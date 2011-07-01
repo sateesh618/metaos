@@ -52,8 +52,6 @@ public class R {
             this.engine.assign(name, (int[]) value);
         } else if(value instanceof String) {
             final REXP x = this.engine.eval(value.toString());
-System.out.println(".....");
-System.out.println(x);
             this.engine.assign(name, x);
         } else {
             System.err.println("Ignoring unknown type " + value.getClass()
@@ -111,11 +109,11 @@ System.out.println(x);
      */
     private final class NullLoopCallbacks implements RMainLoopCallbacks {
         public void rWriteConsole(Rengine re, String text, int oType) {
-            System.out.println(text);
+//            System.out.println(text);
         }
 
         public void rBusy(Rengine re, int which) {
-            System.out.println("rBusy("+which+")");
+//            System.out.println("rBusy("+which+")");
         }
    
         public String rReadConsole(final Rengine re, final String prompt, 
@@ -124,7 +122,7 @@ System.out.println(x);
         }
 
         public void rShowMessage(Rengine re, String message) {
-            System.out.println("rShowMessage \""+message+"\"");
+//            System.out.println("rShowMessage \""+message+"\"");
         }
                        
         public String rChooseFile(Rengine re, int newFile) {
