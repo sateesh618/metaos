@@ -1,0 +1,85 @@
+
+
+<!-- $Id: build.xml,v 1.6 2011-06-23 15:00:51 l Exp $ -->
+
+<project name="juant" basedir="." default="compile">
+    
+<property name="python-test" value="test-correlation.py"/>
+<path id="compile.class.path">
+    <!-- <pathelement location="path,mybrother"/> -->
+    <fileset dir="lib">
+       <include name="*.jar"/>
+    </fileset>
+</path>
+
+<target name="clean" description="Cleans every built elements">
+  <delete dir="distrib"/>
+  <delete dir="build/classes"/>
+  <delete dir="build/javadoc"/>
+</target>
+
+
+<target name="init" description="Creates directory structure">
+  <mkdir dir="build"/>
+  <mkdir dir="build/classes"/>
+  <mkdir dir="build/javadoc"/>
+  <mkdir dir="distrib"/>
+  <mkdir dir="distrib/doc"/>
+  <mkdir dir="distrib/bin"/>
+  <mkdir dir="distrib/lib"/>
+</target>
+
+
+<target name="test" depends="distrib" 
+        description="Executes testing routines, but not Unit Testing">
+    <java fork="true" dir="distrib/bin" classname="com.juant.engine.Engine">
+        <classpath>
+            <fileset dir="lib">
+               <include name="*.jar"/>
+            </fileset>
+            <pathelement path="distrib/lib/juant.jar"/>
+        </classpath>
+        <arg value="init.py"/>
+        <arg value="${python-test}"/>
+    </java>
+</target>
+
+<target name="compile" depends="init" description="Compiles everything">
+    <javac destdir="build/classes"
+               classpathref="compile.class.path" 
+               debug="yes" deprecation="yes">
+        <src path="src/java"/>
+    </javac>
+</target>
+
+
+<target name="distrib" depends="compile" description="Packages everything">
+    <jar jarfile="distrib/lib/juant.jar" basedir="build/classes"/>
+    <copy todir="distrib/lib">
+      <fileset dir="lib" includes="**/*.*"/>
+    </copy>
+    <copy todir="distrib/bin">
+      <fileset dir="src/python" includes="**/*.*"/>
+      <fileset dir="src/R" includes="**/*.*"/>
+      <fileset dir="src/sh" includes="**/*.*"/>
+      <fileset dir="src/testdata" includes="**/*.*"/>
+    </copy>
+    <chmod file="src/sh/run.sh" perm="+x"/>
+</target>
+
+
+<!-- ============================================================ -->
+<target name="javadoc" depends="init" description="Creates javadoc">
+    <javadoc packagenames="com.juant.*"
+             sourcepath="src/java" destdir="build/javadoc"
+             classpathref="compile.class.path" private="true"
+             use="true" author="true"
+             windowtitle="Technical Analysis for Stock Prices"
+             header="Tech Analysis" footer="2011 - LGPL luisf.canals@gmail.com">
+        <tag name="implementation" description="Implementation details: " />
+        <tag name="todo" description="Remains to do: " />
+        <link href="../../doc/jdk" offline="true" packagelistLoc="doc/jdk" />
+    </javadoc>
+</target>
+
+</project>
