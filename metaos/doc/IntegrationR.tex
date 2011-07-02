@@ -3,9 +3,6 @@
 \usepackage{theorem}
 \usepackage{color}
 \usepackage{listings}
-\copyright{GNU Licensed Document. Modifications and copies of this document
-must follow the GNU License, refering to authors and to the original document.
-All other rights are reserved by the authors.}
 
 \title{MetaOS R integration. A how-to guide.}
 \author{Sergio Alvarez (setelena@gmail.com),
@@ -51,4 +48,38 @@ In this case, interface for R class has been modified, to create a simple
 predictor with two methods, \emph{learn} and \emph{predict}. An example of
 predictor based on linear regression might look like this:
 
+From the example, we write down the interface all R-class should satisfy
+to be compatible with \emph{rintegration.py} requirements (in pseudocode 
+Java-like):
+
+\lstset{language=Java,frame=single,tabsize=4,basicstyle=\tiny}
+\begin{lstlisting}
+
+    interface PredictorInR {
+        // Learns a new relation x->y
+        void learn(double x, double y);
+
+        // Tries to predict the value of y from x
+        double predict(double x);
+    }
+
+\end{lstlisting}
+\label{PredictorInR}
+
+
+
+
+\section{Usage from command line and visual interface}
+
+The code in \emph{rintegration.py} can be invoked even from command line or
+from visual interface. In both cases, file acting as a source of prices,
+the main Python script (\emph{rintegration.py} in this case) and the R file
+containing the source code of the class with the predictor following the 
+interface described in the interface \ref{PredictorInR}.
+
+
+\section{License terms}
+This is a GNU Licensed Document. Modifications and copies of this document
+must follow the GNU License, refering to authors and to the original document.
+All other rights are reserved by the authors.
 \end{document}
