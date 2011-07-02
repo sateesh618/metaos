@@ -8,8 +8,8 @@ lsPredictor <- function() {
     r <- NULL
 
     learn <- function(x, y) {
-        xVals <<- union(xVals, x)
-        yVals <<- union(yVals, y)
+        xVals <<- append(xVals, x)
+        yVals <<- append(yVals, y)
     }
 
 

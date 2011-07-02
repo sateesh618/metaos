@@ -10,7 +10,7 @@ correlator <- function() {
 
     show <- function() {
         r <- lm(xVals ~ yVals)
-        print(r)
+        return(r)
     }
 
     return(list(memo=memo, show=show))

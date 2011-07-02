@@ -62,6 +62,7 @@ public class SequentialAccessMarket implements MarketReadWrite {
         this.lastInsert.setTimeInMillis(0);
     }
 
+
     public void setPrice(final Calendar when, final String what,
             final double how) {
         pricesLock.writeLock().lock();
@@ -101,6 +102,7 @@ public class SequentialAccessMarket implements MarketReadWrite {
         }
     }
 
+
     public void setAsk(final Calendar when, final String what,
             final double how) {
         asksLock.writeLock().lock();
@@ -119,6 +121,7 @@ public class SequentialAccessMarket implements MarketReadWrite {
             asksLock.writeLock().unlock();
         }
     }
+
 
     public void setVolume(final Calendar when,final String what,
             final long how) {
@@ -161,14 +164,16 @@ public class SequentialAccessMarket implements MarketReadWrite {
     }
 
     public double getLastPrice(final int delay, final String what) {
-        throw new UnsupportedOperationException("not implemented yet");
-        /*
         pricesLock.readLock().lock();
         try {
+            if(delay==0) {
+                return this.lastWritePrices.get(what);
+            } else {
+                throw new UnsupportedOperationException("not implemented yet");
+            }
         } finally {
             pricesLock.readLock().unlock();
         }
-        */
     }
 
     public double getBid(final Calendar when, final String what) {
@@ -194,25 +199,29 @@ public class SequentialAccessMarket implements MarketReadWrite {
     }
 
     public double getLastBid(final int delay, final String what) {
-        throw new UnsupportedOperationException("not implemented yet");
-        /*
         bidsLock.readLock().lock();
         try {
+            if(delay==0) {
+                return this.lastWriteBid.get(what);
+            } else {
+                throw new UnsupportedOperationException("not implemented yet");
+            }
         } finally {
             bidsLock.readLock().unlock();
         }
-        */
     }
 
     public double getLastAsk(final int delay, final String what) {
-        throw new UnsupportedOperationException("not implemented yet");
-        /*
         asksLock.readLock().lock();
         try {
+            if(delay==0) {
+                return this.lastWriteAsk.get(what);
+            } else {
+                throw new UnsupportedOperationException("not implemented yet");
+            }
         } finally {
             asksLock.readLock().unlock();
         }
-        */
     }
 
     public long getVolume(final Calendar when, final String what) {
@@ -227,14 +236,16 @@ public class SequentialAccessMarket implements MarketReadWrite {
     }
 
     public long getLastVolume(final int delay, final String what) {
-        throw new UnsupportedOperationException("not implemented yet");
-        /*
         volumesLock.readLock().lock();
         try {
+            if(delay==0) {
+                return this.lastWriteVolume.get(what);
+            } else {
+                throw new UnsupportedOperationException("not implemented yet");
+            }
         } finally {
             volumesLock.readLock().unlock();
         }
-        */
     }
 
 

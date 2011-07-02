@@ -1,7 +1,7 @@
 #!/bin/bash
 
 CP=.
-for a in ../lib/*.jar; do
+for a in ${dirname $0}/../lib/*.jar; do
   CP=$CP:$a
 done
 
@@ -28,4 +28,4 @@ fi
 export R_HOME
 export LD_LIBRARY_PATH
 
-${JAVA_HOME}/bin/java -Djava.library.path=. -cp ${CP} com.juant.engine.Engine init.py $*
+${JAVA_HOME}/bin/java -Djava.library.path=${dirname $0}../lib -cp ${CP} com.juant.engine.Engine init.py $*
