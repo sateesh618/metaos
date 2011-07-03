@@ -64,7 +64,7 @@
       <fileset dir="src/sh" includes="**/*.*"/>
       <fileset dir="src/testdata" includes="**/*.*"/>
     </copy>
-    <chmod file="src/sh/run.sh" perm="+x"/>
+    <chmod file="distrib/bin/run.sh" perm="+x"/>
 </target>
 
 
