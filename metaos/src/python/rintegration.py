@@ -14,7 +14,7 @@ symbol2 = symbols[0]
 source = CSVUnorderedData.getInstance().reuters('BRIC40_1min.csv', symbols)
 
 # R code: create predictor object
-interpreteR = R(["lsPredictor.r"])
+interpreteR = R([args[0]])
 interpreteR.eval("predictor <- lsPredictor()")
 
 # Bind R predictor to source events through an observer

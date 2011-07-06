@@ -28,6 +28,7 @@ public class Engine {
 
     public String execute(final String pyFile, final String args[]) 
             throws IOException {
+        this.interpreter.set("args", args);
         final FileReader reader = new FileReader(pyFile);
         final char[] pyBuffer = new char[(int) new File(pyFile).length()];
         reader.read(pyBuffer);
