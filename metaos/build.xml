@@ -47,6 +47,23 @@
     </java>
 </target>
 
+<target name="run" depends="distrib" 
+        description="Executes graphical console">
+    <java fork="true" dir="distrib/bin" classname="com.juant.engine.Console">
+        <classpath>
+            <fileset dir="lib">
+               <include name="*.jar"/>
+            </fileset>
+            <fileset dir="lib/swing-layout">
+               <include name="*.jar"/>
+            </fileset>
+            <pathelement path="distrib/lib/juant.jar"/>
+        </classpath>
+        <arg value="init.py"/>
+    </java>
+</target>
+
+
 <target name="compile" depends="init" description="Compiles everything">
     <javac destdir="build/classes"
                classpathref="compile.class.path" 
@@ -60,6 +77,7 @@
     <jar jarfile="distrib/lib/juant.jar" basedir="build/classes"/>
     <copy todir="distrib/lib">
       <fileset dir="lib" includes="**/*.*"/>
+      <fileset dir="lib/swing-layout" includes="**/*.*"/>
     </copy>
     <copy todir="distrib/bin">
       <fileset dir="src/python" includes="**/*.*"/>
