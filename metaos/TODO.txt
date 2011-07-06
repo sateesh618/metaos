@@ -1,0 +1,7 @@
+1.- Create a visual interface (in AWK?) to simplify the use of test cases.
+
+2.- Document and implement a test case using a learning machine in R
+
+3.- Javadoc and documentation directory for 'distrib' target
+
+4.- Create test code area

@@ -12,31 +12,18 @@ import org.rosuda.JRI.*;
 import org.python.core.PyList;
 
 /**
- * Adapter for JRI object.
+ * Adaptor for JRI object.
  */
 public class R {
     private final Rengine engine;
 
-    /**
-     * Creates a new no-verbose R engine adapter.
-     * @param rFiles array of source files in R to load at startup time.
-     */
     public R(final String rFiles[]) throws IOException {
-        this(rFiles, false);
-    }
-
-    /**
-     * Creates a new R engine adapter.
-     * @param rFiles array of source files in R to load at startup time.
-     * @param verbose true to enable verbosity, false to run the adapter 
-     * silently.
-     */
-    public R(final String rFiles[], final boolean verbose) throws IOException {
         if(!Rengine.versionCheck()) {
             throw new RuntimeException("Mismatch R version");
         }
         this.engine = new Rengine(new String[] {"--vanilla"}, false, 
-                verbose ? new VerboseLoopCallbacks() : new NullLoopCallbacks());
+                new NullLoopCallbacks());
+//        this.engine.setDaemon(true);
         if(!this.engine.waitForR()) {
             throw new RuntimeException("R cannot be loaded");
         }
@@ -122,9 +109,11 @@ public class R {
      */
     private final class NullLoopCallbacks implements RMainLoopCallbacks {
         public void rWriteConsole(Rengine re, String text, int oType) {
+//            System.out.println(text);
         }
 
         public void rBusy(Rengine re, int which) {
+//            System.out.println("rBusy("+which+")");
         }
    
         public String rReadConsole(final Rengine re, final String prompt, 
@@ -133,6 +122,7 @@ public class R {
         }
 
         public void rShowMessage(Rengine re, String message) {
+//            System.out.println("rShowMessage \""+message+"\"");
         }
                        
         public String rChooseFile(Rengine re, int newFile) {
@@ -148,42 +138,4 @@ public class R {
         public void rSaveHistory(final Rengine re, final String filename) {
         }
     }
-
-    /**
-     * Verbose implementation for R callbacks.
-     */
-    private final class VerboseLoopCallbacks implements RMainLoopCallbacks {
-        public void rWriteConsole(Rengine re, String text, int oType) {
-            System.out.println(text);
-        }
-
-        public void rBusy(Rengine re, int which) {
-            System.out.println("> Busy " + which);
-        }
-   
-        public String rReadConsole(final Rengine re, final String prompt, 
-                final int addToHistory) {
-            return null;
-        }
-
-        public void rShowMessage(Rengine re, String message) {
-            System.out.println(message);
-        }
-                       
-        public String rChooseFile(Rengine re, int newFile) {
-            return null;
-        }
-
-        public void rFlushConsole(final Rengine re) {
-        }
-       
-        public void rLoadHistory(final Rengine re, final String filename) {
-            System.out.println("> Loading history into " + filename);
-        }
-                  
-        public void rSaveHistory(final Rengine re, final String filename) {
-            System.out.println("> Saving history into " + filename);
-        }
-    }
-
 }
