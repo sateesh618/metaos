@@ -15,7 +15,7 @@ import com.juant.deriva.options.*;
 import com.juant.*;
 
 /**
- * Long Put implementation.
+ * General Put implementation.
  */
 public class EuropeanPut extends Option {
     public EuropeanPut(final double prime, final double strikePrice,

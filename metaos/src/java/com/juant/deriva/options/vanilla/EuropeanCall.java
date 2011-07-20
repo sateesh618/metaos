@@ -15,10 +15,10 @@ import com.juant.deriva.options.*;
 import com.juant.*;
 
 /**
- * Long Call implementation.
+ * General Call implementation.
  */
-public class EuropeanLongCall extends EuropeanCall {
-    public EuropeanLongCall(final double prime, final double strikePrice,
+public class EuropeanCall extends Option {
+    public EuropeanCall(final double prime, final double strikePrice,
             final Calendar strike,final Instrument underlying,final int size) {
         super(prime, strikePrice, strike, underlying, size);
     }

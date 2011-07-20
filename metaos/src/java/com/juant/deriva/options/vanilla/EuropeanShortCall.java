@@ -18,7 +18,7 @@ import com.juant.*;
 /**
  * Short Call implementation.
  */
-public class EuropeanShortCall extends Option {
+public class EuropeanShortCall extends EuropeanCall {
     public EuropeanShortCall(final double prime, final double strikePrice,
             final Calendar strike,final Instrument underlying,final int size) {
         super(prime, strikePrice, strike, underlying, size);
