@@ -17,19 +17,19 @@ import com.juant.*;
 /**
  * Long Put implementation.
  */
-public class EuropeanLongPut extends Option {
+public class EuropeanLongPut extends EuropeanPut {
     public EuropeanLongPut(final double prime, final double strikePrice,
             final Calendar strike,final Instrument underlying,final int size) {
         super(prime, strikePrice, strike, underlying, size);
     }
 
     public double getPrice(final Calendar when) {
-        throw new UnsupportedOperationException("NOT IMPLEMENTED YET");
+        return super.getPrice(when);
     }
 
     protected double getPrice(final Calendar when, 
             final double underlyingPrice) {
-        throw new UnsupportedOperationException("NOT IMPLEMENTED YET");
+        return super.getPrice(when, underlyingPrice);
     }
 
     public double getVega(final Calendar when) {

@@ -14,23 +14,22 @@ import java.util.logging.Logger;
 import com.juant.deriva.options.*;
 import com.juant.*;
 
-
 /**
- * Short Put implementation.
+ * Long Put implementation.
  */
-public class EuropeanShortPut extends EuropeanPut {
-    public EuropeanShortPut(final double prime, final double strikePrice,
+public class EuropeanPut extends Option {
+    public EuropeanPut(final double prime, final double strikePrice,
             final Calendar strike,final Instrument underlying,final int size) {
         super(prime, strikePrice, strike, underlying, size);
     }
 
     public double getPrice(final Calendar when) {
-        return -super.getPrice(when);
+        throw new UnsupportedOperationException("NOT IMPLEMENTED YET");
     }
 
     protected double getPrice(final Calendar when, 
             final double underlyingPrice) {
-        return -super.getPrice(when, underlyingPrice);
+        throw new UnsupportedOperationException("NOT IMPLEMENTED YET");
     }
 
     public double getVega(final Calendar when) {
