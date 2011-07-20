@@ -19,8 +19,9 @@ import com.juant.*;
  */
 public class EuropeanCall extends Option {
     public EuropeanCall(final double prime, final double strikePrice,
-            final Calendar strike,final Instrument underlying,final int size) {
-        super(prime, strikePrice, strike, underlying, size);
+            final Calendar strike,final Instrument underlying, final int size,
+            final PriceCalculator calculator) {
+        super(prime, strikePrice, strike, underlying, size, calculator);
     }
 
     public double getPrice(final Calendar when) {
@@ -28,8 +29,10 @@ public class EuropeanCall extends Option {
     }
 
     protected double getPrice(final Calendar when, 
-            final double underlyingPrice) {
-        throw new UnsupportedOperationException("NOT IMPLEMENTED YET");
+            final double underlyingPrice, final double riskFreeRate) {
+        final double t1 = underlyingPrice * N(d1);
+        final double t2 = N(d2) * this.strikePrice * Math.exp(riskFreeRate*tau);
+        return size * (t1 - t2);
     }
 
     public double getVega(final Calendar when) {

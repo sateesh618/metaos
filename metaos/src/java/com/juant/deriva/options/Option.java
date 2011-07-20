@@ -24,14 +24,19 @@ public abstract class Option implements Derivative {
     protected final double prime;
     protected final Calendar strike;
     protected final int size;
+    protected final Market riskFreeMarket;
+    protected final PriceCalculator priceCalculator;
 
     public Option(final double prime, final double strikePrice,
-            final Calendar strike,final Instrument underlying,final int size) {
+            final Calendar strike, final Instrument underlying, final int size,
+            final PriceCalculator priceCalculator) {
         this.underlying = underlying;
         this.strikePrice = strikePrice;
         this.prime = prime;
         this.strike = strike;
         this.size = size;
+        this.riskFreeMarket = riskFreeMarket;
+        this.priceCalculator = priceCalculator;
     }
 
     public double getAcquisitionPrice() {
@@ -47,9 +52,11 @@ public abstract class Option implements Derivative {
     }
 
     public double getDelta(final Calendar when) {
-        double dS = 0.0001;
-        double S0 = this.underlying.getPrice(when);
-        return (getPrice(when, S0 - dS) - getPrice(when, S0 - dS))/(2*dS);
+        final double dS = 0.0001;
+        final double S0 = this.underlying.getPrice(when);
+        final double rf = rfMarket.getRate(when, timeScale);
+        return (getPrice(when, S0-dS, this.priceCalculator) 
+                - getPrice(when, S0-dS, this.priceCalculator))/(2*dS);
     }
 
 
@@ -87,5 +94,5 @@ public abstract class Option implements Derivative {
      * Internal shortcut to calculate prices.
      */
     protected abstract double getPrice(final Calendar when,
-            final double underlyingPrice);
+            final double underlyingPrice,final PriceCalculator priceCalculator);
 }

@@ -20,8 +20,9 @@ import com.juant.*;
  */
 public class EuropeanShortCall extends EuropeanCall {
     public EuropeanShortCall(final double prime, final double strikePrice,
-            final Calendar strike,final Instrument underlying,final int size) {
-        super(prime, strikePrice, strike, underlying, size);
+            final Calendar strike,final Instrument underlying,final int size,
+            final PriceCalculator calculator) {
+        super(prime, strikePrice, strike, underlying, size, calculator);
     }
 
     public double getPrice(final Calendar when) {

@@ -55,6 +55,18 @@ public class CalUtils {
 
 
     /**
+     * Calculates difference in chunks of unit times expressed by the timer.
+     * @param a the lowest value for calendar.
+     * @param b the highest value for calendar.
+     * @param pattern timer to consider clicks
+     */
+    public static double difference(final Calendar a, final Calendar b,
+            final Timer pattern, final int chunks) {
+        return pattern.clicksOfDifference(b, a) / chunks;
+    }
+
+
+    /**
      * Calculates difference in years between to dates.
      */
     public static double differenceInYears(final Calendar a, final Calendar b) {

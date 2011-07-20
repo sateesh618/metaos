@@ -19,8 +19,9 @@ import com.juant.*;
  */
 public class EuropeanPut extends Option {
     public EuropeanPut(final double prime, final double strikePrice,
-            final Calendar strike,final Instrument underlying,final int size) {
-        super(prime, strikePrice, strike, underlying, size);
+            final Calendar strike,final Instrument underlying,final int size,
+            final PriceCalculator calculator) {
+        super(prime, strikePrice, strike, underlying, size, calculator);
     }
 
     public double getPrice(final Calendar when) {
@@ -28,7 +29,7 @@ public class EuropeanPut extends Option {
     }
 
     protected double getPrice(final Calendar when, 
-            final double underlyingPrice) {
+            final double underlyingPrice, final double riskFreeRate) {
         throw new UnsupportedOperationException("NOT IMPLEMENTED YET");
     }
 
