@@ -2,7 +2,7 @@
 
 <!-- $Id: build.xml,v 1.6 2011-06-23 15:00:51 l Exp $ -->
 
-<project name="juant" basedir="." default="compile">
+<project name="metaos" basedir="." default="compile">
     
 <property name="python-test" value="test-correlation.py"/>
 <path id="compile.class.path">
@@ -35,12 +35,12 @@
 
 <target name="test" depends="distrib" 
         description="Executes testing routines, but not Unit Testing">
-    <java fork="true" dir="distrib/bin" classname="com.juant.engine.Engine">
+    <java fork="true" dir="distrib/bin" classname="com.metaos.engine.Engine">
         <classpath>
             <fileset dir="lib">
                <include name="*.jar"/>
             </fileset>
-            <pathelement path="distrib/lib/juant.jar"/>
+            <pathelement path="distrib/lib/metaos.jar"/>
         </classpath>
         <arg value="init.py"/>
         <arg value="${python-test}"/>
@@ -49,7 +49,7 @@
 
 <target name="run" depends="distrib" 
         description="Executes graphical console">
-    <java fork="true" dir="distrib/bin" classname="com.juant.engine.Console">
+    <java fork="true" dir="distrib/bin" classname="com.metaos.engine.Console">
         <classpath>
             <fileset dir="lib">
                <include name="*.jar"/>
@@ -57,7 +57,7 @@
             <fileset dir="lib/swing-layout">
                <include name="*.jar"/>
             </fileset>
-            <pathelement path="distrib/lib/juant.jar"/>
+            <pathelement path="distrib/lib/metaos.jar"/>
         </classpath>
         <arg value="init.py"/>
     </java>
@@ -74,7 +74,7 @@
 
 
 <target name="distrib" depends="compile" description="Packages everything">
-    <jar jarfile="distrib/lib/juant.jar" basedir="build/classes"/>
+    <jar jarfile="distrib/lib/metaos.jar" basedir="build/classes"/>
     <copy todir="distrib/lib">
       <fileset dir="lib" includes="**/*.*"/>
       <fileset dir="lib/swing-layout" includes="**/*.*"/>
@@ -91,7 +91,7 @@
 
 <!-- ============================================================ -->
 <target name="javadoc" depends="init" description="Creates javadoc">
-    <javadoc packagenames="com.juant.*"
+    <javadoc packagenames="com.metaos.*"
              sourcepath="src/java" destdir="build/javadoc"
              classpathref="compile.class.path" private="true"
              use="true" author="true"
