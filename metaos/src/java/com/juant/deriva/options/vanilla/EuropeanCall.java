@@ -29,7 +29,7 @@ public class EuropeanCall extends Option {
     }
 
     protected double getPrice(final Calendar when, 
-            final double underlyingPrice, final double riskFreeRate) {
+            final double underlyingPrice, final PriceCalculator pricer) {
         final double t1 = underlyingPrice * N(d1);
         final double t2 = N(d2) * this.strikePrice * Math.exp(riskFreeRate*tau);
         return size * (t1 - t2);

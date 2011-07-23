@@ -13,6 +13,7 @@ import java.util.*;
 import java.util.logging.Logger;
 import com.juant.deriva.Derivative;
 import com.juant.Instrument;
+import com.juant.pricer.options.PriceCalculator;
 import com.juant.util.*;
 
 /**
@@ -24,19 +25,17 @@ public abstract class Option implements Derivative {
     protected final double prime;
     protected final Calendar strike;
     protected final int size;
-    protected final Market riskFreeMarket;
-    protected final PriceCalculator priceCalculator;
+    protected final PriceCalculator pricer;
 
     public Option(final double prime, final double strikePrice,
             final Calendar strike, final Instrument underlying, final int size,
-            final PriceCalculator priceCalculator) {
+            final PriceCalculator pricer) {
         this.underlying = underlying;
         this.strikePrice = strikePrice;
         this.prime = prime;
         this.strike = strike;
         this.size = size;
-        this.riskFreeMarket = riskFreeMarket;
-        this.priceCalculator = priceCalculator;
+        this.pricer = pricer;
     }
 
     public double getAcquisitionPrice() {
@@ -54,9 +53,10 @@ public abstract class Option implements Derivative {
     public double getDelta(final Calendar when) {
         final double dS = 0.0001;
         final double S0 = this.underlying.getPrice(when);
-        final double rf = rfMarket.getRate(when, timeScale);
-        return (getPrice(when, S0-dS, this.priceCalculator) 
-                - getPrice(when, S0-dS, this.priceCalculator))/(2*dS);
+
+        final double a = this.pricer.calculate(this, S0-dS, when);
+        final double b = this.pricer.calculate(this, S0+dS, when);
+        return (a-b)/(2*dS);
     }
 
 
