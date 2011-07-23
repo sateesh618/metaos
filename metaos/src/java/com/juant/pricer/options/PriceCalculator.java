@@ -4,7 +4,7 @@
  * The LICENSE.txt file and this header must be included or referenced 
  * in each piece of code derived from this project.
  */
-package com.juant.maths.pricer.options;
+package com.juant.pricer.options;
 
 import java.io.*;
 import java.net.*;

@@ -12,6 +12,7 @@ import java.text.*;
 import java.util.*;
 import java.util.logging.Logger;
 import com.juant.deriva.options.*;
+import com.juant.pricer.options.PriceCalculator;
 import com.juant.*;
 
 /**
@@ -29,10 +30,8 @@ public class EuropeanCall extends Option {
     }
 
     protected double getPrice(final Calendar when, 
-            final double underlyingPrice, final PriceCalculator pricer) {
-        final double t1 = underlyingPrice * N(d1);
-        final double t2 = N(d2) * this.strikePrice * Math.exp(riskFreeRate*tau);
-        return size * (t1 - t2);
+            final double underlyingPrice) {
+        return size * super.pricer.calculate(this, underlyingPrice, when);
     }
 
     public double getVega(final Calendar when) {

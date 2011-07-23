@@ -1,6 +1,7 @@
-Copyright (c) 2011 
+Copyright (c) 2011 - 2012
     Sergio Alvarez -Madrid, Spain-
     Luis F. Canals -Madrid, Spain-
+    And other contributors that may appear in specfic areas of code.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

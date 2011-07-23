@@ -54,8 +54,8 @@ public abstract class Option implements Derivative {
         final double dS = 0.0001;
         final double S0 = this.underlying.getPrice(when);
 
-        final double a = this.pricer.calculate(this, S0-dS, when);
-        final double b = this.pricer.calculate(this, S0+dS, when);
+        final double a = getPrice(when, S0-dS);
+        final double b = getPrice(when, S0+dS);
         return (a-b)/(2*dS);
     }
 
@@ -94,5 +94,5 @@ public abstract class Option implements Derivative {
      * Internal shortcut to calculate prices.
      */
     protected abstract double getPrice(final Calendar when,
-            final double underlyingPrice,final PriceCalculator priceCalculator);
+            final double underlyingPrice);
 }

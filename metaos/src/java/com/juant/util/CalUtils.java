@@ -9,7 +9,10 @@ package com.juant.util;
 import java.io.*;
 import java.net.*;
 import java.text.*;
-import java.util.*;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
 /**
@@ -53,17 +56,6 @@ public class CalUtils {
         return cl;
     }
 
-
-    /**
-     * Calculates difference in chunks of unit times expressed by the timer.
-     * @param a the lowest value for calendar.
-     * @param b the highest value for calendar.
-     * @param pattern timer to consider clicks
-     */
-    public static double difference(final Calendar a, final Calendar b,
-            final Timer pattern, final int chunks) {
-        return pattern.clicksOfDifference(b, a) / chunks;
-    }
 
 
     /**

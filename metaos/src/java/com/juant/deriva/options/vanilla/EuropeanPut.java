@@ -12,6 +12,7 @@ import java.text.*;
 import java.util.*;
 import java.util.logging.Logger;
 import com.juant.deriva.options.*;
+import com.juant.pricer.options.PriceCalculator;
 import com.juant.*;
 
 /**
@@ -29,7 +30,7 @@ public class EuropeanPut extends Option {
     }
 
     protected double getPrice(final Calendar when, 
-            final double underlyingPrice, final double riskFreeRate) {
+            final double underlyingPrice) {
         throw new UnsupportedOperationException("NOT IMPLEMENTED YET");
     }
 
