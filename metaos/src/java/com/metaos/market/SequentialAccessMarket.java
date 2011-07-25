@@ -78,6 +78,7 @@ public class SequentialAccessMarket implements MarketReadWrite {
                 createNewBucket();
             }
             this.lastWritePrices.put(what, how);
+            this.prices.getLast().put(what, how);
             this.lastInsert = when;
         } finally {
             pricesLock.writeLock().unlock();
@@ -98,6 +99,7 @@ public class SequentialAccessMarket implements MarketReadWrite {
                 createNewBucket();
             }
             this.lastWriteBid.put(what, how);
+            this.bids.getLast().put(what, how);
             this.lastInsert = when;
         } finally {
             bidsLock.writeLock().unlock();
@@ -118,6 +120,7 @@ public class SequentialAccessMarket implements MarketReadWrite {
                 createNewBucket();
             }
             this.lastWriteAsk.put(what, how);
+            this.asks.getLast().put(what, how);
             this.lastInsert = when;
         } finally {
             asksLock.writeLock().unlock();
@@ -138,6 +141,7 @@ public class SequentialAccessMarket implements MarketReadWrite {
                 createNewBucket();
             }
             this.lastWriteVolume.put(what, how);
+            this.volumes.getLast().put(what, how);
             this.lastInsert = when;
         } finally {
             volumesLock.writeLock().unlock();

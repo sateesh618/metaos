@@ -87,10 +87,10 @@ variances.listHighVariancesIntraPeriod.sort()
 variances.listLowVariancesPeriod.sort()
 variances.listHighVariancesPeriod.sort()
 
-print '98% of measures intra period are less than :'
+print '98% of high variances intra period are less than :'
 print variances.listHighVariancesIntraPeriod[\
-    0.98 * len(variances.listHighVariancesIntraPeriod)]
-print '98% of variances from init to end of each period are less than :'
+    98 * len(variances.listHighVariancesIntraPeriod) / 100]
+print '98% of high variances from init to end of each period are less than :'
 print variances.listHighVariancesPeriod[\
-    0.98 * len(variances.listHighVariancesIntraPeriod)]
+    98 * len(variances.listHighVariancesIntraPeriod) / 100]
 
