@@ -19,6 +19,8 @@ import net.tasecurity.taslib.util.CacheMap;
  * Market optimized for sequential accesses from now to past prices.
  */
 public class SequentialAccessMarket implements MarketReadWrite {
+    /* @TODO: test if the use of circular fixed-size arrays improves
+       performance. */
     private final LinkedList<Calendar> moments;
     private final LinkedList<Map<String, Double>> bids;
     private final LinkedList<Map<String, Double>> asks;
@@ -169,7 +171,12 @@ public class SequentialAccessMarket implements MarketReadWrite {
             if(delay==0) {
                 return this.lastWritePrices.get(what);
             } else {
-                throw new UnsupportedOperationException("not implemented yet");
+                final Iterator<Map<String, Double>> it = 
+                        this.prices.descendingIterator();
+                for(int i=0; i<delay; i++) {
+                    it.next();
+                }
+                return it.next().get(what);
             }
         } finally {
             pricesLock.readLock().unlock();
@@ -204,7 +211,12 @@ public class SequentialAccessMarket implements MarketReadWrite {
             if(delay==0) {
                 return this.lastWriteBid.get(what);
             } else {
-                throw new UnsupportedOperationException("not implemented yet");
+                final Iterator<Map<String, Double>> it = 
+                        this.bids.descendingIterator();
+                for(int i=0; i<delay; i++) {
+                    it.next();
+                }
+                return it.next().get(what);
             }
         } finally {
             bidsLock.readLock().unlock();
@@ -217,7 +229,12 @@ public class SequentialAccessMarket implements MarketReadWrite {
             if(delay==0) {
                 return this.lastWriteAsk.get(what);
             } else {
-                throw new UnsupportedOperationException("not implemented yet");
+                final Iterator<Map<String, Double>> it = 
+                        this.asks.descendingIterator();
+                for(int i=0; i<delay; i++) {
+                    it.next();
+                }
+                return it.next().get(what);
             }
         } finally {
             asksLock.readLock().unlock();
@@ -241,7 +258,12 @@ public class SequentialAccessMarket implements MarketReadWrite {
             if(delay==0) {
                 return this.lastWriteVolume.get(what);
             } else {
-                throw new UnsupportedOperationException("not implemented yet");
+                final Iterator<Map<String, Long>> it = 
+                        this.volumes.descendingIterator();
+                for(int i=0; i<delay; i++) {
+                    it.next();
+                }
+                return it.next().get(what);
             }
         } finally {
             volumesLock.readLock().unlock();

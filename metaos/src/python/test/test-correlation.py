@@ -1,6 +1,3 @@
-from java.lang import Long
-from java.lang import Double
-
 
 #
 # Defines market evolution observer.

@@ -5,3 +5,6 @@ from com.metaos.time import *
 from com.metaos.market.source import *
 from com.metaos.engine import *
 from java.util import *
+from java.lang import Long
+from java.lang import Double
+from java.lang import Integer 

@@ -30,7 +30,18 @@ public final class CSVGeneral {
     }
 
     /**
-     * Creates a Source of data from a CSV with only one symbol
+     * Creates a Source of data from a CSV with only one symbol.
+     * @param symbol symbol name, to send messages to markets.
+     * @param filePath complete path to CSV file of prices.
+     * @param dateFormat in format described by 
+     *      <i>java.util.text.SimpleDateFormat</i>, date present in CSV.
+     * @param linePattern REGEXP pattern describing groups of elements for
+     *      each line. For example, to parse lines like
+     *      <code>2011.07.01,10:15,1.234,4.567.7.890,10,111,234</code>
+     *      pattern should look like <code>([0-9]{4}.[0-9]{2}.[0-9]{2},[0-9]{2}:[0-9]{2}),(.*),(.*),(.*),(.*),(.*)</code>.
+     * @param fieldSet list of positions of elements into each line.
+     *      In the previous example, <code>{DATE, OPEN, HIGH, LOW, CLOSE, 
+     *      VOLUME}</code>.
      */
     public PricesSource continuousSingleSource(final String symbol,
             final String filePath, final String dateFormat, 

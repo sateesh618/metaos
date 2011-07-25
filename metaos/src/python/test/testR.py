@@ -1,5 +1,3 @@
-from java.lang import Long
-from java.lang import Double
 
 interpreteR = R(["correlation.r"])
 

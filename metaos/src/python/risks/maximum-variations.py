@@ -24,7 +24,7 @@ source = CSVGeneral.getInstance().continuousSingleSource(symbol, \
 
 
 # Bind 
-class MyObserver(MarketObserver):
+class VariancesObserver(MarketObserver):
     def __init__(self):
         self.numOfSignals = 0
         self.listHighVariancesPeriod = []
@@ -33,7 +33,9 @@ class MyObserver(MarketObserver):
         self.listHighVariancesIntraPeriod = []
 
     def update(self, ss, when):
+        print when
         self.numOfSignals = self.numOfSignals + 1
+        print '.'
 
         if self.numOfSignals >= periods :
             refPrice = market.getLastPrice(period, symbol + '-OPEN')
@@ -65,10 +67,13 @@ class MyObserver(MarketObserver):
 
 # Join everything together
 market = SequentialAccessMarket(0.0, 5000)
+variances = VariancesObserver()
 source.addMarketListener(market)
-source.addListener(MyObserver())
+source.addListener(variances)
 
 # Ready, steady, go
 source.run()
+
+print variances.listHighVariancesPeriod
 
 
