@@ -25,39 +25,38 @@ source = CSVGeneral.getInstance().continuousSingleSource(symbol, \
 
 # Bind 
 class VariancesObserver(MarketObserver):
-    def __init__(self):
+    def __init__(self, market):
         self.numOfSignals = 0
         self.listHighVariancesPeriod = []
         self.listLowVariancesPeriod = []
         self.listLowVariancesIntraPeriod = []
         self.listHighVariancesIntraPeriod = []
+        self.market = market
 
     def update(self, ss, when):
-        print when
         self.numOfSignals = self.numOfSignals + 1
-        print '.'
 
-        if self.numOfSignals >= periods :
-            refPrice = market.getLastPrice(period, symbol + '-OPEN')
+        if self.numOfSignals > periods :
+            refPrice = self.market.getLastPrice(periods, symbol + '-OPEN')
 
             # Look for extreme values into period
-            lowVarianceIntraPeriod = 0;
-            highVarianceIntraPeriod = 0;
-            for i in range(0,period):
-                m = market.getLastPrice(i, symbol + '-LOW')    
-                M = market.getLastPrice(i, symbol + '-HIGH')    
+            lowVarianceIntraPeriod = 0
+            highVarianceIntraPeriod = 0
+            for i in range(periods):
+                m = self.market.getLastPrice(i, symbol + '-LOW')    
+                M = self.market.getLastPrice(i, symbol + '-HIGH')    
                 if m<refPrice :
                     lowVarianceIntraPeriod = max(lowVarianceIntraPeriod, \
-                            refPrice - m)
+                            (refPrice - m)/refPrice)
                 if M>refPrice :
                     highVarianceIntraPeriod = max(highVarianceIntraPeriod, \
-                            M - refPrice)
+                            (M - refPrice)/refPrice)
 
             # Calculate variance in the limits of period
-            highVariancePeriod = max(0, \
-                    market.getLastPrice(0, symbol + '-HIGH') - refPrice)
-            lowVariancePeriod = max(0, \
-                    refPrice - market.getLastPrice(0, symbol + '-LOW')) 
+            highVariancePeriod = max(0, (self.market.getLastPrice(0, \
+                    symbol + '-HIGH') - refPrice)/refPrice)
+            lowVariancePeriod = max(0, (refPrice - self.market.getLastPrice(\
+                    0, symbol + '-LOW'))/refPrice) 
 
             self.listHighVariancesPeriod.append(highVariancePeriod)
             self.listLowVariancesPeriod.append(lowVariancePeriod)
@@ -67,13 +66,31 @@ class VariancesObserver(MarketObserver):
 
 # Join everything together
 market = SequentialAccessMarket(0.0, 5000)
-variances = VariancesObserver()
+variances = VariancesObserver(market)
 source.addMarketListener(market)
 source.addListener(variances)
 
 # Ready, steady, go
 source.run()
 
-print variances.listHighVariancesPeriod
+print 'Maximum low variance intra period :'
+print max(variances.listLowVariancesIntraPeriod)
+print 'Maximum high variance intra period :'
+print max(variances.listHighVariancesIntraPeriod)
+print 'Maximum low variance init and end of period :'
+print max(variances.listLowVariancesPeriod)
+print 'Maximum high variance init and end of period :'
+print max(variances.listHighVariancesPeriod)
 
+variances.listLowVariancesIntraPeriod.sort()
+variances.listHighVariancesIntraPeriod.sort()
+variances.listLowVariancesPeriod.sort()
+variances.listHighVariancesPeriod.sort()
+
+print '98% of measures intra period are less than :'
+print variances.listHighVariancesIntraPeriod[\
+    0.98 * len(variances.listHighVariancesIntraPeriod)]
+print '98% of variances from init to end of each period are less than :'
+print variances.listHighVariancesPeriod[\
+    0.98 * len(variances.listHighVariancesIntraPeriod)]
 
