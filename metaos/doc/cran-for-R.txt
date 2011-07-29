@@ -1,0 +1,6 @@
+Recommended packages for R:
+
+    Forecast http://cran.r-project.org/web/packages/forecast/index.html
+        > install.packages("forecast")
+
+
