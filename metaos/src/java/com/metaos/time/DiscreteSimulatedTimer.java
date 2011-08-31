@@ -18,7 +18,8 @@ public class DiscreteSimulatedTimer implements Timer {
 
 
     /**
-     * Creates a simulated timer with given resolution.
+     * Creates a simulated timer with given resolution of milliseconds.
+     * @param resolution number of milliseconds of resolution.
      */
     public DiscreteSimulatedTimer(final long resolution) {
         this.resolution = resolution;
@@ -51,6 +52,18 @@ public class DiscreteSimulatedTimer implements Timer {
         cal.setTimeInMillis(this.currentTime);
         return cal;
     }
+
+
+    /**
+     * Returns a new date with substracted clicks of current timer.
+     */
+    public Calendar addClicks(final long clicks, final Calendar date) {
+        final long millis = date.getTimeInMillis() + clicks*resolution;
+        final Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(millis);
+        return cal;
+    }
+
 
 
     /**

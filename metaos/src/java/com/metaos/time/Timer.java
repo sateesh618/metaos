@@ -20,6 +20,12 @@ public interface Timer {
 
 
     /**
+     * Returns a new date with added clicks of current timer.
+     */
+    public Calendar addClicks(final long clicks, final Calendar date);
+
+
+    /**
      * Number of clicks (whatever it means) of difference between dates
      * taken into account this timer.
      */

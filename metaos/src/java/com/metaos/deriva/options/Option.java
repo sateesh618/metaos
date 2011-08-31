@@ -38,6 +38,14 @@ public abstract class Option implements Derivative {
         this.pricer = pricer;
     }
 
+    public Calendar getStrike() {
+        return this.strike;
+    }
+
+    public double getStrikePrice() {
+        return this.strikePrice;
+    }
+
     public double getAcquisitionPrice() {
         return this.prime * this.size;
     }

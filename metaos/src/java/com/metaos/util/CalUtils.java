@@ -19,6 +19,8 @@ import java.util.logging.Logger;
  * Utilities for calendar generation.
  */
 public class CalUtils {
+    private static final long MILLISECONDS_PER_YEAR = 365 * 24 * 60 * 60 * 1000;
+
     /**
      * Creates a Calendar for given day/month/year as human antural
      * way (month 1 is January, day 1 is the 1st day of month and so).
@@ -35,6 +37,7 @@ public class CalUtils {
         cal.set(Calendar.DAY_OF_MONTH, day);
         return cal;
     }
+
 
     /**
      * Normalizes a date to be comparable with strike dates.
@@ -57,11 +60,14 @@ public class CalUtils {
     }
 
 
-
     /**
      * Calculates difference in years between to dates.
+     * @param a first element of substraction of dates.
+     * @param b second element of substraction of dates.
+     * @return a-b in fractions of year.
      */
     public static double differenceInYears(final Calendar a, final Calendar b) {
-        throw new RuntimeException("Not implementedYet");
+        final long millisDif = a.getTimeInMillis() - b.getTimeInMillis();
+        return millisDif / MILLISECONDS_PER_YEAR;
     }
 }

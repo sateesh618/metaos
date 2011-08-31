@@ -34,6 +34,17 @@ public class RealTimeTimer implements Timer {
         return cal;
     }
 
+    
+    /**
+     * Returns a new date with added clicks of current timer.
+     */
+    public Calendar addClicks(final long clicks, final Calendar date) {
+        final Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(((cal.getTimeInMillis() / resolution) + clicks) 
+                * resolution);
+        return cal;
+    }
+
 
     /**
      * Number of <i>resolution</i> blocks of milliseconds between dates.
