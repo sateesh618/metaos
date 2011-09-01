@@ -18,5 +18,7 @@ import com.metaos.market.*;
  * Fields from a source.
  */
 public enum Fields {
-    OPEN, CLOSE, HIGH, LOW, VOLUME, DATE;
+    OPEN, CLOSE, HIGH, LOW, VOLUME, DATE,
+    BID_OPEN, BID_CLOSE, BID_HIGH, BID_LOW, BID_VOLUME,
+    ASK_OPEN, ASK_CLOSE, ASK_HIGH, ASK_LOW, ASK_VOLUME;
 }
