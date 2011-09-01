@@ -16,7 +16,7 @@ class MyObserver(MarketObserver):
                     .encode('utf-8')
         print strLine
                 
-source = CSVGeneral.getInstance().continuousSingleSource('XAG', \
+source = CSVGeneral.getInstance().simpleContinuousSingleSource('XAG', \
     'XAGUSD1.csv', 'yyyy.MM.dd,HH:mm', \
     '([0-9]{4}.[0-9]{2}.[0-9]{2},[0-9]{2}:[0-9]{2}),(.*),(.*),(.*),(.*),(.*)', \
     [Fields.DATE,Fields.OPEN,Fields.HIGH,Fields.LOW,Fields.CLOSE,Fields.VOLUME])

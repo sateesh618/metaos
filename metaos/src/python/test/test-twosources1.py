@@ -36,11 +36,11 @@ class MyObserver(MarketObserver):
         print strLine
                 
 
-xSource = CSVGeneral.getInstance().continuousSingleSource('X', \
+xSource = CSVGeneral.getInstance().simpleContinuousSingleSource('X', \
     'XAGUSD1.csv', 'yyyy.MM.dd,HH:mm', \
     '([0-9]{4}.[0-9]{2}.[0-9]{2},[0-9]{2}:[0-9]{2}),(.*),(.*),(.*),(.*),(.*)', \
     [Fields.DATE,Fields.OPEN,Fields.HIGH,Fields.LOW,Fields.CLOSE,Fields.VOLUME])
-ySource = CSVGeneral.getInstance().continuousSingleSource('Y', \
+ySource = CSVGeneral.getInstance().simpleContinuousSingleSource('Y', \
     'XAGUSD1.csv', 'yyyy.MM.dd,HH:mm', \
     '([0-9]{4}.[0-9]{2}.[0-9]{2},[0-9]{2}:[0-9]{2}),(.*),(.*),(.*),(.*),(.*)', \
     [Fields.DATE,Fields.OPEN,Fields.HIGH,Fields.LOW,Fields.CLOSE,Fields.VOLUME])

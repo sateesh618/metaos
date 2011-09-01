@@ -41,7 +41,7 @@ bricSymbols = [ '1288.HK' ];# '3988.HK', '0883.HK', '0939.HK', '2628.HK', '3968.
 bricSource = CSVUnorderedData.getInstance().reuters('BRIC40_1min.csv', \
     bricSymbols)
 
-xagSource = CSVGeneral.getInstance().continuousSingleSource('XAG', \
+xagSource = CSVGeneral.getInstance().simpleContinuousSingleSource('XAG', \
     'XAGUSD1.csv', 'yyyy.MM.dd,HH:mm', \
     '([0-9]{4}.[0-9]{2}.[0-9]{2},[0-9]{2}:[0-9]{2}),(.*),(.*),(.*),(.*),(.*)', \
     [Fields.DATE,Fields.OPEN,Fields.HIGH,Fields.LOW,Fields.CLOSE,Fields.VOLUME])
