@@ -33,7 +33,8 @@ public class CSVVWAPBidOfferSingleSource extends CSVBidOfferSingleSource {
             final int bidVolumePosition,
             final int askHighPosition, final int askLowPosition,
             final int askOpenPosition, final int askClosePosition,
-            final int askVolumePosition, final int vwapPosition) 
+            final int askVolumePosition, final int vwapPosition,
+            final int maxElements) 
             throws IOException {
         super(symbol, filePath, dateFormat, linePattern, datePosition, 
                 highPosition, lowPosition, openPosition, closePosition, 
@@ -41,7 +42,7 @@ public class CSVVWAPBidOfferSingleSource extends CSVBidOfferSingleSource {
                 bidHighPosition, bidLowPosition, bidOpenPosition, 
                 bidClosePosition, bidVolumePosition, 
                 askHighPosition, askLowPosition, askOpenPosition, 
-                askClosePosition, askVolumePosition, 17);
+                askClosePosition, askVolumePosition, maxElements);
         this.vwapPosition = vwapPosition;
     }
 
@@ -52,7 +53,6 @@ public class CSVVWAPBidOfferSingleSource extends CSVBidOfferSingleSource {
      */
     protected void processLine(final String parts[], final Calendar moment) {
         super.processLine(parts, moment);
-
         final double vwap = Double.parseDouble(parts[this.vwapPosition]);
         this.sendPriceToMarkets(moment, symbol + "-VWAP", vwap);
     }

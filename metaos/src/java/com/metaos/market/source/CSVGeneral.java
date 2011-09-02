@@ -77,8 +77,8 @@ public final class CSVGeneral {
         }
         return new CSVSingleSource(symbol, filePath, new SimpleDateFormat(
                 dateFormat), Pattern.compile(linePattern),
-                datePos, highPos, lowPos, openPos, closePos,
-                volumePos);
+                datePos, highPos, lowPos, openPos, closePos, volumePos,
+                fieldSet.length);
     }
 
 
@@ -91,21 +91,31 @@ public final class CSVGeneral {
      *      <i>java.util.text.SimpleDateFormat</i>, date present in CSV.
      * @param linePattern REGEXP pattern describing groups of elements for
      *      each line. 
-     * @param fieldSet list of positions of PRICE,ASK and BID elements 
-     *      into each line.
+     * @param fieldSetPrices list of positions of PRICE elements into each line.
+     * @param fieldSetBid list of positions of BID elements into each line.
+     * @param fieldSetAsk list of positions of ASK elements into each line.
      * @param vwapField position of VWAP element.
      */
-    public PricesSource simpleContinuousSingleSource(final String symbol,
+    public PricesSource vwapContinuousSingleSource(final String symbol,
             final String filePath, final String dateFormat, 
-            final String linePattern, final Fields fieldSet[],
+            final String linePattern, final Fields fieldSetPrices[],
+            final Fields fieldSetBid[], final Fields fieldSetAsk[],
             final int vwapFieldPosition) throws IOException {
+        if(fieldSetBid.length != fieldSetAsk.length
+                || fieldSetBid.length != fieldSetPrices.length
+                || fieldSetAsk.length != fieldSetPrices.length) {
+            throw new RuntimeException("Incorrect usage: \n"
+                    + "fieldSetPrices, fieldSetBid, fieldSetAsk must have "
+                    + "same sizes");
+        }
+
         int highPos=0, lowPos=0, openPos=0, closePos=0, datePos=0, volumePos=0;
         int bidHighPos=0, bidLowPos=0, bidOpenPos=0, bidClosePos=0, 
                 bidVolumePos=0;
         int askHighPos=0, askLowPos=0, askOpenPos=0, askClosePos=0, 
                 askVolumePos=0;
-        for(int i=0; i<fieldSet.length; i++) {
-            switch(fieldSet[i]) {
+        for(int i=0; i<fieldSetPrices.length; i++) {
+            switch(fieldSetPrices[i]) {
                 case LOW:
                     lowPos = i;
                     break;
@@ -124,40 +134,61 @@ public final class CSVGeneral {
                 case DATE:
                     datePos = i;
                     break;
-                case BID_LOW:
-                    bidLowPos = i;
+                case IGNORE:
                     break;
-                case BID_HIGH:
-                    bidHighPos = i;
-                    break;
-                case BID_OPEN:
-                    bidOpenPos = i;
-                    break;
-                case BID_CLOSE:
-                    bidClosePos = i;
-                    break;
-                case BID_VOLUME:
-                    bidVolumePos = i;
-                    break;
-                case ASK_LOW:
-                    askLowPos = i;
-                    break;
-                case ASK_HIGH:
-                    askHighPos = i;
-                    break;
-                case ASK_OPEN:
-                    askOpenPos = i;
-                    break;
-                case ASK_CLOSE:
-                    askClosePos = i;
-                    break;
-                case ASK_VOLUME:
-                    askVolumePos = i;
-                    break;
-
                 default:
                     throw new RuntimeException("Not understood field " 
-                            + fieldSet[i] + " in this kind of sources");
+                            + fieldSetPrices[i] + " in this kind of sources");
+            }
+        }
+ 
+        for(int i=0; i<fieldSetBid.length; i++) {
+            switch(fieldSetBid[i]) {
+                case LOW:
+                    bidLowPos = i;
+                    break;
+                case HIGH:
+                    bidHighPos = i;
+                    break;
+                case OPEN:
+                    bidOpenPos = i;
+                    break;
+                case CLOSE:
+                    bidClosePos = i;
+                    break;
+                case VOLUME:
+                    bidVolumePos = i;
+                    break;
+                case IGNORE:
+                    break;
+                default:
+                    throw new RuntimeException("Not understood field " 
+                            + fieldSetBid[i] + " in this kind of sources");
+            }
+        }
+ 
+        for(int i=0; i<fieldSetAsk.length; i++) {
+            switch(fieldSetAsk[i]) {
+                case LOW:
+                    askLowPos = i;
+                    break;
+                case HIGH:
+                    askHighPos = i;
+                    break;
+                case OPEN:
+                    askOpenPos = i;
+                    break;
+                case CLOSE:
+                    askClosePos = i;
+                    break;
+                case VOLUME:
+                    askVolumePos = i;
+                    break;
+                case IGNORE:
+                    break;
+                default:
+                    throw new RuntimeException("Not understood field " 
+                            + fieldSetAsk[i] + " in this kind of sources");
             }
         }
         return new CSVVWAPBidOfferSingleSource(symbol, filePath, 
@@ -166,7 +197,6 @@ public final class CSVGeneral {
                 highPos, lowPos, openPos, closePos, volumePos,
                 bidHighPos, bidLowPos, bidOpenPos, bidClosePos, bidVolumePos,
                 askHighPos, askLowPos, askOpenPos, askClosePos, askVolumePos,
-                vwapFieldPosition);
+                vwapFieldPosition, fieldSetPrices.length);
     }
-
 }

@@ -4,6 +4,8 @@ from com.metaos.market import *
 from com.metaos.time import *
 from com.metaos.market.source import *
 from com.metaos.engine import *
+from com.metaos.pricer import *
+from com.metaos.pricer.volatility import *
 from java.util import *
 from java.lang import Long
 from java.lang import Double

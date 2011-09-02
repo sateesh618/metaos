@@ -35,7 +35,7 @@ public class CSVSingleSource extends BasicPricesSource {
     /**
      * To be used by extending classes.
      */
-    protected CSVSingleSource(final String symbol, final String filePath, 
+    public CSVSingleSource(final String symbol, final String filePath, 
             final DateFormat dateFormat, final Pattern linePattern,
             final int datePosition, final int highPosition, 
             final int lowPosition, final int openPosition, 
@@ -56,15 +56,14 @@ public class CSVSingleSource extends BasicPricesSource {
     }
 
 
-    public CSVSingleSource(final String symbol, final String filePath, 
-            final DateFormat dateFormat, final Pattern linePattern,
-            final int datePosition, final int highPosition, 
-            final int lowPosition, final int openPosition, 
-            final int closePosition, final int volumePosition) 
-            throws IOException {
-        this(symbol, filePath, dateFormat, linePattern, datePosition, 
-                highPosition, lowPosition, openPosition, closePosition, 
-                volumePosition, 6);
+    public boolean test(final String sample, final int field, 
+            final String value) {
+        final Matcher matcher = this.pattern.matcher(sample);
+        if(matcher.matches()) {
+            return value.equals(matcher.group(field+1));
+        } else {
+            throw new RuntimeException("Line does not match pattern");
+        }
     }
 
 
@@ -84,7 +83,7 @@ public class CSVSingleSource extends BasicPricesSource {
             }
 
             final String[] parts = new String[this.maxParts];
-            final Matcher matcher = pattern.matcher(line);
+            final Matcher matcher = this.pattern.matcher(line);
             if(matcher.matches()) {
                 for(int i=0; i<this.maxParts; i++) {
                     parts[i] = matcher.group(i+1);
@@ -108,6 +107,7 @@ public class CSVSingleSource extends BasicPricesSource {
 
             return true;
         } catch(Exception e) {
+e.printStackTrace();
             this.nomore = true;
             return false;
         }

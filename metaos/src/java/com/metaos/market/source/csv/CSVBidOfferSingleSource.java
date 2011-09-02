@@ -25,31 +25,11 @@ public class CSVBidOfferSingleSource extends CSVSingleSource {
             askOpenPosition, askClosePosition, askVolumePosition;
 
 
-    public CSVBidOfferSingleSource(final String symbol, 
-            final String filePath, 
-            final DateFormat dateFormat, final Pattern linePattern,
-            final int datePosition, final int highPosition, 
-            final int lowPosition, final int openPosition, 
-            final int closePosition, final int volumePosition, 
-            final int bidHighPosition, final int bidLowPosition,
-            final int bidOpenPosition, final int bidClosePosition,
-            final int bidVolumePosition,
-            final int askHighPosition, final int askLowPosition,
-            final int askOpenPosition, final int askClosePosition,
-            final int askVolumePosition) throws IOException {
-        this(symbol, filePath, dateFormat, linePattern, datePosition, 
-                highPosition, lowPosition, openPosition, closePosition, 
-                volumePosition, bidHighPosition, bidLowPosition,
-                bidOpenPosition, bidClosePosition, bidVolumePosition,
-                askHighPosition, askLowPosition, askOpenPosition, 
-                askClosePosition, askVolumePosition, 16);
-    }
-
 
     /**
      * To be used by extending classes.
      */
-    protected CSVBidOfferSingleSource(final String symbol, 
+    public CSVBidOfferSingleSource(final String symbol, 
             final String filePath, 
             final DateFormat dateFormat, final Pattern linePattern,
             final int datePosition, final int highPosition, 
@@ -74,7 +54,6 @@ public class CSVBidOfferSingleSource extends CSVSingleSource {
         this.askOpenPosition = askOpenPosition;
         this.askClosePosition = askClosePosition;
         this.askVolumePosition = askVolumePosition;
-
     }
  
 
@@ -92,7 +71,7 @@ public class CSVBidOfferSingleSource extends CSVSingleSource {
                 Double.parseDouble(parts[this.bidOpenPosition]);
         final double bidClose =
                 Double.parseDouble(parts[this.bidClosePosition]);
-        final long bidVolume = Long.parseLong(parts[this.bidVolumePosition]);
+//        final long bidVolume = Long.parseLong(parts[this.bidVolumePosition]);
 
         this.sendBidToMarkets(moment, symbol + "-HIGH", bidHigh);
         this.sendBidToMarkets(moment, symbol + "-LOW", bidLow);
@@ -106,7 +85,7 @@ public class CSVBidOfferSingleSource extends CSVSingleSource {
                 Double.parseDouble(parts[this.askOpenPosition]);
         final double askClose =
                 Double.parseDouble(parts[this.askClosePosition]);
-        final long askVolume = Long.parseLong(parts[this.askVolumePosition]);
+//        final long askVolume = Long.parseLong(parts[this.askVolumePosition]);
 
         this.sendAskToMarkets(moment, symbol + "-HIGH", askHigh);
         this.sendAskToMarkets(moment, symbol + "-LOW", askLow);

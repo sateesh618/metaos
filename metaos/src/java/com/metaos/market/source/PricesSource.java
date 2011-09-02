@@ -19,6 +19,12 @@ import com.metaos.market.*;
  */
 public interface PricesSource {
     /**
+     * Tests source against a given line.
+     */
+    public boolean test(final String sample, final int field, 
+            final String value);
+
+    /**
      * Adds a marekt listener.
      */
     public void addMarketListener(final MarketListener market);

@@ -38,6 +38,13 @@ public abstract class BasicPricesSource implements PricesSource {
     }
 
 
+    public boolean test(final String sample, final int field, 
+            final String value) {
+        throw new UnsupportedOperationException("Method not implemented");
+    }
+
+
+
     //
     // Utility methods ------------------------------
     //

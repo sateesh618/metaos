@@ -16,7 +16,7 @@ symbol = args[0]
 fileName = args[1]
 periods = Integer.parseInt(args[2])
 
-source = CSVGeneral.getInstance().continuousSingleSource(symbol, \
+source = CSVGeneral.getInstance().simpleContinuousSingleSource(symbol, \
     fileName, 'yyyy.MM.dd,HH:mm', \
     '([0-9]{4}.[0-9]{2}.[0-9]{2},[0-9]{2}:[0-9]{2}),(.*),(.*),(.*),(.*),(.*)', \
     [Fields.DATE,Fields.OPEN,Fields.HIGH,Fields.LOW,Fields.CLOSE,Fields.VOLUME])
