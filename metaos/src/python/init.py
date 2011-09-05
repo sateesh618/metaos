@@ -1,4 +1,5 @@
 from com.metaos import *
+from com.metaos.spot import *
 from com.metaos.deriva import *
 from com.metaos.market import *
 from com.metaos.time import *

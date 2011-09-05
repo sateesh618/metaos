@@ -4,7 +4,7 @@
  * The LICENSE.txt file and this header must be included or referenced 
  * in each piece of code derived from this project.
  */
-package com.metaos;
+package com.metaos.spot;
 
 import java.io.*;
 import java.net.*;
@@ -14,8 +14,7 @@ import java.util.logging.Logger;
 import com.metaos.market.*;
 
 /**
- * Spot products.
+ * Equity.
  */
-public interface Spot extends Instrument {
-    public void setMarket(final Market market);
+public class Equity extends Spot {
 }
