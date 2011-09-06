@@ -1,4 +1,10 @@
-
+##
+## Expected data format is:
+##
+##   Symbol,,dd-mmm-yyyy,HH:MM:ss.S,+2,Intraday 1Min,Open,High,Low,Last,Vol,
+##   AveragePrice,VWAP,NumberOfTrades,OpenBid,HighBid,LowBid,CloseBid,
+##   NumberOfBids,OpenAsk,HighAsk,LowAsk,CloseAsk,NumberOfAsks
+##
 
 symbol='TEF.MC'
 fileName = 'TEF1min-N24033945.csv';
