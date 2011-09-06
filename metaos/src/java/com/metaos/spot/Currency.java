@@ -17,4 +17,20 @@ import com.metaos.market.*;
  * Currency exchanges.
  */
 public class Currency extends Spot {
+    public double getPrice(final Calendar date) {
+        throw new UnsupportedOperationException();
+    }
+
+    public double getAcquisitionPrice() {
+        throw new UnsupportedOperationException();
+    }
+
+    public double getAcquisitionCosts() {
+        throw new UnsupportedOperationException();
+    }
+
+    public double getReleaseCosts(final Calendar date) {
+        throw new UnsupportedOperationException();
+    }
+
 }

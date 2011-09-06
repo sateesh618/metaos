@@ -17,4 +17,21 @@ import com.metaos.market.*;
  * Equity.
  */
 public class Equity extends Spot {
+    public double getPrice(final Calendar date) {
+        throw new UnsupportedOperationException();
+    }
+
+    public double getAcquisitionPrice() {
+        throw new UnsupportedOperationException();
+    }
+
+    public double getAcquisitionCosts() {
+        throw new UnsupportedOperationException();
+    }
+
+    public double getReleaseCosts(final Calendar date) {
+        throw new UnsupportedOperationException();
+    }
+
 }
+

@@ -23,4 +23,20 @@ public abstract class Spot implements Instrument {
     public void setMarket(final Market market) {
         this.market = market;
     }
+
+    public double getPrice(final Calendar date) {
+        throw new UnsupportedOperationException();
+    }
+
+    public double getAcquisitionPrice() {
+        throw new UnsupportedOperationException();
+    }
+
+    public double getAcquisitionCosts() {
+        throw new UnsupportedOperationException();
+    }
+
+    public double getReleaseCosts(final Calendar date) {
+        throw new UnsupportedOperationException();
+    }
 }
