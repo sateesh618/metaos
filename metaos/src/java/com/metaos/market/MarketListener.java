@@ -31,10 +31,4 @@ public interface MarketListener {
      * Sets ASK price for a given moment.
      */
     public void setAsk(final Calendar when,final String what,final double how);
-
-    /**
-     * Sets volume for a given moment.
-     */
-    public void setVolume(final Calendar when, final String what,
-            final long how);
 }

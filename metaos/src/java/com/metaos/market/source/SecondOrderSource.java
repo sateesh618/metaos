@@ -72,7 +72,7 @@ public class SecondOrderSource extends BasicPricesSource {
                     throw new IOException("Cannot find symbol '" 
                             + symbols[i] + "' in file '" + filePath + "'");
                 }
-                if(symbols[i].equals(this.processor.getSymbol(line))) {
+                if(symbols[i].equals(this.processor.getSymbol(line, 0))) {
                     break;
                 }
             }
@@ -85,7 +85,7 @@ public class SecondOrderSource extends BasicPricesSource {
             for(;;) {
                 try {
                     final String line = partReader[i].readLine();
-                    if( ! symbols[i].equals(this.processor.getSymbol(line)) ) {
+                    if( ! symbols[i].equals(this.processor.getSymbol(line,0))) {
                         this.nextLine[i] = null;
                     } else {
                         this.nextLine[i] = line;
@@ -137,7 +137,8 @@ public class SecondOrderSource extends BasicPricesSource {
                     // Move to next line
                     final String line = partReader[i].readLine();
                     if(line != null) {
-                        if(! symbols[i].equals(this.processor.getSymbol(line))){
+                        if(! symbols[i].equals(
+                                this.processor.getSymbol(line, 0)) ) {
                             this.nextLine[i] = null;
                         } else {
                             this.nextLine[i] = line;

@@ -57,25 +57,12 @@ public class MarketWithSpreads implements MarketReadWrite {
         this.adaptee.setPrice(when, what, how - halfSpread);
     }
 
-    public void setVolume(final Calendar when, final String what,
-            final long how) {
-        this.adaptee.setVolume(when, what, how);
-    }
-
     public double getPrice(final Calendar when, final String what) {
         return this.adaptee.getPrice(when, what);
     }
 
     public double getLastPrice(final int delay, final String what) {
         return this.adaptee.getLastPrice(delay, what);
-    }
-
-    public long getVolume(final Calendar when, final String what) {
-        return this.adaptee.getVolume(when, what);
-    }
-
-    public long getLastVolume(final int delay, final String what) {
-        return this.adaptee.getLastVolume(delay, what);
     }
 
     public double getBid(final Calendar when, final String what) {

@@ -15,16 +15,18 @@ import java.util.logging.Logger;
 import com.metaos.market.*;
 
 /**
- * Line processor for CSV files.
+ * Line processor for CSV files with only one date and symbol per line.
  *
  * <b>Not thread safe</b>
  */
 public class CSVSourceLineProcessor implements SourceLineProcessor {
     private final Format[] formatters;
-    private final String[] fieldNames;
+    private final Field[] fieldNames;
     private final ParsePosition[] parsePositions;
     private final int symbolIndex, dateIndex;
-    private final Map<String, Double> parsedValues;
+    private final Map<Field, Double> parsedValues;
+    private final List<MarketListener> marketListeners;
+    private final List<PricesListener> pricesListeners;
 
     private String parsedLine;
     private String parsedSymbol;
@@ -44,17 +46,19 @@ public class CSVSourceLineProcessor implements SourceLineProcessor {
      *      fieldNames).
      */
     public CSVSourceLineProcessor(final Format formatters[],
-            final String[] fieldNames, final int symbolIndex, 
+            final Field[] fieldNames, final int symbolIndex, 
             final int dateIndex) {
         assert (fieldNames.length == formatters.length);
         assert (symbolIndex != dateIndex);
         assert (symbolIndex < fieldNames.length);
         assert (dateIndex < fieldNames.length);
 
-        this.parsedValues = new HashMap<String, Double>();
+        this.marketListeners = new ArrayList<MarketListener>();
+        this.pricesListeners = new ArrayList<PricesListener>();
+        this.parsedValues = new HashMap<Field, Double>();
         this.dateIndex = dateIndex;
         this.symbolIndex = symbolIndex;
-        this.fieldNames = new String[fieldNames.length];
+        this.fieldNames = new Field[fieldNames.length];
         this.formatters = new Format[formatters.length];
         this.parsePositions = new ParsePosition[formatters.length];
         for(int i=0; i<parsePositions.length; i++) {
@@ -78,27 +82,41 @@ public class CSVSourceLineProcessor implements SourceLineProcessor {
         if( ! line.equals(this.parsedLine) ) {
             _parseLine(line);
         }
-
-        if(this.parsedSymbol!=null && this.parsedCalendar!=null) {
-            for(final Map.Entry<String, Double> entry
-                    : this.parsedValues.entrySet()) {
-                // NOTIFIES TO LISTENERS this.parsedSymbol+"-"+entry.getKey()
-            }
-        }
     }
 
 
-    public void addListener(final PricesObserver listener, 
-            final boolean highPriority) {
+    public void addPricesListener(final PricesListener listener) {
+        this.pricesListeners.add(listener);
+    }
+
+
+    public void addMarketListener(final MarketListener listener) {
+        this.marketListeners.add(listener);
     }
 
 
     public void concludeLineSet() {
-        // NOTIFIES TO LISTENERS THE END OF THE SET LINE
+        if(this.parsedSymbol==null || this.parsedCalendar==null) return;
+
+        for(final MarketListener listener : this.marketListeners) {
+            for(final Map.Entry<Field, Double> entry
+                    : this.parsedValues.entrySet()) {
+                entry.getKey().notify(listener, this.parsedCalendar,
+                        this.parsedSymbol, entry.getValue());
+            }
+        }
+
+        final List<String> symbolArray = Arrays.asList(this.parsedSymbol);
+        for(final PricesListener listener : this.pricesListeners) {
+            listener.update(symbolArray, this.parsedCalendar);
+        }
+
+        this.parsedSymbol = null;
+        this.parsedCalendar = null;
     }
 
 
-    public String getSymbol(final String line) {
+    public String getSymbol(final String line, final int index) {
         if( ! line.equals(this.parsedLine) ) {
             _parseLine(line);
         }

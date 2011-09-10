@@ -30,18 +30,6 @@ public interface Market {
 
 
     /**
-     * Gets volume of operations.
-     * This method is optionally implemented and is faced to get more 
-     * performance.
-     */
-    public long getLastVolume(final int delay, final String what);
-
-    /**
-     * Gets volume of operations.
-     */
-    public long getVolume(final Calendar when, final String what);
-
-    /**
      * Gets bid prices in the given moment.
      */
     public double getBid(final Calendar when, final String what);

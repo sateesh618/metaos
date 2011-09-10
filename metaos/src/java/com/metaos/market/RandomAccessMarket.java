@@ -22,11 +22,9 @@ public class RandomAccessMarket implements MarketReadWrite {
     private final Map<Calendar, Map<String, Double>> prices;
     private final Map<Calendar, Map<String, Double>> bids;
     private final Map<Calendar, Map<String, Double>> asks;
-    private final Map<Calendar, Map<String, Long>> volumes;
     private final Map<String, Double> lastPrices;
     private final Map<String, Double> lastAsks;
     private final Map<String, Double> lastBids;
-    private final Map<String, Long> lastVolumes;
     private final double transactionCosts;
 
     //
@@ -35,18 +33,15 @@ public class RandomAccessMarket implements MarketReadWrite {
     private final ReadWriteLock pricesLock = new ReentrantReadWriteLock();
     private final ReadWriteLock bidsLock = new ReentrantReadWriteLock();
     private final ReadWriteLock asksLock = new ReentrantReadWriteLock();
-    private final ReadWriteLock volumesLock = new ReentrantReadWriteLock();
 
 
     public RandomAccessMarket(final double transactionCosts, final int size) {
         this.prices = new CacheMap<Calendar, Map<String, Double>>(size);
         this.bids = new CacheMap<Calendar, Map<String, Double>>(size);
         this.asks = new CacheMap<Calendar, Map<String, Double>>(size);
-        this.volumes = new CacheMap<Calendar, Map<String,Long>>(size);
         this.lastPrices = new HashMap<String, Double>(size);
         this.lastAsks = new HashMap<String, Double>(size);
         this.lastBids = new HashMap<String, Double>(size);
-        this.lastVolumes = new HashMap<String, Long>(size);
         this.transactionCosts = transactionCosts;
     }
 
@@ -96,22 +91,6 @@ public class RandomAccessMarket implements MarketReadWrite {
             moment.put(what, how);
         } finally {
             asksLock.writeLock().unlock();
-        }
-    }
-
-    public void setVolume(final Calendar when,final String what,
-            final long how) {
-        volumesLock.writeLock().lock();
-        try {
-            Map<String, Long> moment = this.volumes.get(when);
-            if(moment==null) {
-                moment = new HashMap<String, Long>();
-                this.volumes.put(when, moment);
-            }
-            this.lastVolumes.put(what, how);
-            moment.put(what, how);
-        } finally {
-            volumesLock.writeLock().unlock();
         }
     }
 
@@ -211,39 +190,6 @@ public class RandomAccessMarket implements MarketReadWrite {
             asksLock.readLock().unlock();
         }
     }
-
-    public long getVolume(final Calendar when, final String what) {
-        volumesLock.readLock().lock();
-        try {
-            Map<String, Long> moment = this.volumes.get(when);
-            if(moment==null) {
-                return -1;
-            } else {
-                return moment.get(what);
-            }
-        } finally {
-            volumesLock.readLock().unlock();
-        }
-    }
-
-    public long getLastVolume(final int delay, final String what) {
-        volumesLock.readLock().lock();
-        try {
-            if(delay!=0) {
-                throw new UnsupportedOperationException(
-                    "Method only available for last prices (delay=0)");
-            }
-            final Long how = this.lastVolumes.get(what);
-            if(how==null) {
-                return -1;
-            } else {
-                return how.longValue();
-            }
-        } finally {
-            volumesLock.readLock().unlock();
-        }
-    }
-
 
     public double getTransactionCosts(final String what) {
         return this.transactionCosts;

@@ -125,7 +125,7 @@ public class OrderedSource extends BasicPricesSource {
             }
 
             final Calendar moment = this.processor.getDate(line);
-            if(symbol.equals(this.processor.getSymbol(line)) 
+            if(symbol.equals(this.processor.getSymbol(line, 0)) 
                     && this.processor.isValid(line)) {
                 this.currentLine = line;
                 if(this.firstLine==null) this.firstLine = line;

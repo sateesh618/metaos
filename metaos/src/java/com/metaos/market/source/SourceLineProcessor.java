@@ -37,18 +37,29 @@ public interface SourceLineProcessor {
     public boolean isValid(final String line);
 
     /**
-     * Subscribe a listener to concluding ling events.
-     * @param highPriority true for highest priority listeners, false for
-     * less prioriarty ones.
+     * Subscribe a listener to concluding line events that will receive only
+     * the list of symbols with new prices.
+     * The set of <i>PricesListener</i>s will be notified after the set of
+     * <i>MarketListener</i> has been invoked.
+     * @see #addMarketListener
      */
-    public void addListener(final PricesObserver listener, 
-            final boolean priority);
+    public void addPricesListener(final PricesListener listener);
+
+    /**
+     * Subscribe a listener to concluding line events that will receive the
+     * list of pairs with symbol and prices.
+     * The set of <i>PricesListener</i>s will be notified after the set of
+     * <i>MarketListener</i> has been invoked.
+     * @see #addPricesListener
+     */
+    public void addMarketListener(final MarketListener listener);
 
     /**
      * Analyzes the line getting the symbol, but not reporting to listeners
      * the result.
+     * @param index 0 for the first symbol of the line, 1 for the second...
      */
-    public String getSymbol(final String line);
+    public String getSymbol(final String line, final int index);
 
     /**
      * Analyzes the line getting the date, but not reporting to listeners

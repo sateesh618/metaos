@@ -15,6 +15,6 @@ import java.util.logging.Logger;
 /**
  * Prices events observer interface.
  */
-public interface PricesObserver {
+public interface PricesListener {
     public void update(final List<String> symbols, final Calendar when);
 }

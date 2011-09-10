@@ -67,49 +67,6 @@ public class CompossedMarket implements Market {
 
 
     /**
-     * Gets volume of operations.
-     * This method is optionally implemented and is faced to get more 
-     * performance.
-     */
-    public long getLastVolume(final int delay, final String what) {
-        final Market m2 = sticky.get(what);
-        if(m2!=null) {
-            final long p = m2.getLastVolume(delay, what);
-            if(p!=0) return p;
-        }
-
-        for(final Market m : markets) {
-            final long p = m.getLastVolume(delay, what);
-            if(p!=0) {
-                sticky.put(what, m);
-                return p;
-            }
-        }
-        return 0;
-    }
-
-
-    /**
-     * Gets volume of operations.
-     */
-    public long getVolume(final Calendar when, final String what) {
-        final Market m2 = sticky.get(what);
-        if(m2!=null) {
-            final long p = m2.getVolume(when, what);
-            if(p!=0) return p;
-        }
-
-        for(final Market m : markets) {
-            final long p = m.getVolume(when, what);
-            if(p!=0) {
-                sticky.put(what, m);
-                return p;
-            }
-        }
-        return 0;
-    }
-
-    /**
      * Gets bid prices in the given moment.
      */
     public double getBid(final Calendar when, final String what) {
