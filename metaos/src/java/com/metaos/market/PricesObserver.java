@@ -13,8 +13,8 @@ import java.util.*;
 import java.util.logging.Logger;
 
 /**
- * Market events observer interface.
+ * Prices events observer interface.
  */
-public interface MarketObserver {
+public interface PricesObserver {
     public void update(final List<String> symbols, final Calendar when);
 }

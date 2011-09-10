@@ -19,22 +19,6 @@ import com.metaos.market.*;
  */
 public interface PricesSource {
     /**
-     * Tests source against a given line.
-     */
-    public boolean test(final String sample, final int field, 
-            final String value);
-
-    /**
-     * Adds a marekt listener.
-     */
-    public void addMarketListener(final MarketListener market);
-
-    /**
-     * Adds a general listener.
-     */
-    public void addListener(final MarketObserver observer);
-
-    /**
      * Starts source to get all prices.
      */
     public void run();
@@ -45,9 +29,43 @@ public interface PricesSource {
     public boolean next();
 
     /**
+     * Gets the first set of prices.
+     * Optional method: maybe has no sense for realtime sources.
+     */
+    public boolean first();
+
+    /**
+     * Gets the last set of prices.
+     * Optional method: maybe has no sense for realtime sources.
+     */
+    public boolean last();
+
+    /**
+     * Search for data just at the desired time.
+     * @return true if there is something at desired moment, false otherwise.
+     */
+    public boolean search(final Calendar time);
+
+    /**
+     * Search for data at the moment just before the desired time.
+     * @return true if there is something before the desired moment, 
+     * false otherwise. (Eq., true if the given time is greater than the
+     * first moment in souce.)
+     */
+    public boolean searchClosestBefore(final Calendar time);
+
+    /**
+     * Search for data at the moment just after the desired time.
+     * @return true if there is something after the desired moment, 
+     * false otherwise. (Eq., true if the given moment is less than the
+     * last moment.)
+     */
+    public boolean searchClosestAfter(final Calendar time);
+
+    /**
      * Closes the source.
-     * After calling this method, every invokation to <i>next()</i> will
-     * return false.
+     * After calling this method, every invokation to <i>next()</i>,
+     * <i>first()</i> or <i>last()</i> will return false.
      */
     public void close();
 }

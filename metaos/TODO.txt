@@ -7,6 +7,8 @@
 
 4.- Create test code area
     
-5.- Read KDB+ files
+5.- CSV Source adaptable to header according to Reuters 
 
-.- Emulate Loan/Bond + fx options
+6.- Market without memory, to ask for out of memory prices on linked sources.
+
+6.- Emulate Loan/Bond + fx options

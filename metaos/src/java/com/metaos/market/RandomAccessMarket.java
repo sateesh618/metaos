@@ -245,7 +245,6 @@ public class RandomAccessMarket implements MarketReadWrite {
     }
 
 
-
     public double getTransactionCosts(final String what) {
         return this.transactionCosts;
     }

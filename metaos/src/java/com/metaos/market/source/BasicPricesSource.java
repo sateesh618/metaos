@@ -18,86 +18,31 @@ import com.metaos.market.*;
  * Basic implementation of prices source.
  */
 public abstract class BasicPricesSource implements PricesSource {
-    private final Set<MarketListener> markets = new HashSet<MarketListener>();
-    private final Set<MarketObserver> otherObservers = 
-            new HashSet<MarketObserver>();
-
-    /**
-     * Adds a marekt listener.
-     */
-    public void addMarketListener(final MarketListener market) {
-        markets.add(market);
-    }
-
-
-    /**
-     * Adds a general listener.
-     */
-    public void addListener(final MarketObserver observer) {
-        this.otherObservers.add(observer);
-    }
-
-
-    public boolean test(final String sample, final int field, 
-            final String value) {
-        throw new UnsupportedOperationException("Method not implemented");
-    }
-
-
-
     //
-    // Utility methods ------------------------------
+    // Overriden methods as not functional operations ------------
     //
 
-    /**
-     * Notifies to everyone is looking for good news...
-     */
-    protected void notifyListeners(final Calendar when, 
-            final List<String> products) {
-        for(final MarketObserver observer : otherObservers) {
-            observer.update(products, when);
-        }
+    public boolean next() {
+        throw new UnsupportedOperationException();
     }
 
-    /**
-     * Reports new price for listening markets.
-     */
-    protected void sendPriceToMarkets(final Calendar when,
-            final String product,final double price) {
-        for(final MarketListener market : markets) {
-            market.setPrice(when, product, price);
-        }
+    public boolean last() {
+        throw new UnsupportedOperationException();
     }
 
-    /**
-     * Reports new ask price for listening markets.
-     */
-    protected void sendAskToMarkets(final Calendar when,
-            final String product,final double price) {
-        for(final MarketListener market : markets) {
-            market.setAsk(when, product, price);
-        }
+    public boolean first() {
+        throw new UnsupportedOperationException();
     }
 
-    /**
-     * Reports new bid price for listening markets.
-     */
-    protected void sendBidToMarkets(final Calendar when,
-            final String product, final double price) {
-        for(final MarketListener market : markets) {
-            market.setBid(when, product, price);
-        }
+    public boolean search(final Calendar time) {
+        throw new UnsupportedOperationException();
     }
 
-    /**
-     * Reports new price for listening markets.
-     */
-    protected void sendVolumeToMarkets(final Calendar when,
-            final String product, final long how) {
-        for(final MarketListener market : markets) {
-            market.setVolume(when, product, how);
-        }
+    public boolean searchClosestBefore(final Calendar time) {
+        throw new UnsupportedOperationException();
     }
 
-
+    public boolean searchClosestAfter(final Calendar time) {
+        throw new UnsupportedOperationException();
+    }
 }

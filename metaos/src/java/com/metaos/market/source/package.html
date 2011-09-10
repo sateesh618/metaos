@@ -1,16 +1,24 @@
 Different types of data sources.<br>
 <br>
 <p>
-The most general usage is from a CSV file. But other implementations could
-get data from KDB+, SQL databases, remote services...
+Interfaces govern the structure of the package:
+  <ol>
+    <li>Lines with prices are provided by <i>PricesSource</i>s.</li>
+    <li>Each line is processed by <i>SourceLineProcessor</i>s.</li>
+    <li>Who notifies to subscribed <i>FieldProcessor</i>s.</li>
+  </ol>
+</p>
+
+<p>
+Different types of <i>PricesSource</i>s are given:
+  <ul>
+    <li><i>TwoOrderSource</i> for source files with two orders: first in 
+            symbol, second in time.</li>
+    <li><i>OrderedSource</i> for source files with order only in time.</li>
+  </ul>
 </p>
 <p>
-All source of prices inherits from <i>PricesSource</i> interface.
-<br>
-The general design for these classes are as singletons, but it's only
-a decission to mantain the esthetic coherence of the framework.
-<br>
-<i>PricesSource</i>s send messages to a subscribed market (using an observer
+<i>FieldProcessor</i>s send messages to a subscribed market (using an observer
 pattern) with names for symbols like "xxx-HIGH", "xxx-LOW", "xxx-OPEN"
 or "xxx-CLOSE":
 <code><pre>
