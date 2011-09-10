@@ -96,6 +96,13 @@ public abstract class Field {
         }
     }
 
+    public static final class VOLUME extends Field {
+        public VOLUME(final Qualifier qualifier) {
+            super(qualifier, "VOLUME");
+        }
+    }
+
+
     public static final class EXTENDED extends Field {
         public EXTENDED(final Qualifier qualifier, final String extension) {
             super(qualifier, extension);
