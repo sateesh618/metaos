@@ -150,9 +150,9 @@ public class CSVSourceLineProcessor implements SourceLineProcessor {
             if(this.fieldNames[i] != null) {
                 final Object obj = this.formatters[i].parseObject(parts[i],
                         this.parsePositions[i]);
-                if(obj instanceof String) {
+                if(obj instanceof String[]) {
                     if(i==this.symbolIndex) {
-                        this.parsedSymbol = (String) obj;
+                        this.parsedSymbol = ((String[]) obj)[0];
                     }
                 } else if(obj instanceof Double) {
                    this.parsedValues.put(this.fieldNames[i], (Double) obj); 
