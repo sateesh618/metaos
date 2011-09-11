@@ -23,7 +23,7 @@ public class CSVSourceLineProcessor implements SourceLineProcessor {
     private final Format[] formatters;
     private final Field[] fieldNames;
     private final ParsePosition[] parsePositions;
-    private final int symbolIndex, dateIndex;
+    private final int symbolIndex, dateIndexes[];
     private final Map<Field, Double> parsedValues;
     private final List<MarketListener> marketListeners;
     private final List<PricesListener> pricesListeners;
@@ -47,16 +47,14 @@ public class CSVSourceLineProcessor implements SourceLineProcessor {
      */
     public CSVSourceLineProcessor(final Format formatters[],
             final Field[] fieldNames, final int symbolIndex, 
-            final int dateIndex) {
+            final int dateIndexes[]) {
         assert (fieldNames.length == formatters.length);
-        assert (symbolIndex != dateIndex);
         assert (symbolIndex < fieldNames.length);
-        assert (dateIndex < fieldNames.length);
 
         this.marketListeners = new ArrayList<MarketListener>();
         this.pricesListeners = new ArrayList<PricesListener>();
         this.parsedValues = new HashMap<Field, Double>();
-        this.dateIndex = dateIndex;
+        this.dateIndexes = dateIndexes;
         this.symbolIndex = symbolIndex;
         this.fieldNames = new Field[fieldNames.length];
         this.formatters = new Format[formatters.length];
@@ -159,10 +157,17 @@ public class CSVSourceLineProcessor implements SourceLineProcessor {
                 } else if(obj instanceof Double) {
                    this.parsedValues.put(this.fieldNames[i], (Double) obj); 
                 } else if(obj instanceof Date) {
-                    if(i==this.dateIndex) {
-                        this.parsedCalendar = Calendar.getInstance();
-                        this.parsedCalendar.setTimeInMillis(
-                                ((Date) obj).getTime());
+                    for(int j=0; j<dateIndexes.length; j++) {
+                        if(i==this.dateIndexes[j]) {
+                            if(this.parsedCalendar==null) {
+                                this.parsedCalendar = Calendar.getInstance();
+                            }
+                            // Date is built adding milliseconds... so simple.
+                            this.parsedCalendar.setTimeInMillis(
+                                    this.parsedCalendar.getTimeInMillis()
+                                    + ((Date) obj).getTime());
+                            break;
+                        }
                     }
                 } else {
                     // Unknown type
