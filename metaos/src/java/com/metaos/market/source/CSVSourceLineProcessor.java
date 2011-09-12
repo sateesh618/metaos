@@ -27,6 +27,7 @@ public class CSVSourceLineProcessor implements SourceLineProcessor {
     private final Map<Field, Double> parsedValues;
     private final List<MarketListener> marketListeners;
     private final List<PricesListener> pricesListeners;
+    private final List<PricesFilter> pricesFilters;
 
     private String parsedLine;
     private String parsedSymbol;
@@ -53,6 +54,7 @@ public class CSVSourceLineProcessor implements SourceLineProcessor {
 
         this.marketListeners = new ArrayList<MarketListener>();
         this.pricesListeners = new ArrayList<PricesListener>();
+        this.pricesFilters = new ArrayList<PricesFilter>();
         this.parsedValues = new HashMap<Field, Double>();
         this.dateIndexes = dateIndexes;
         this.symbolIndex = symbolIndex;
@@ -83,6 +85,11 @@ public class CSVSourceLineProcessor implements SourceLineProcessor {
     }
 
 
+    public void addPricesFilter(final PricesFilter filter) {
+        this.pricesFilters.add(filter);
+    }
+
+
     public void addPricesListener(final PricesListener listener) {
         this.pricesListeners.add(listener);
     }
@@ -96,17 +103,28 @@ public class CSVSourceLineProcessor implements SourceLineProcessor {
     public void concludeLineSet() {
         if(this.parsedSymbol==null || this.parsedCalendar==null) return;
 
-        for(final MarketListener listener : this.marketListeners) {
-            for(final Map.Entry<Field, Double> entry
-                    : this.parsedValues.entrySet()) {
-                entry.getKey().notify(listener, this.parsedCalendar,
-                        this.parsedSymbol, entry.getValue());
+        boolean pricesAreValid = true;
+        for(final PricesFilter filter : this.pricesFilters) {
+            if( ! filter.filter(this.parsedCalendar, this.parsedSymbol, 
+                    this.parsedValues)) {
+                pricesAreValid = false;
+                break;
             }
         }
 
-        final List<String> symbolArray = Arrays.asList(this.parsedSymbol);
-        for(final PricesListener listener : this.pricesListeners) {
-            listener.update(symbolArray, this.parsedCalendar);
+        if(pricesAreValid) {
+            for(final MarketListener listener : this.marketListeners) {
+                for(final Map.Entry<Field, Double> entry
+                        : this.parsedValues.entrySet()) {
+                    entry.getKey().notify(listener, this.parsedCalendar,
+                            this.parsedSymbol, entry.getValue());
+                }
+            }
+
+            final List<String> symbolArray = Arrays.asList(this.parsedSymbol);
+            for(final PricesListener listener : this.pricesListeners) {
+                listener.update(symbolArray, this.parsedCalendar);
+            }
         }
 
         this.parsedSymbol = null;
@@ -147,30 +165,37 @@ public class CSVSourceLineProcessor implements SourceLineProcessor {
         final String parts[] = line.split(",");
         boolean allLineProcessed = true;
         for(int i=0; i<parts.length; i++) {
-            if(this.fieldNames[i] != null) {
-                final Object obj = this.formatters[i].parseObject(parts[i],
-                        this.parsePositions[i]);
-                if(obj instanceof String[]) {
-                    if(i==this.symbolIndex) {
-                        this.parsedSymbol = ((String[]) obj)[0];
-                    }
-                } else if(obj instanceof Double) {
-                   this.parsedValues.put(this.fieldNames[i], (Double) obj); 
-                } else if(obj instanceof Date) {
-                    for(int j=0; j<dateIndexes.length; j++) {
-                        if(i==this.dateIndexes[j]) {
-                            if(this.parsedCalendar==null) {
-                                this.parsedCalendar = Calendar.getInstance();
-                            }
-                            // Date is built adding milliseconds... so simple.
-                            this.parsedCalendar.setTimeInMillis(
-                                    this.parsedCalendar.getTimeInMillis()
-                                    + ((Date) obj).getTime());
-                            break;
+            if(this.formatters[i] != null) {
+                try {
+                    this.parsePositions[i].setIndex(0);
+                    final Object obj = this.formatters[i]
+                            .parseObject(parts[i], this.parsePositions[i]);
+                    if(obj instanceof Object[]) {
+                        if(i==this.symbolIndex) {
+                            this.parsedSymbol = (String) ((Object[])obj)[0];
                         }
+                    } else if(obj instanceof Double) {
+                        this.parsedValues.put(this.fieldNames[i], (Double) obj);
+                    } else if(obj instanceof Date) {
+                        for(int j=0; j<dateIndexes.length; j++) {
+                            if(i==this.dateIndexes[j]) {
+                                if(this.parsedCalendar==null) {
+                                    this.parsedCalendar=Calendar.getInstance();
+                                    this.parsedCalendar.setTimeInMillis(
+                                        ((Date) obj).getTime());
+                                } else {
+                                    this.parsedCalendar.setTimeInMillis(
+                                        this.parsedCalendar.getTimeInMillis()
+                                        + ((Date) obj).getTime());
+                                }
+                                break;
+                            }
+                        }
+                    } else {
+                        // Unknown type
+                        allLineProcessed = false;
                     }
-                } else {
-                    // Unknown type
+                } catch(Exception e) {
                     allLineProcessed = false;
                 }
             }

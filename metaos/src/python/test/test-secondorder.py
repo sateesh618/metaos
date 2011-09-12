@@ -3,15 +3,16 @@ symbols = [ '1288.HK', '3988.HK', '0883.HK', '0939.HK', '2628.HK', '3968.HK', '0
 
 #lineProcessor = CSVReutersAdaptative('BRIC_1min.csv')
 textFormat = MessageFormat("{0}")
-dateFormat = SimpleDateFormat()
-timeFormat = SimpleDateFormat()
-doubleFormat = NumberFormat.getInstance()
-#print textFormat.parseObject("HOla", ParsePosition(0))[0].encode('utf-8')
+dateFormat = SimpleDateFormat('dd-MMM-yyyy')
+timeFormat = SimpleDateFormat('HH:mm:ss.SSS')
+doubleFormat = DecimalFormat('#.##')
 
-lineProcessor = CSVSourceLineProcessor([textFormat,dateFormat,timeFormat,textFormat,textFormat,doubleFormat,doubleFormat,doubleFormat,doubleFormat,doubleFormat,doubleFormat,doubleFormat,doubleFormat],[None,None,None,None,None,OPEN(PRICE),HIGH(PRICE),LOW(PRICE),CLOSE(PRICE),VOLUME(PRICE),Field.EXTENDED(PRICE,"Ave. Price"),Field.EXTENDED(PRICE,"VWAP"),Field.EXTENDED(PRICE,"No. Trades")],0,[1,2])
+lineProcessor = CSVSourceLineProcessor([textFormat,dateFormat,timeFormat,None,None,doubleFormat,doubleFormat,doubleFormat,doubleFormat,doubleFormat,doubleFormat,doubleFormat,doubleFormat],[None,None,None,None,None,OPEN(PRICE),HIGH(PRICE),LOW(PRICE),CLOSE(PRICE),VOLUME(PRICE),Field.EXTENDED(PRICE,"Ave. Price"),Field.EXTENDED(PRICE,"VWAP"),Field.EXTENDED(PRICE,"No. Trades")],0,[1,2])
+
 source = SecondOrderSource('BRIC40_1min.csv', symbols, lineProcessor)
 
-class MyObserver(MarketObserver):
+print "Ready"
+class MyObserver(PricesListener):
     def update(self, ss, when):
         strLine = Long.toString(when.getTimeInMillis()).encode('utf-8')
         strLine = strLine + when.toString().encode('utf-8')
@@ -32,8 +33,10 @@ class MyObserver(MarketObserver):
 
 
 market = RandomAccessMarket(0.0, 5000)
-lineProcessor.addListener(PricesToMarketListenerAdaptor(market), True)
-lineProcessor.addListener(MyObserver(), False)
+lineProcessor.addMarketListener(market)
+lineProcessor.addPricesListener(MyObserver())
+
+print "Go!"
 
 strLine = 'milliseconds'
 for s in symbols:
