@@ -2,34 +2,42 @@ Different types of data sources.<br>
 <br>
 <p>
 Interfaces govern the structure of the package:
-  <ol>
+  <ul>
     <li>Lines with prices are provided by <i>PricesSource</i>s.</li>
     <li>Each line is processed by <i>SourceLineProcessor</i>s.</li>
-    <li>Who notifies to subscribed <i>FieldProcessor</i>s.</li>
-  </ol>
+    <li>Who notifies to subscribed listeners (of types <i>PricesListener</i>
+        and <i>MarketListener</i></li>
+  </ul>
 </p>
 
 <p>
 Different types of <i>PricesSource</i>s are given:
   <ul>
-    <li><i>TwoOrderSource</i> for source files with two orders: first in 
+    <li><i>SecondOrderSource</i> for source files with two orders: first in 
             symbol, second in time.</li>
     <li><i>OrderedSource</i> for source files with order only in time.</li>
   </ul>
 </p>
 <p>
-<i>FieldProcessor</i>s send messages to a subscribed market (using an observer
-pattern) with names for symbols like "xxx-HIGH", "xxx-LOW", "xxx-OPEN"
-or "xxx-CLOSE":
-<code><pre>
-this.sendPriceToMarkets(moment, symbol + "-HIGH", high);
-this.sendPriceToMarkets(moment, symbol + "-LOW", low);
-this.sendPriceToMarkets(moment, symbol + "-OPEN", open);
-this.sendPriceToMarkets(moment, symbol + "-CLOSE", close);
-this.sendVolumeToMarkets(moment, symbol, volume);
-this.notifyListeners(moment, {symbol});
-</pre></code>
+<i>SourceLineProcessor</i>s try to parse each line, verifies if it's
+valid (in any sense), which symbols are present in the line, the date of
+the line and notifies to listeners when a set of lines are completely
+read and should be managed.
 <br>
-To simplify notification process, <i>BasicPricesSource</i> abstract class is
-provided, with methods to notify markets prices, asks, bids and volumes.
-</p>
+It's important to take into account the process as a whole:
+<ol>
+  <li><i>PriceSource</i> concrete class gets line by line from the source
+        of data (for instance as <i>OrderedSource</i> does with CSV file 
+        with only one symbol per line sorted by date).</li>
+  <li>After reading a line, a <i>SourceLineProcessor</i> gets information
+        like processed symbol, date and positional numeric values (for example,
+        <i>CSVSourceLineProcessor</i> deals with comma separated values,
+        and remembers, for each position, which data is present: open price,
+        volume, VWAP...)</li>
+  <li>When a set of lines are read, maybe when date changes, <i>PriceSource</i>
+        decides to ask to <i>SourceLineProcessor</i> for notifying listeners.
+        (For example, <i>OrderedSource</i> calls function <i>concludeLineSet</i>
+        on its <i>SourceLineProcessor</i> after every line is read, since
+        it's supposed there will be no more than one line with a given date.)
+        </li>
+</ol>
