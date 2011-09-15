@@ -78,7 +78,7 @@ public class CSVLineParser implements LineParser {
             _parseLine(line);
         }
 
-/*
+        /*
         for(final CacheListener listener : this.cacheListeners) {
             for(final Map.Entry<Field, Double> entry
                     : this.parsedValues.entrySet()) {
@@ -87,7 +87,7 @@ public class CSVLineParser implements LineParser {
                         this.parsedData.getSymbol(), entry.getValue());
             }
         }
-*/
+        */
         return this.parsedData;
     }
 
