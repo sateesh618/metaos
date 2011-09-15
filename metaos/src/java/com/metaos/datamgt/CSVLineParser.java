@@ -68,7 +68,7 @@ public class CSVLineParser implements LineParser {
             _parseLine(line);
         }
         return this.parsedData.getSymbol(0) != null 
-                && this.parsedData.getCalendar() != null
+                && this.parsedData.getTimestamp() != null
                 && this.parsingResult;
     }
 
@@ -84,7 +84,7 @@ public class CSVLineParser implements LineParser {
                 for(final Map.Entry<Field, Double> entry
                         : this.parsedData.values(symbol).entrySet()) {
                     entry.getKey().notify(listener, 
-                            this.parsedData.getCalendar(),
+                            this.parsedData.getTimesatmp(),
                             symbol, entry.getValue());
                 }
             }
@@ -152,7 +152,7 @@ public class CSVLineParser implements LineParser {
         if( ! line.equals(this.parsedLine) ) {
             _parseLine(line);
         }
-        return this.parsedData.getCalendar();
+        return this.parsedData.getTimestamp();
     }
 
 
@@ -187,15 +187,15 @@ public class CSVLineParser implements LineParser {
                     } else if(obj instanceof Date) {
                         for(int j=0; j<dateIndexes.length; j++) {
                             if(i==this.dateIndexes[j]) {
-                                if(this.parsedData.getCalendar()==null) {
-                                    this.parsedData.newCalendar();
-                                    this.parsedData.getCalendar()
+                                if(this.parsedData.getTimestamp()==null) {
+                                    this.parsedData.newTimestamp();
+                                    this.parsedData.getTimestamp()
                                             .setTimeInMillis(((Date) obj)
                                                 .getTime());
                                 } else {
-                                    this.parsedData.getCalendar()
+                                    this.parsedData.getTimestamp()
                                         .setTimeInMillis(this.parsedData
-                                            .getCalendar().getTimeInMillis() 
+                                            .getTimestamp().getTimeInMillis() 
                                             + ((Date) obj).getTime());
                                 }
                                 break;

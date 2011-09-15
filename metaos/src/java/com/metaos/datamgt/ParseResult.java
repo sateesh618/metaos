@@ -35,13 +35,13 @@ public class ParseResult {
     /**
      * Returns null if calendar is reset and has not been set.
      */
-    public Calendar getCalendar() { return this.calendar; }
+    public Calendar getTimestamp() { return this.calendar; }
 
 
     /**
      * Creates a new calendar reset to time zero.
      */
-    public void newCalendar() {
+    public void newTimestamp() {
         this.calendar = Calendar.getInstance();
         this.calendar.setTimeInMillis(0);
     }
@@ -84,6 +84,13 @@ public class ParseResult {
         this.symbols.add(symbol);
     }
 
+
+    /**
+     * Gets the list of parsed symbols.
+     */
+    public List<String> getSymbols() {
+        return Collections.unmodifiableList(this.symbols);
+    }
 
     /**
      * Empties all values.

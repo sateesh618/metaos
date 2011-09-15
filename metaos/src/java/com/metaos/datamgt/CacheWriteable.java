@@ -19,8 +19,7 @@ public interface CacheWriteable {
     /**
      * Sets center price for a given moment.
      */
-    public void setPrice(final Calendar when, final String what,
-            final double how);
+    public void set(final Calendar when, final String what, final double how);
 
     /**
      * Sets BID price for a given moment.

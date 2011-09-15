@@ -19,14 +19,14 @@ public interface CacheReadable {
     /**
      * Gets prices in the given moment.
      */
-    public double getPrice(final Calendar when, final String what);
+    public double get(final Calendar when, final String what);
 
     /**
      * Gets prices N moments before the last recognized time (usually NOW).
      * This method is optionally implemented and is faced to get more 
      * performance.
      */
-    public double getLastPrice(final int delay, final String what);
+    public double getLast(final int delay, final String what);
 
 
     /**

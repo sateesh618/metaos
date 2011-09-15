@@ -66,46 +66,37 @@ public abstract class Field {
 
 
     public static final class NONE extends Field {
-        public NONE(final Qualifier qualifier) {
-            super(qualifier, null);
-        }
+        public NONE(final Qualifier qualifier) { super(qualifier, null); }
     }
 
     public static final class OPEN extends Field {
-        public OPEN(final Qualifier qualifier) {
-            super(qualifier, "OPEN");
-        }
+        public OPEN(final Qualifier qualifier) { super(qualifier, "OPEN"); }
+        public OPEN() { this(PRICE); }
     }
 
     public static final class CLOSE extends Field {
-        public CLOSE(final Qualifier qualifier) {
-            super(qualifier, "CLOSE");
-        }
+        public CLOSE(final Qualifier qualifier) { super(qualifier, "CLOSE"); }
+        public CLOSE() { this(PRICE); }
     }
 
     public static final class HIGH extends Field {
-        public HIGH(final Qualifier qualifier) {
-            super(qualifier, "HIGH");
-        }
+        public HIGH(final Qualifier qualifier) { super(qualifier, "HIGH"); }
+        public HIGH() { this(PRICE); }
     }
 
     public static final class LOW extends Field {
-        public LOW(final Qualifier qualifier) {
-            super(qualifier, "LOW");
-        }
+        public LOW(final Qualifier qualifier) { super(qualifier, "LOW"); }
+        public LOW() { this(PRICE); }
     }
 
     public static final class VOLUME extends Field {
-        public VOLUME(final Qualifier qualifier) {
-            super(qualifier, "VOLUME");
-        }
+        public VOLUME(final Qualifier qualifier) { super(qualifier, "VOLUME"); }
+        public VOLUME() { this(PRICE); }
     }
-
 
     public static final class EXTENDED extends Field {
         public EXTENDED(final Qualifier qualifier, final String extension) {
             super(qualifier, extension);
         }
-
     }
 }
