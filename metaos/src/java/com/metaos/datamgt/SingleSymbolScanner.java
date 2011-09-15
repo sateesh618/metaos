@@ -14,7 +14,6 @@ import java.util.regex.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.metaos.market.source.*;
 
 /**
  * Source of prices for ONE symbol ordered by date.

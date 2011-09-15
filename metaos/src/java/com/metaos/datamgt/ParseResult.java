@@ -23,6 +23,7 @@ public class ParseResult {
         this.calendar = null;
     }
 
+
     /**
      * Returns null if there is no symbol at given position.
      */
@@ -36,6 +37,7 @@ public class ParseResult {
      */
     public Calendar getCalendar() { return this.calendar; }
 
+
     /**
      * Creates a new calendar reset to time zero.
      */
@@ -43,6 +45,7 @@ public class ParseResult {
         this.calendar = Calendar.getInstance();
         this.calendar.setTimeInMillis(0);
     }
+
 
     /** 
      * Stores the value for the given field associated to 
@@ -59,11 +62,28 @@ public class ParseResult {
 
 
     /**
+     * Gets the list of parsed values for the given symbol
+     */
+    public Map<Field, Double> values(final String symbol) {
+        return values.get(symbol);
+    }
+
+
+    /**
+     * Gets the list of parsed values for the symbol at given position.
+     */
+    public Map<Field, Double> values(final int symbolPos) {
+        return values.get(this.getSymbol(symbolPos));
+    }
+
+
+    /**
      * Adds new parsed symbol.
      */
     public void addSymbol(final String symbol) {
         this.symbols.add(symbol);
     }
+
 
     /**
      * Empties all values.

@@ -32,10 +32,10 @@ public interface LineParser {
      * Subscribe a listener to concluding line events that will receive the
      * list of pairs with symbol and prices.
      * The set of <i>Listener</i>s will be notified after the set of
-     * <i>CacheListener</i> has been invoked.
+     * <i>CacheWriteable</i> has been invoked.
      * @see #addListener
      */
-    public void addCacheListener(final CacheListener listener);
+    public void addCacheWriteable(final CacheWriteable listener);
 
     /**
      * Analyzes the line getting the symbol, but not reporting to listeners

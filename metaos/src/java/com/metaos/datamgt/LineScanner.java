@@ -12,7 +12,6 @@ import java.text.*;
 import java.util.*;
 import java.util.logging.Logger;
 
-import com.metaos.market.*;
 
 /**
  * Prices source.

@@ -12,7 +12,6 @@ import java.text.*;
 import java.util.*;
 import java.util.logging.Logger;
 
-import com.metaos.market.*;
 
 /**
  * Field from a source with actions to perform over a listener.
@@ -38,7 +37,7 @@ public abstract class Field {
     /**
      * Notifies to market the value of this field.
      */
-    public void notify(final MarketListener listener, final Calendar moment,
+    public void notify(final CacheWriteable listener, final Calendar moment,
             final String symbol, final double val) {
         switch(qualifier) {
             case BID:

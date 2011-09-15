@@ -22,7 +22,7 @@ public class CSVLineParser implements LineParser {
     private final Field[] fieldNames;
     private final ParsePosition[] parsePositions;
     private final int symbolIndex, dateIndexes[];
-    private final List<CacheListener> cacheListeners;
+    private final List<CacheWriteable> cacheListeners;
     private final List<Filter> pricesFilters;
 
     private String parsedLine;
@@ -47,7 +47,7 @@ public class CSVLineParser implements LineParser {
         assert (fieldNames.length == formatters.length);
         assert (symbolIndex < fieldNames.length);
 
-        this.cacheListeners = new ArrayList<CacheListener>();
+        this.cacheListeners = new ArrayList<CacheWriteable>();
         this.pricesFilters = new ArrayList<Filter>();
         this.dateIndexes = dateIndexes;
         this.symbolIndex = symbolIndex;
@@ -78,16 +78,17 @@ public class CSVLineParser implements LineParser {
             _parseLine(line);
         }
 
-        /*
-        for(final CacheListener listener : this.cacheListeners) {
-            for(final Map.Entry<Field, Double> entry
-                    : this.parsedValues.entrySet()) {
-                
-                entry.getKey().notify(listener, this.parsedDatathis.parsedData.getCalendar(),
-                        this.parsedData.getSymbol(), entry.getValue());
+        final String symbol = this.parsedData.getSymbol(0);
+        if(symbol!=null) {
+            for(final CacheWriteable listener : this.cacheListeners) {
+                for(final Map.Entry<Field, Double> entry
+                        : this.parsedData.values(symbol).entrySet()) {
+                    entry.getKey().notify(listener, 
+                            this.parsedData.getCalendar(),
+                            symbol, entry.getValue());
+                }
             }
         }
-        */
         return this.parsedData;
     }
 
@@ -98,7 +99,7 @@ public class CSVLineParser implements LineParser {
 
 
 
-    public void addCacheListener(final CacheListener listener) {
+    public void addCacheWriteable(final CacheWriteable listener) {
         this.cacheListeners.add(listener);
     }
 
@@ -117,7 +118,7 @@ public class CSVLineParser implements LineParser {
         }
 
         if(pricesAreValid) {
-            for(final CacheListener listener : this.cacheListeners) {
+            for(final CacheWriteable listener : this.cacheListeners) {
                 for(final Map.Entry<Field, Double> entry
                         : this.parsedValues.entrySet()) {
                     entry.getKey().notify(listener, 
