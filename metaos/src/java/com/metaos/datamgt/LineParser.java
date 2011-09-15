@@ -21,12 +21,7 @@ public interface LineParser {
      * @return true if the whole line has been processed, false if some
      * fields are invalid.
      */
-    public void parseAndRemember(final String line);
-
-    /**
-     * Considers the end of processing a set of lines and notifies listeners.
-     */
-    public void notifiesAndForget();
+    public void parse(final String line);
 
     /**
      * Tests if provided line is valid in some sense.
@@ -34,22 +29,13 @@ public interface LineParser {
     public boolean isValid(final String line);
 
     /**
-     * Subscribe a listener to concluding line events that will receive only
-     * the list of symbols with new prices.
-     * The set of <i>PricesListener</i>s will be notified after the set of
-     * <i>MarketListener</i> has been invoked.
-     * @see #addMarketListener
-     */
-    public void addLineSetListener(final SourceListener listener)
-
-    /**
      * Subscribe a listener to concluding line events that will receive the
      * list of pairs with symbol and prices.
-     * The set of <i>PricesListener</i>s will be notified after the set of
-     * <i>MarketListener</i> has been invoked.
-     * @see #addPricesListener
+     * The set of <i>Listener</i>s will be notified after the set of
+     * <i>CacheListener</i> has been invoked.
+     * @see #addListener
      */
-    public void addLineListener(final SourceListener listener);
+    public void addCacheListener(final CacheListener listener);
 
     /**
      * Analyzes the line getting the symbol, but not reporting to listeners

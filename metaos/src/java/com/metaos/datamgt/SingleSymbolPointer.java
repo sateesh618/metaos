@@ -24,6 +24,7 @@ public class SingleSymbolPointer implements LineScanner {
     private boolean endReached = false;
     private final BufferedReader fileReader;
     private final LineParser lineParser;
+    private final LinesAccumulator linesAccumulator;
     protected final String symbol;
     private String currentLine, firstLine, lastLine;
 
@@ -32,10 +33,12 @@ public class SingleSymbolPointer implements LineScanner {
      * To be used by extending classes.
      */
     public OrderedSource(final String filePath, final String symbol,
-            final LineParser lineParser) throws IOException {
+            final LineParser lineParser,final LinesAccumulator linesAccumulator)
+            throws IOException {
         this.fileReader = new BufferedReader(new FileReader(filePath));
         this.symbol = symbol;
         this.lineParser = lineParser;
+        this.linesAccumulator = linesAccumulator;
     }
 
 
@@ -46,10 +49,11 @@ public class SingleSymbolPointer implements LineScanner {
 
     public final boolean next() {
         if(this.readNextLine()) {
-            this.lineParser.process(this.firstLine);
-            this.lineParser.concludeLineSet();
+            final ParseResult result = this.lineParser.parse(this.firstLine);
+            this.linesAccumulator.accumulate(result);
             return true;
         } else {
+            this.linesAccumulator.endAggregation();
             return false;
         }
     }
@@ -66,8 +70,9 @@ public class SingleSymbolPointer implements LineScanner {
             }
             return false;
         } else {
-            this.lineParser.process(this.firstLine);
-            this.lineParser.concludeLineSet();
+            final ParseResult result = this.lineParser.parse(this.firstLine);
+            this.linesAccumulator.accumulate(result);
+            this.linesAccumulator.endAggregation();
             return true;
         }
     }
@@ -90,8 +95,9 @@ public class SingleSymbolPointer implements LineScanner {
             if(this.lastLine != null) return this.last();
             else return false;
         } else {
-            this.lineParser.process(this.lastLine);
-            this.lineParser.concludeLineSet();
+            final ParseResult result = this.lineParser.parse(this.lastLine);
+            this.linesAccumulator.accumulate(result);
+            this.linesAccumulator.endAccumulation();
             return true;
         }
     }
