@@ -19,7 +19,7 @@ import com.metaos.market.source.*;
 /**
  * Source of prices for ONE symbol ordered by date.
  */
-public class SingleSymbolPointer implements LineScanner {
+public class SingleSymbolScanner implements LineScanner {
     private boolean isClosed = false;
     private boolean endReached = false;
     private final BufferedReader fileReader;
@@ -32,7 +32,7 @@ public class SingleSymbolPointer implements LineScanner {
     /**
      * To be used by extending classes.
      */
-    public OrderedSource(final String filePath, final String symbol,
+    public SingleSymbolScanner(final String filePath, final String symbol,
             final LineParser lineParser,final LinesAccumulator linesAccumulator)
             throws IOException {
         this.fileReader = new BufferedReader(new FileReader(filePath));

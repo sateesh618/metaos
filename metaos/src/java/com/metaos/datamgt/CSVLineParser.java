@@ -4,15 +4,13 @@
  * The LICENSE.txt file and this header must be included or referenced 
  * in each piece of code derived from this project.
  */
-package com.metaos.cache.source;
+package com.metaos.datamgt;
 
 import java.io.*;
 import java.net.*;
 import java.text.*;
 import java.util.*;
 import java.util.logging.Logger;
-
-import com.metaos.cache.*;
 
 /**
  * Line processor for CSV files with only one date and symbol per line.
@@ -24,13 +22,12 @@ public class CSVLineParser implements LineParser {
     private final Field[] fieldNames;
     private final ParsePosition[] parsePositions;
     private final int symbolIndex, dateIndexes[];
-    private final Map<Field, Double> parsedValues;
     private final List<CacheListener> cacheListeners;
     private final List<Filter> pricesFilters;
 
     private String parsedLine;
-    private String parsedSymbol;
-    private Calendar parsedCalendar;
+
+    private ParseResult parsedData;
     private boolean parsingResult;
     
     /**
@@ -45,7 +42,7 @@ public class CSVLineParser implements LineParser {
      *      date of the line (should be null in the previous list of 
      *      fieldNames).
      */
-    public CSVSourceLineProcessor(final Format formatters[],
+    public CSVLineParser(final Format formatters[],
             final Field[] fieldNames, final int symbolIndex, 
             final int dateIndexes[]) {
         assert (fieldNames.length == formatters.length);
@@ -64,6 +61,7 @@ public class CSVLineParser implements LineParser {
             this.fieldNames[i] = fieldNames[i];
             this.parsePositions[i] = new ParsePosition(0);
         }
+        this.parsedData = new ParseResult();
     }
 
 
@@ -71,7 +69,8 @@ public class CSVLineParser implements LineParser {
         if( ! line.equals(this.parsedLine) ) {
             _parseLine(line);
         }
-        return this.parsedSymbol!=null && this.parsedCalendar!=null
+        return this.parsedData.getSymbol() != null 
+                && this.parsedData.getCalendar() != null
                 && this.parsingResult;
     }
 
@@ -86,8 +85,8 @@ public class CSVLineParser implements LineParser {
             for(final Map.Entry<Field, Double> entry
                     : this.parsedValues.entrySet()) {
                 
-                entry.getKey().notify(listener, this.parseResultthis.parsedCalendar,
-                        this.parsedSymbol, entry.getValue());
+                entry.getKey().notify(listener, this.parseResultthis.parsedData.getCalendar(),
+                        this.parsedData.getSymbol(), entry.getValue());
             }
         }
 */
@@ -106,12 +105,13 @@ public class CSVLineParser implements LineParser {
 
 
     public void concludeLineSet() {
-        if(this.parsedSymbol==null || this.parsedCalendar==null) return;
+        if(this.parsedData.getSymbol()==null || 
+                this.parsedData.getCalendar()==null) return;
 
         boolean pricesAreValid = true;
         for(final Filter filter : this.pricesFilters) {
-            if( ! filter.filter(this.parsedCalendar, this.parsedSymbol, 
-                    this.parsedValues)) {
+            if( ! filter.filter(this.parsedData.getCalendar(), 
+                    this.parsedData.getSymbol(), this.parsedValues)) {
                 pricesAreValid = false;
                 break;
             }
@@ -121,19 +121,21 @@ public class CSVLineParser implements LineParser {
             for(final CacheListener listener : this.cacheListeners) {
                 for(final Map.Entry<Field, Double> entry
                         : this.parsedValues.entrySet()) {
-                    entry.getKey().notify(listener, this.parsedCalendar,
-                            this.parsedSymbol, entry.getValue());
+                    entry.getKey().notify(listener, 
+                            this.parsedData.getCalendar(),
+                            this.parsedData.getSymbol(), entry.getValue());
                 }
             }
 
-            final List<String> symbolArray = Arrays.asList(this.parsedSymbol);
+            final List<String> symbolArray = Arrays.asList(
+                    this.parsedData.getSymbol());
             for(final Listener listener : this.pricesListeners) {
-                listener.update(symbolArray, this.parsedCalendar);
+                listener.update(symbolArray, this.parsedData.getCalendar());
             }
         }
 
-        this.parsedSymbol = null;
-        this.parsedCalendar = null;
+        this.parsedData.getSymbol() = null;
+        this.parsedData.getCalendar() = null;
     }
 
 
@@ -141,7 +143,7 @@ public class CSVLineParser implements LineParser {
         if( ! line.equals(this.parsedLine) ) {
             _parseLine(line);
         }
-        return this.parsedSymbol;
+        return this.parsedData.getSymbol();
     }
 
 
@@ -149,7 +151,7 @@ public class CSVLineParser implements LineParser {
         if( ! line.equals(this.parsedLine) ) {
             _parseLine(line);
         }
-        return this.parsedCalendar;
+        return this.parsedData.getCalendar();
     }
 
 
@@ -161,10 +163,8 @@ public class CSVLineParser implements LineParser {
      * Modifies internal values trying to parse given line.
      */
     private void _parseLine(final String line) {
-        this.parsedValues.clear();
         this.parsedLine = line;
-        this.parsedCalendar = null;
-        this.parsedSymbol = null;
+        this.parsedData.reset();
         this.parsingResult = false;
 
         final String parts[] = line.split(",");
@@ -177,21 +177,25 @@ public class CSVLineParser implements LineParser {
                             .parseObject(parts[i], this.parsePositions[i]);
                     if(obj instanceof Object[]) {
                         if(i==this.symbolIndex) {
-                            this.parsedSymbol = (String) ((Object[])obj)[0];
+                            this.parsedData.addSymbol((String) 
+                                    ((Object[])obj)[0]);
                         }
                     } else if(obj instanceof Double) {
-                        this.parsedValues.put(this.fieldNames[i], (Double) obj);
+                        this.parsedData.putValue(
+                                this.fieldNames[i], (Double) obj);
                     } else if(obj instanceof Date) {
                         for(int j=0; j<dateIndexes.length; j++) {
                             if(i==this.dateIndexes[j]) {
-                                if(this.parsedCalendar==null) {
-                                    this.parsedCalendar=Calendar.getInstance();
-                                    this.parsedCalendar.setTimeInMillis(
-                                        ((Date) obj).getTime());
+                                if(this.parsedData.getCalendar()==null) {
+                                    this.parsedData.newParsedCalendar();
+                                    this.parsedData.getCalendar()
+                                            .setTimeInMillis(((Date) obj)
+                                                .getTime());
                                 } else {
-                                    this.parsedCalendar.setTimeInMillis(
-                                        this.parsedCalendar.getTimeInMillis()
-                                        + ((Date) obj).getTime());
+                                    this.parsedData.getCalendar()
+                                        .setTimeInMillis(this.parsedData
+                                            .getCalendar().getTimeInMillis() 
+                                            + ((Date) obj).getTime());
                                 }
                                 break;
                             }
