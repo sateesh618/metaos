@@ -5,14 +5,27 @@
 package com.metaos.datamgt;
 
 /**
- * The way to not accumulate anything.
+ * The way to not accumulate anything: notifies to listener after every
+ * line is accumulated.
  */
 public class ZeroAccumulator implements LinesAccumulator {
+    private final List<Listener> listeners;
+
+    /**
+     * Creates a zero capacity accumulator.
+     */
+    public ZeroAccumulator() {
+        this.listeners = new ArrayList<Listener>();
+    }
+
     /**
      * Memorizes the result and consider if "end of accumulation" event
      * should be notified.
      */
     public void accumulate(final ParseResult result) {
+        for(final Listener listener : this.listeners) {
+            listener.notify(result);
+        }
     }
 
     /**
@@ -25,6 +38,6 @@ public class ZeroAccumulator implements LinesAccumulator {
      * Subscribes a listener to "end of accumulation" events.
      */
     public void addListener(final Listener listener) {
-        this.pricesListeners.add(listener);
+        this.listeners.add(listener);
     }
 }
