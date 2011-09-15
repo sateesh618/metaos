@@ -56,9 +56,9 @@ public abstract class Field {
                 break;
             case PRICE:
                 if(this.field==null) {
-                    listener.setPrice(moment, symbol, val);
+                    listener.set(moment, symbol, val);
                 } else {
-                    listener.setPrice(moment, symbol + "-" + this.field, val);
+                    listener.set(moment, symbol + "-" + this.field, val);
                 }
                 break;
         }
@@ -71,27 +71,27 @@ public abstract class Field {
 
     public static final class OPEN extends Field {
         public OPEN(final Qualifier qualifier) { super(qualifier, "OPEN"); }
-        public OPEN() { this(PRICE); }
+        public OPEN() { this(Qualifier.PRICE); }
     }
 
     public static final class CLOSE extends Field {
         public CLOSE(final Qualifier qualifier) { super(qualifier, "CLOSE"); }
-        public CLOSE() { this(PRICE); }
+        public CLOSE() { this(Qualifier.PRICE); }
     }
 
     public static final class HIGH extends Field {
         public HIGH(final Qualifier qualifier) { super(qualifier, "HIGH"); }
-        public HIGH() { this(PRICE); }
+        public HIGH() { this(Qualifier.PRICE); }
     }
 
     public static final class LOW extends Field {
         public LOW(final Qualifier qualifier) { super(qualifier, "LOW"); }
-        public LOW() { this(PRICE); }
+        public LOW() { this(Qualifier.PRICE); }
     }
 
     public static final class VOLUME extends Field {
         public VOLUME(final Qualifier qualifier) { super(qualifier, "VOLUME"); }
-        public VOLUME() { this(PRICE); }
+        public VOLUME() { this(Qualifier.PRICE); }
     }
 
     public static final class EXTENDED extends Field {

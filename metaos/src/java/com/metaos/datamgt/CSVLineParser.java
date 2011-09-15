@@ -84,7 +84,7 @@ public class CSVLineParser implements LineParser {
                 for(final Map.Entry<Field, Double> entry
                         : this.parsedData.values(symbol).entrySet()) {
                     entry.getKey().notify(listener, 
-                            this.parsedData.getTimesatmp(),
+                            this.parsedData.getTimestamp(),
                             symbol, entry.getValue());
                 }
             }
