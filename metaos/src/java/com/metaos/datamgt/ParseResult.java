@@ -4,6 +4,8 @@
  */
 package com.metaos.datamgt;
 
+import java.util.*;
+
 /**
  * Easy way to store and retreive parsed data from a line.
  */
@@ -16,7 +18,7 @@ public class ParseResult {
      * Creates an empty result set.
      */
     public ParseResult() {
-        this.values = new HashMap<Field, Double>();
+        this.values = new HashMap<String,Map<Field, Double>>();
         this.symbols = new ArrayList<String>();
         this.calendar = null;
     }
@@ -43,13 +45,15 @@ public class ParseResult {
     }
 
     /** 
-     * Stores the value for the given field associated to a symbol.
+     * Stores the value for the given field associated to 
+     * last inserted symbol symbol.
+     * If no symbol has been inserted yet, an exception occurs.
      */
-    public void putValue(final String symbol, final Field field, 
-            final double val) {
+    public void putValue(final Field field, final double val) {
+        final String symbol = symbols.get(symbols.size());
         Map<Field, Double> vs = values.get(symbol);
         if(vs==null) vs = new HashMap<Field, Double>();
-        vs.put(field, value);
+        vs.put(field, val);
         this.values.put(symbol, vs);
     }
 

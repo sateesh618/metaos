@@ -21,7 +21,7 @@ public interface LineParser {
      * @return true if the whole line has been processed, false if some
      * fields are invalid.
      */
-    public void parse(final String line);
+    public ParseResult parse(final String line);
 
     /**
      * Tests if provided line is valid in some sense.

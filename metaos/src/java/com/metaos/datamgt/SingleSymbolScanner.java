@@ -53,7 +53,7 @@ public class SingleSymbolScanner implements LineScanner {
             this.linesAccumulator.accumulate(result);
             return true;
         } else {
-            this.linesAccumulator.endAggregation();
+            this.linesAccumulator.endAccumulation();
             return false;
         }
     }
@@ -72,7 +72,7 @@ public class SingleSymbolScanner implements LineScanner {
         } else {
             final ParseResult result = this.lineParser.parse(this.firstLine);
             this.linesAccumulator.accumulate(result);
-            this.linesAccumulator.endAggregation();
+            this.linesAccumulator.endAccumulation();
             return true;
         }
     }
@@ -130,7 +130,7 @@ public class SingleSymbolScanner implements LineScanner {
                 return false;
             }
 
-            final Calendar moment = this.lineParser.getDate(line);
+            final Calendar moment = this.lineParser.getTimestamp(line);
             if(this.symbol.equals(this.lineParser.getSymbol(line, 0)) 
                     && this.lineParser.isValid(line)) {
                 this.currentLine = line;

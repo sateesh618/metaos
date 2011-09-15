@@ -4,6 +4,8 @@
  */
 package com.metaos.datamgt;
 
+import java.util.*;
+
 /**
  * The way to not accumulate anything: notifies to listener after every
  * line is accumulated.

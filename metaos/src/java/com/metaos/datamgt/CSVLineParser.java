@@ -26,7 +26,6 @@ public class CSVLineParser implements LineParser {
     private final List<Filter> pricesFilters;
 
     private String parsedLine;
-
     private ParseResult parsedData;
     private boolean parsingResult;
     
@@ -50,7 +49,6 @@ public class CSVLineParser implements LineParser {
 
         this.cacheListeners = new ArrayList<CacheListener>();
         this.pricesFilters = new ArrayList<Filter>();
-        this.parsedValues = new HashMap<Field, Double>();
         this.dateIndexes = dateIndexes;
         this.symbolIndex = symbolIndex;
         this.fieldNames = new Field[fieldNames.length];
@@ -69,7 +67,7 @@ public class CSVLineParser implements LineParser {
         if( ! line.equals(this.parsedLine) ) {
             _parseLine(line);
         }
-        return this.parsedData.getSymbol() != null 
+        return this.parsedData.getSymbol(0) != null 
                 && this.parsedData.getCalendar() != null
                 && this.parsingResult;
     }
@@ -77,7 +75,7 @@ public class CSVLineParser implements LineParser {
 
     public ParseResult parse(final String line) {
         if( ! line.equals(this.parsedLine) ) {
-            this.parseResult = _parseLine(line);
+            _parseLine(line);
         }
 
 /*
@@ -85,11 +83,12 @@ public class CSVLineParser implements LineParser {
             for(final Map.Entry<Field, Double> entry
                     : this.parsedValues.entrySet()) {
                 
-                entry.getKey().notify(listener, this.parseResultthis.parsedData.getCalendar(),
+                entry.getKey().notify(listener, this.parsedDatathis.parsedData.getCalendar(),
                         this.parsedData.getSymbol(), entry.getValue());
             }
         }
 */
+        return this.parsedData;
     }
 
 
@@ -103,7 +102,7 @@ public class CSVLineParser implements LineParser {
         this.cacheListeners.add(listener);
     }
 
-
+/*
     public void concludeLineSet() {
         if(this.parsedData.getSymbol()==null || 
                 this.parsedData.getCalendar()==null) return;
@@ -137,17 +136,18 @@ public class CSVLineParser implements LineParser {
         this.parsedData.getSymbol() = null;
         this.parsedData.getCalendar() = null;
     }
+*/
 
 
     public String getSymbol(final String line, final int index) {
         if( ! line.equals(this.parsedLine) ) {
             _parseLine(line);
         }
-        return this.parsedData.getSymbol();
+        return this.parsedData.getSymbol(index);
     }
 
 
-    public Calendar getDate(final String line) {
+    public Calendar getTimestamp(final String line) {
         if( ! line.equals(this.parsedLine) ) {
             _parseLine(line);
         }
@@ -187,7 +187,7 @@ public class CSVLineParser implements LineParser {
                         for(int j=0; j<dateIndexes.length; j++) {
                             if(i==this.dateIndexes[j]) {
                                 if(this.parsedData.getCalendar()==null) {
-                                    this.parsedData.newParsedCalendar();
+                                    this.parsedData.newCalendar();
                                     this.parsedData.getCalendar()
                                             .setTimeInMillis(((Date) obj)
                                                 .getTime());

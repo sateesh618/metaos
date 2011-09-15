@@ -40,18 +40,18 @@ public interface LineScanner {
      */
     public boolean last();
 
-    /**
+    /*
      * Search for data just at the desired time.
      * @return true if there is something at desired moment, false otherwise.
-     */
+     *
     public boolean search(final Calendar time);
 
-    /**
+    /*
      * Search for data at the moment just before the desired time.
      * @return true if there is something before the desired moment, 
      * false otherwise. (Eq., true if the given time is greater than the
      * first moment in souce.)
-     */
+     *
     public boolean searchClosestBefore(final Calendar time);
 
     /**
@@ -59,8 +59,9 @@ public interface LineScanner {
      * @return true if there is something after the desired moment, 
      * false otherwise. (Eq., true if the given moment is less than the
      * last moment.)
-     */
+     *
     public boolean searchClosestAfter(final Calendar time);
+    */
 
     /**
      * Closes the source.
