@@ -12,29 +12,56 @@ import java.text.*;
 import java.util.*;
 import java.util.logging.Logger;
 
+import com.metaos.datamgt.Field.*;
+import com.metaos.datamgt.Field.Qualifier;
+
 /**
  * Line processor for Reuters CSV files with only one date and symbol per line.
  *
  * <b>Not thread safe</b>
  */
-public class ReutersCSVLineParser extends CSVLineParser {
+public class ReutersCSVLineParser implements LineParser {
+    private final CSVLineParser inner;
     /**
      * Creates a parser for a CSV file according to its header line.
      * @param filePath complete or relative path to file to parse.
      */
     public ReutersCSVLineParser(final String filePath) throws IOException {
-        super(this.getFormatters(filePath), this.getFieldNames(filePath), 
-                this.getSymbolIndex(filePath), this.getDateIndexes(filePath));
+        this.inner = new CSVLineParser(this.getFormatters(filePath),
+                this.getFieldNames(filePath), this.getSymbolIndex(filePath), 
+                this.getDateIndexes(filePath));
     }
 
-    
+    public boolean isValid(final String line) { 
+        return this.inner.isValid(line);
+    }
+
+    public ParseResult parse(final String line) {
+        return this.inner.parse(line);
+    }
+
+    public void addFilter(final Filter filter) {
+        this.inner.addFilter(filter);
+    }
+
+    public void addCacheWriteable(final CacheWriteable listener) {
+        this.inner.addCacheWriteable(listener);
+    }
+
+    public String getSymbol(final String line, final int index) {
+        return this.inner.getSymbol(line, index);
+    }
+
+    public Calendar getTimestamp(final String line) {
+        return this.inner.getTimestamp(line);
+    }
 
     //
     // Private stuff ------------------ only useful for construction
     //
     private String filePath;
     private Format[] formatters;
-    private Field[] fieldNames;
+    private Field[] fields;
     private int symbolIndex;
     private List<Integer> dateIndexes;
 
@@ -46,12 +73,12 @@ public class ReutersCSVLineParser extends CSVLineParser {
         return this.formatters;
     }
 
-    private Filed[] getFieldNames(final String filePath) 
+    private Field[] getFieldNames(final String filePath) 
             throws IOException {
         if( ! filePath.equals(this.filePath)) {
             parseHeader(filePath);
         }
-        return this.fieldNames;
+        return this.fields;
     }
 
     private int getSymbolIndex(final String filePath) 
@@ -67,7 +94,11 @@ public class ReutersCSVLineParser extends CSVLineParser {
         if( ! filePath.equals(this.filePath)) {
             parseHeader(filePath);
         }
-        return this.dateIndexes.toArray();
+        final int[] tmp = new int[this.dateIndexes.size()];
+        for(int i=0; i<tmp.length; i++) {
+            tmp[i] = this.dateIndexes.get(i);
+        }
+        return tmp;
     }
 
 
@@ -78,9 +109,9 @@ public class ReutersCSVLineParser extends CSVLineParser {
         final String[] parts = firstLine.split(",");
         this.formatters = new Format[parts.length];
         this.fields = new Field[parts.length];
-        this.dateIndexs = new ArrayList<Integer>();
+        this.dateIndexes = new ArrayList<Integer>();
         for(int i=0; i<parts.length; i++) {
-            parts[i] = // Quitar la #
+            parts[i] = parts[i].replaceAll("#","");
             if(parts[i].equals("RIC")) {
                 this.symbolIndex = i;
             } else if(parts[i].equals("Date[G]")) {
@@ -88,10 +119,10 @@ public class ReutersCSVLineParser extends CSVLineParser {
             } else if(parts[i].equals("Time[G]")) {
                 this.dateIndexes.add(i);
             }
-            formatters[i] = formattersMap.get(parts[i]);
-            if(formatters[i]==null) {
-                formatters[i] = doubleFormat;
-                fields[i] = EXTENDED(NONE, parts[i]);
+            this.formatters[i] = formattersMap.get(parts[i]);
+            if(this.formatters[i]==null) {
+                this.formatters[i] = doubleFormat;
+                this.fields[i] = new EXTENDED(Qualifier.NONE, parts[i]);
             } else {
                 fields[i] = fieldsMap.get(parts[i]);
             }
@@ -100,36 +131,45 @@ public class ReutersCSVLineParser extends CSVLineParser {
     }
 
 
+    private static final Format textFormat=new MessageFormat("{0}");
+    private static final DateFormat dateFormat =
+            new SimpleDateFormat("dd-MMM-yyyy", Locale.UK);
+    private static final DateFormat timeFormat = 
+            new SimpleDateFormat("HH:mm:ss.SSS", Locale.UK);
+    private static final Format doubleFormat=new DecimalFormat("#.##");
+
     private static final Map<String, Format> formattersMap = 
             new HashMap<String, Format>();
     private static final Map<String, Field> fieldsMap = 
             new HashMap<String, Field>();
 
     static {
-        fieldsMap.put("Ask Price", CLOSE(ASK));
-        fieldsMap.put("Ask Size", VOLUME(ASK));
-        fieldsMap.put("Ask Size", VOLUME(BID));
-        fieldsMap.put("Ave.Price", EXTENDED(NONE,"Ave.Price"));
-        fieldsMap.put("Bid Price", CLOSE(BID));
-        fieldsMap.put("Close Ask", CLOSE(ASK));
-        fieldsMap.put("Close Bid", CLOSE(BID));
-        fieldsMap.put("Close", CLOSE());
-        fieldsMap.put("High Ask", HIGH(ASK));
-        fieldsMap.put("High Bid", HIGH(BID));
-        fieldsMap.put("High", HIGH());
-        fieldsMap.put("Last", CLOSE());
-        fieldsMap.put("Low Ask", LOW(ASK));
-        fieldsMap.put("Low Bid", LOW(BID));
-        fieldsMap.put("Low", Low());
-        fieldsMap.put("No. Asks", EXTENDED(ASK, "No."));
-        fieldsMap.put("No. Trades", EXTENDED(BID, "No."));
-        fieldsMap.put("No. Trades", EXTENDED(NONE,"No."));
-        fieldsMap.put("Open Ask", OPEN(ASK));
-        fieldsMap.put("Open Bid", OPEN(BID));
-        fieldsMap.put("Open", OPEN());
-        fieldsMap.put("Price", CLOSE());
-        fieldsMap.put("VWAP", EXTENDED(NONE,"VWAP"));
-        fieldsMap.put("Volume", VOLUME());
+        timeFormat.setTimeZone(TimeZone.getTimeZone("GMT+0"));
+        dateFormat.setTimeZone(TimeZone.getTimeZone("GMT+0"));
+        fieldsMap.put("Ask Price", new CLOSE(Qualifier.ASK));
+        fieldsMap.put("Ask Size", new VOLUME(Qualifier.ASK));
+        fieldsMap.put("Ask Size", new VOLUME(Qualifier.BID));
+        fieldsMap.put("Ave.Price", new EXTENDED(Qualifier.NONE,"Ave.Price"));
+        fieldsMap.put("Bid Price", new CLOSE(Qualifier.BID));
+        fieldsMap.put("Close Ask", new CLOSE(Qualifier.ASK));
+        fieldsMap.put("Close Bid", new CLOSE(Qualifier.BID));
+        fieldsMap.put("Close", new CLOSE());
+        fieldsMap.put("High Ask", new HIGH(Qualifier.ASK));
+        fieldsMap.put("High Bid", new HIGH(Qualifier.BID));
+        fieldsMap.put("High", new HIGH());
+        fieldsMap.put("Last", new CLOSE());
+        fieldsMap.put("Low Ask", new LOW(Qualifier.ASK));
+        fieldsMap.put("Low Bid", new LOW(Qualifier.BID));
+        fieldsMap.put("Low", new LOW());
+        fieldsMap.put("No. Asks", new EXTENDED(Qualifier.ASK, "No."));
+        fieldsMap.put("No. Trades", new EXTENDED(Qualifier.BID, "No."));
+        fieldsMap.put("No. Trades", new EXTENDED(Qualifier.NONE,"No."));
+        fieldsMap.put("Open Ask", new OPEN(Qualifier.ASK));
+        fieldsMap.put("Open Bid", new OPEN(Qualifier.BID));
+        fieldsMap.put("Open", new OPEN());
+        fieldsMap.put("Price", new CLOSE());
+        fieldsMap.put("VWAP", new EXTENDED(Qualifier.NONE,"VWAP"));
+        fieldsMap.put("Volume", new VOLUME());
         formattersMap.put("Ask Price", doubleFormat);
         formattersMap.put("Ask Size", doubleFormat);
         formattersMap.put("Ave.Price", doubleFormat);
