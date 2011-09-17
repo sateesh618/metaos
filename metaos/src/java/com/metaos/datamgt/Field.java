@@ -21,7 +21,7 @@ public abstract class Field {
      * Qualifiers for a field.
      */
     public static enum Qualifier {
-        BID, ASK, PRICE;
+        BID, ASK, NONE;
     }
 
 
@@ -54,7 +54,7 @@ public abstract class Field {
                     listener.setAsk(moment, symbol + "-" + this.field, val);
                 }
                 break;
-            case PRICE:
+            case NONE:
                 if(this.field==null) {
                     listener.set(moment, symbol, val);
                 } else {
@@ -71,27 +71,27 @@ public abstract class Field {
 
     public static final class OPEN extends Field {
         public OPEN(final Qualifier qualifier) { super(qualifier, "OPEN"); }
-        public OPEN() { this(Qualifier.PRICE); }
+        public OPEN() { this(Qualifier.NONE); }
     }
 
     public static final class CLOSE extends Field {
         public CLOSE(final Qualifier qualifier) { super(qualifier, "CLOSE"); }
-        public CLOSE() { this(Qualifier.PRICE); }
+        public CLOSE() { this(Qualifier.NONE); }
     }
 
     public static final class HIGH extends Field {
         public HIGH(final Qualifier qualifier) { super(qualifier, "HIGH"); }
-        public HIGH() { this(Qualifier.PRICE); }
+        public HIGH() { this(Qualifier.NONE); }
     }
 
     public static final class LOW extends Field {
         public LOW(final Qualifier qualifier) { super(qualifier, "LOW"); }
-        public LOW() { this(Qualifier.PRICE); }
+        public LOW() { this(Qualifier.NONE); }
     }
 
     public static final class VOLUME extends Field {
         public VOLUME(final Qualifier qualifier) { super(qualifier, "VOLUME"); }
-        public VOLUME() { this(Qualifier.PRICE); }
+        public VOLUME() { this(Qualifier.NONE); }
     }
 
     public static final class EXTENDED extends Field {
