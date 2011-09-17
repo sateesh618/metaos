@@ -48,7 +48,7 @@ public class SingleSymbolScanner implements LineScanner {
 
     public final boolean next() {
         if(this.readNextLine()) {
-            final ParseResult result = this.lineParser.parse(this.firstLine);
+            final ParseResult result = this.lineParser.parse(this.currentLine);
             this.linesAccumulator.accumulate(result);
             return true;
         } else {

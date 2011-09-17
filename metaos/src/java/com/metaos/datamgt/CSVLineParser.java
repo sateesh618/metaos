@@ -98,7 +98,6 @@ public class CSVLineParser implements LineParser {
     }
 
 
-
     public void addCacheWriteable(final CacheWriteable listener) {
         this.cacheListeners.add(listener);
     }
@@ -169,7 +168,7 @@ public class CSVLineParser implements LineParser {
         this.parsingResult = false;
 
         final String parts[] = line.split(",");
-        boolean allLineProcessed = true;
+        boolean anyValuePresent = false;
         for(int i=0; i<parts.length; i++) {
             if(this.formatters[i] != null) {
                 try {
@@ -184,6 +183,7 @@ public class CSVLineParser implements LineParser {
                     } else if(obj instanceof Double) {
                         this.parsedData.putValue(
                                 this.fieldNames[i], (Double) obj);
+                        anyValuePresent = true;
                     } else if(obj instanceof Date) {
                         for(int j=0; j<dateIndexes.length; j++) {
                             if(i==this.dateIndexes[j]) {
@@ -198,19 +198,18 @@ public class CSVLineParser implements LineParser {
                                             .getTimestamp().getTimeInMillis() 
                                             + ((Date) obj).getTime());
                                 }
+
                                 break;
                             }
                         }
                     } else {
                         // Unknown type
-                        allLineProcessed = false;
                     }
                 } catch(Exception e) {
-                    allLineProcessed = false;
+                    // Ok, don't worry, nothing matters
                 }
             }
         }
-
-        this.parsingResult = allLineProcessed;
+        this.parsingResult = anyValuePresent;
     }
 }

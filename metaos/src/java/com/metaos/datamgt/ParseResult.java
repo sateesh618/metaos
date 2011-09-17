@@ -10,6 +10,7 @@ import java.util.*;
  * Easy way to store and retreive parsed data from a line.
  */
 public class ParseResult {
+    private static final TimeZone GMT0 = TimeZone.getTimeZone("GMT");
     private final Map<String, Map<Field, Double>> values;
     private final List<String> symbols;
     private Calendar calendar;
@@ -42,7 +43,7 @@ public class ParseResult {
      * Creates a new calendar reset to time zero.
      */
     public void newTimestamp() {
-        this.calendar = Calendar.getInstance();
+        this.calendar = Calendar.getInstance(GMT0, Locale.UK);
         this.calendar.setTimeInMillis(0);
     }
 
@@ -53,7 +54,7 @@ public class ParseResult {
      * If no symbol has been inserted yet, an exception occurs.
      */
     public void putValue(final Field field, final double val) {
-        final String symbol = symbols.get(symbols.size());
+        final String symbol = symbols.get(symbols.size()-1);
         Map<Field, Double> vs = values.get(symbol);
         if(vs==null) vs = new HashMap<Field, Double>();
         vs.put(field, val);
