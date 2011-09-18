@@ -19,34 +19,40 @@ public interface CacheReadable {
     /**
      * Gets prices in the given moment.
      */
-    public double get(final Calendar when, final String what);
+    public double get(final Calendar when, final Field field, 
+            final String what);
 
     /**
      * Gets prices N moments before the last recognized time (usually NOW).
      * This method is optionally implemented and is faced to get more 
      * performance.
      */
-    public double getLast(final int delay, final String what);
+    public double getLast(final int delay, final Field field,
+            final String what);
 
 
     /**
      * Gets bid prices in the given moment.
      */
-    public double getBid(final Calendar when, final String what);
+    public double getBid(final Calendar when, final Field field,
+            final String what);
 
     /**
      * Gets bid prices n moments before.
      */
-    public double getLastBid(final int delay, final String what);
+    public double getLastBid(final int delay, final Field field,
+            final String what);
 
 
     /**
      * Gets ask prices in the given moment.
      */
-    public double getAsk(final Calendar when, final String what);
+    public double getAsk(final Calendar when, final Field field,
+            final String what);
 
     /**
      * Gets ask prices n moments before.
      */
-    public double getLastAsk(final int delay, final String what);
+    public double getLastAsk(final int delay, final Field field,
+            final String what);
 }

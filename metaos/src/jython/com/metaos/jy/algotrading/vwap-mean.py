@@ -26,7 +26,8 @@ class TraversalCutter(Listener):
         if self.data.get(minute)==None: self.data.put(minute, [])
 
         try:
-            self.data.get(minute).append(cache.get(moment, symbol + "-VOLUME"))
+            self.data.get(minute).append(cache.get(moment, \
+                    Field.VOLUME(), symbol))
         except:
             None
 

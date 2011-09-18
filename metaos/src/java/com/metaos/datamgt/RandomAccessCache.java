@@ -43,8 +43,8 @@ public class RandomAccessCache implements CacheReadable, CacheWriteable {
         this.lastBids = new HashMap<String, Double>(size);
     }
 
-    public void set(final Calendar when, final String what,
-            final double how) {
+    public void set(final Calendar when, final Field field,
+            final String what, final double how) {
         pricesLock.writeLock().lock();
         try {
             Map<String, Double> moment = this.prices.get(when);
@@ -52,16 +52,16 @@ public class RandomAccessCache implements CacheReadable, CacheWriteable {
                 moment = new HashMap<String, Double>();
                 this.prices.put(when, moment);
             }
-            this.lastPrices.put(what, how);
-            moment.put(what, how);
+            this.lastPrices.put(field + "-" + what, how);
+            moment.put(field + "-" + what, how);
         } finally {
             pricesLock.writeLock().unlock();
         }
     }
 
 
-    public void setBid(final Calendar when, final String what,
-            final double how) {
+    public void setBid(final Calendar when, final Field field, 
+            final String what, final double how) {
         bidsLock.writeLock().lock();
         try {
             Map<String, Double> moment = this.bids.get(when);
@@ -69,15 +69,15 @@ public class RandomAccessCache implements CacheReadable, CacheWriteable {
                 moment = new HashMap<String, Double>();
                 this.bids.put(when, moment);
             }
-            this.lastBids.put(what, how);
-            moment.put(what, how);
+            this.lastBids.put(field + "-" + what, how);
+            moment.put(field + "-" + what, how);
         } finally {
             bidsLock.writeLock().unlock();
         }
     }
 
-    public void setAsk(final Calendar when, final String what,
-            final double how) {
+    public void setAsk(final Calendar when, final Field field,
+            final String what, final double how) {
         asksLock.writeLock().lock();
         try {
             Map<String, Double> moment = this.asks.get(when);
@@ -85,36 +85,37 @@ public class RandomAccessCache implements CacheReadable, CacheWriteable {
                 moment = new HashMap<String, Double>();
                 this.asks.put(when, moment);
             }
-            this.lastAsks.put(what, how);
-            moment.put(what, how);
+            this.lastAsks.put(field + "-" + what, how);
+            moment.put(field + "-" + what, how);
         } finally {
             asksLock.writeLock().unlock();
         }
     }
 
-
-    public double get(final Calendar when, final String what) {
+    public double get(final Calendar when, final Field field,
+            final String what) {
         pricesLock.readLock().lock();
         try {
             Map<String, Double> moment = this.prices.get(when);
             if(moment==null) {
                 throw new NoSuchElementException();
             } else {
-                return moment.get(what);
+                return moment.get(field + "-" + what);
             }
         } finally {
             pricesLock.readLock().unlock();
         }
     }
 
-    public double getLast(final int delay, final String what) {
+    public double getLast(final int delay, final Field field,
+            final String what) {
         pricesLock.readLock().lock();
         try {
             if(delay!=0) {
                 throw new UnsupportedOperationException(
                     "Method only available for last prices (delay=0)");
             }
-            final Double how = this.lastPrices.get(what);
+            final Double how = this.lastPrices.get(field + "-" + what);
             if(how==null) {
                 throw new NoSuchElementException();
             } else {
@@ -125,42 +126,45 @@ public class RandomAccessCache implements CacheReadable, CacheWriteable {
         }
     }
 
-    public double getBid(final Calendar when, final String what) {
+    public double getBid(final Calendar when, final Field field,
+            final String what) {
         bidsLock.readLock().lock();
         try {
             Map<String, Double> moment = this.bids.get(when);
             if(moment==null) {
                 throw new NoSuchElementException();
             } else {
-                return moment.get(what);
+                return moment.get(field + "-" + what);
             }
         } finally {
             pricesLock.readLock().unlock();
         }     
     }
 
-    public double getAsk(final Calendar when, final String what) {
+    public double getAsk(final Calendar when, final Field field,
+            final String what) {
         asksLock.readLock().lock();
         try {
             Map<String, Double> moment = this.asks.get(when);
             if(moment==null) {
                 throw new NoSuchElementException();
             } else {
-                return moment.get(what);
+                return moment.get(field + "-" + what);
             }
         } finally {
             asksLock.readLock().unlock();
         }
     }
 
-    public double getLastBid(final int delay, final String what) {
+    public double getLastBid(final int delay, final Field field,
+            final String what) {
         bidsLock.readLock().lock();
         try {
             if(delay!=0) {
                 throw new UnsupportedOperationException(
                     "Method only available for last prices (delay=0)");
             }
-            final Double how = this.lastBids.get(what);
+            final Double how = this.lastBids.get(field + "-" + what);
             if(how==null) {
                 throw new NoSuchElementException();
             } else {
@@ -171,14 +175,15 @@ public class RandomAccessCache implements CacheReadable, CacheWriteable {
         }
     }
 
-    public double getLastAsk(final int delay, final String what) {
+    public double getLastAsk(final int delay, final Field field,
+            final String what) {
         asksLock.readLock().lock();
         try {
             if(delay!=0) {
                 throw new UnsupportedOperationException(
                     "Method only available for last prices (delay=0)");
             }
-            final Double how = this.lastAsks.get(what);
+            final Double how = this.lastAsks.get(field + "-" + what);
             if(how==null) {
                 throw new NoSuchElementException();
             } else {

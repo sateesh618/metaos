@@ -41,27 +41,31 @@ public abstract class Field {
             final String symbol, final double val) {
         switch(qualifier) {
             case BID:
-                if(this.field==null) {
-                    listener.setBid(moment, symbol, val);
-                } else {
-                    listener.setBid(moment, symbol + "-" + this.field, val);
-                }
+                listener.setBid(moment, this, symbol, val);
                 break;
             case ASK:
-                if(this.field==null) {
-                    listener.setAsk(moment, symbol, val);
-                } else {
-                    listener.setAsk(moment, symbol + "-" + this.field, val);
-                }
+                listener.setAsk(moment, this, symbol, val);
                 break;
             case NONE:
-                if(this.field==null) {
-                    listener.set(moment, symbol, val);
-                } else {
-                    listener.set(moment, symbol + "-" + this.field, val);
-                }
+                listener.set(moment, this, symbol, val);
                 break;
         }
+    }
+
+    public String toString() {
+        if(this.field==null) return "";
+        else return this.field;
+    }
+
+    public int hashCode() {
+        return this.qualifier.hashCode();
+    }
+
+    public boolean equals(final Object o) {
+        final Field other = (Field) o;
+        if(this.field==null) return other.qualifier==this.qualifier;
+        else return other.qualifier==this.qualifier
+                && this.field.equals(other.field);
     }
 
 
