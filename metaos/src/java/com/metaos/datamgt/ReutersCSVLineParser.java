@@ -171,6 +171,7 @@ public class ReutersCSVLineParser implements LineParser {
         fieldsMap.put("Price", new CLOSE());
         fieldsMap.put("VWAP", new EXTENDED(Qualifier.NONE,"VWAP"));
         fieldsMap.put("Volume", new VOLUME());
+        fieldsMap.put("GMT Offset", new EXTENDED(Qualifier.NONE,"GMT"));
         formattersMap.put("Ask Price", doubleFormat);
         formattersMap.put("Ask Size", doubleFormat);
         formattersMap.put("Ave.Price", doubleFormat);
@@ -199,5 +200,6 @@ public class ReutersCSVLineParser implements LineParser {
         formattersMap.put("Type", textFormat);
         formattersMap.put("VWAP", doubleFormat);
         formattersMap.put("Volume", doubleFormat);
+        formattersMap.put("GMT Offset", new DecimalFormat("+#;-#"));
     }
 }
