@@ -73,6 +73,7 @@ print "Go!"
 
 source.run()
 
+# Buscando aberraciones en los datos...
 pos = 0
 for k in traversalCutter.data.keySet():
     v = traversalCutter.data[k]
