@@ -102,42 +102,6 @@ public class CSVLineParser implements LineParser {
         this.cacheListeners.add(listener);
     }
 
-/*
-    public void concludeLineSet() {
-        if(this.parsedData.getSymbol()==null || 
-                this.parsedData.getCalendar()==null) return;
-
-        boolean pricesAreValid = true;
-        for(final Filter filter : this.pricesFilters) {
-            if( ! filter.filter(this.parsedData.getCalendar(), 
-                    this.parsedData.getSymbol(), this.parsedValues)) {
-                pricesAreValid = false;
-                break;
-            }
-        }
-
-        if(pricesAreValid) {
-            for(final CacheWriteable listener : this.cacheListeners) {
-                for(final Map.Entry<Field, Double> entry
-                        : this.parsedValues.entrySet()) {
-                    entry.getKey().notify(listener, 
-                            this.parsedData.getCalendar(),
-                            this.parsedData.getSymbol(), entry.getValue());
-                }
-            }
-
-            final List<String> symbolArray = Arrays.asList(
-                    this.parsedData.getSymbol());
-            for(final Listener listener : this.pricesListeners) {
-                listener.update(symbolArray, this.parsedData.getCalendar());
-            }
-        }
-
-        this.parsedData.getSymbol() = null;
-        this.parsedData.getCalendar() = null;
-    }
-*/
-
 
     public String getSymbol(final String line, final int index) {
         if( ! line.equals(this.parsedLine) ) {
@@ -180,9 +144,9 @@ public class CSVLineParser implements LineParser {
                             this.parsedData.addSymbol((String) 
                                     ((Object[])obj)[0]);
                         }
-                    } else if(obj instanceof Double) {
+                    } else if(obj instanceof Number) {
                         this.parsedData.putValue(
-                                this.fieldNames[i], (Double) obj);
+                                this.fieldNames[i],((Number)obj).doubleValue());
                         anyValuePresent = true;
                     } else if(obj instanceof Date) {
                         for(int j=0; j<dateIndexes.length; j++) {

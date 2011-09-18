@@ -103,6 +103,7 @@ public class ReutersCSVLineParser implements LineParser {
 
 
     private void parseHeader(final String filePath) throws IOException {
+        this.filePath = filePath;
         final BufferedReader reader = new BufferedReader(
                 new FileReader(filePath));
         final String firstLine = reader.readLine();
@@ -162,7 +163,7 @@ public class ReutersCSVLineParser implements LineParser {
         fieldsMap.put("Low Bid", new LOW(Qualifier.BID));
         fieldsMap.put("Low", new LOW());
         fieldsMap.put("No. Asks", new EXTENDED(Qualifier.ASK, "No."));
-        fieldsMap.put("No. Trades", new EXTENDED(Qualifier.BID, "No."));
+        fieldsMap.put("No. Bids", new EXTENDED(Qualifier.BID, "No."));
         fieldsMap.put("No. Trades", new EXTENDED(Qualifier.NONE,"No."));
         fieldsMap.put("Open Ask", new OPEN(Qualifier.ASK));
         fieldsMap.put("Open Bid", new OPEN(Qualifier.BID));
