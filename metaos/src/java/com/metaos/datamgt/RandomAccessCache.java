@@ -98,7 +98,7 @@ public class RandomAccessCache implements CacheReadable, CacheWriteable {
         try {
             Map<String, Double> moment = this.prices.get(when);
             if(moment==null) {
-                return -1;
+                throw new NoSuchElementException();
             } else {
                 return moment.get(what);
             }
@@ -116,7 +116,7 @@ public class RandomAccessCache implements CacheReadable, CacheWriteable {
             }
             final Double how = this.lastPrices.get(what);
             if(how==null) {
-                return -1;
+                throw new NoSuchElementException();
             } else {
                 return how.doubleValue();
             }
@@ -130,7 +130,7 @@ public class RandomAccessCache implements CacheReadable, CacheWriteable {
         try {
             Map<String, Double> moment = this.bids.get(when);
             if(moment==null) {
-                return -1;
+                throw new NoSuchElementException();
             } else {
                 return moment.get(what);
             }
@@ -144,7 +144,7 @@ public class RandomAccessCache implements CacheReadable, CacheWriteable {
         try {
             Map<String, Double> moment = this.asks.get(when);
             if(moment==null) {
-                return -1;
+                throw new NoSuchElementException();
             } else {
                 return moment.get(what);
             }
@@ -162,7 +162,7 @@ public class RandomAccessCache implements CacheReadable, CacheWriteable {
             }
             final Double how = this.lastBids.get(what);
             if(how==null) {
-                return -1;
+                throw new NoSuchElementException();
             } else {
                 return how.doubleValue();
             }
@@ -180,7 +180,7 @@ public class RandomAccessCache implements CacheReadable, CacheWriteable {
             }
             final Double how = this.lastAsks.get(what);
             if(how==null) {
-                return -1;
+                throw new NoSuchElementException();
             } else {
                 return how.doubleValue();
             }

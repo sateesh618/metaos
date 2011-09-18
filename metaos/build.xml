@@ -80,7 +80,7 @@
       <fileset dir="lib/swing-layout" includes="**/*.*"/>
     </copy>
     <copy todir="distrib/bin">
-      <fileset dir="src/python" includes="**/*.*"/>
+      <fileset dir="src/jython" includes="**/*.*"/>
       <fileset dir="src/R" includes="**/*.*"/>
       <fileset dir="src/sh" includes="**/*.*"/>
       <fileset dir="src/testdata" includes="**/*.*"/>
