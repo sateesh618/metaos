@@ -90,6 +90,9 @@ class TraversalCutter(Listener):
 
         for m in range(MIN_MC_MINUTE, MAX_MC_MINUTE):
             interpreteR.eval('predictor$clean()')
+            if self.days.get(m) is None:
+                print "No hay datos para el minuto " + str(m)
+
             for i in range(0, len(self.days.get(m))):
                 interpreterR.eval('predictor$learn(' \
                         + str(self.data.get(m)[i]) + ')')
