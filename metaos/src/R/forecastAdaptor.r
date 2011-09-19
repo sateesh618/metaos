@@ -1,5 +1,5 @@
 #
-# Linear regression predictor with infinite memory
+# ETS predictor with infinite memory
 #
 etsPredictor <- function() {
     yVals <- c()

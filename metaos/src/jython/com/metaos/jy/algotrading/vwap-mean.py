@@ -15,9 +15,14 @@ lineProcessor.addCacheWriteable(cache)
 # for each minute.
 #
 class TraversalCutter(Listener):
+    MIN_MC_MINUTE = 540
+    MAX_MC_MINUTE = 1049
+
     def __init__(self):
-        self.data = HashMap()
-        self.days = HashMap()
+        self.data = HashMap()   # minute of day -> list of values
+        self.days = HashMap()   # minute of day -> list of available dates
+        self.seqOfDays = []     # list of days
+
 
     def notify(self, parseResult):
         moment = parseResult.getTimestamp()
@@ -26,21 +31,24 @@ class TraversalCutter(Listener):
 
         minute = minute + 60*cache.get(moment, \
                 Field.EXTENDED(Field.Qualifier.NONE, "GMT"), symbol)
-        if minute>=540and minute<1049:
+        if minute>=MIN_MC_MINUTE and minute<MAX_MC_MINUTE:
             if self.data.get(minute)==None: 
                 self.data.put(minute, [])
                 self.days.put(minute, [])
 
+            dayAndMonth = str(Calendar.DAY_OF_MONTH)) \
+                        + "-" + str(moment.get(Calendar.MONTH)+1))
             try:
                 self.data.get(minute).append(cache.get(moment, \
                         Field.VOLUME(), symbol))
-                self.days.get(minute).append(str(\
-                        moment.get(Calendar.DAY_OF_MONTH)) \
-                        + "-" + str(moment.get(Calendar.MONTH)+1))
+                self.days.get(minute).append(moment.get(dayAndMonth))
+                if self.seqOfDays[-1]!=dayAndMonth:
+                    self.seqOfDays.append(dayAndMonth)
+
             except:
-                print str(moment.get(Calendar.DAY_OF_MONTH)) \
-                        + "-" + str(moment.get(Calendar.MONTH)+1) \
-                        + " " + str(minute)
+                #print str(moment.get(Calendar.DAY_OF_MONTH)) \
+                #        + "-" + str(moment.get(Calendar.MONTH)+1) \
+                #        + " " + str(minute)
                 None
 
         # The same as:
@@ -48,21 +56,19 @@ class TraversalCutter(Listener):
 
 
     def calculatePercents(self):
-        length = 0
-        for v in self.data.values():
-            if len(v)!=0: 
-                length = len(v)
-            else:
-                # Remove this element...
-                None
-
-        for i in range(0,length-1):
+        for day in seqOfDays:
             dailyVol = 0
-            for v in self.data.values():
-                if len(v)>0: dailyVol = dailyVol + v[i]
+            for m in range(MIN_MC_MINUTE, MAX_MC_MINUTE):
+                for i in range(0, len(self.days.get(m)):
+                    if self.days.get(m)[i]==day:
+                        dailyVol = dailyVol + self.data.get(m)[i]
+                        break
 
-            for v in self.data.values():
-                if len(v)>0: v[i] = v[i] / dailyVol
+            for m in range(MIN_MC_MINUTE, MAX_MC_MINUTE):
+                for i in range(0, len(self.days.get(m)):
+                    if self.days.get(m)[i]==day:
+                        self.data.get(m)[i] = self.data(m)[i] / dailyVol
+                        break
                 
 
 
