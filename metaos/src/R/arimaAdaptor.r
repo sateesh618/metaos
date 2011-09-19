@@ -21,13 +21,15 @@ arimaPredictor <- function(p,d,q) {
 
 
     forecast <- function() {
-        return(3)
-#        if(!learnClosed) {
-#            learnClosed <<- TRUE
-#            ar <- arima(x=yVals, order=pars)
-#            f <<- predict(ar)
-#        }
-#        return(f)
+        if(!learnClosed) {
+            learnClosed <<- TRUE
+            #ar <- arima(x=yVals, order=pars)
+            #f <<- predict(ar)
+            f <<- sum(yVals)/length(yVals)
+        }
+        # Existe el caso: un solo punto training => no hay ARIMA que valga
+        # ¿que hacemos?
+        return(f)
     }
 
     return(list(forecast=forecast, learn=learn, clean=clean))
