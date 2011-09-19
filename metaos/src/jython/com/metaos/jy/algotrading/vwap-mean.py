@@ -33,6 +33,8 @@ class TraversalCutter(Listener):
 
         minute = minute + 60*cache.get(moment, \
                 Field.EXTENDED(Field.Qualifier.NONE, "GMT"), symbol)
+        minute = int(minute)
+
         if minute>=MIN_MC_MINUTE and minute<=MAX_MC_MINUTE:
             if self.data.get(minute)==None: 
                 self.data.put(minute, [])
@@ -44,14 +46,14 @@ class TraversalCutter(Listener):
                 self.data.get(minute).append(cache.get(moment, \
                         Field.VOLUME(), symbol))
                 self.days.get(minute).append(dayAndMonth)
-                if self.seqOfDays[-1]!=dayAndMonth:
-                    self.seqOfDays.append(dayAndMonth)
 
+                if len(self.seqOfDays)==0 or self.seqOfDays[-1]!=dayAndMonth:
+                    self.seqOfDays.append(dayAndMonth)
             except:
-                #print str(moment.get(Calendar.DAY_OF_MONTH)) \
-                #        + "-" + str(moment.get(Calendar.MONTH)+1) \
-                #        + " " + str(minute)
                 None
+
+
+
 
         # The same as:
         #data[minute].push(parseResult.values(symbol).get(VOLUME()))
@@ -61,18 +63,18 @@ class TraversalCutter(Listener):
     ## Calculates percent values for volume over the daily traded volume.
     ##
     def calculatePercents(self):
-        for day in seqOfDays:
+        for day in self.seqOfDays:
             dailyVol = 0
-            for m in range(MIN_MC_MINUTE, MAX_MC_MINUTE):
+            for m in range(MIN_MC_MINUTE, MAX_MC_MINUTE+1):
                 for i in range(0, len(self.days.get(m))):
                     if self.days.get(m)[i]==day:
                         dailyVol = dailyVol + self.data.get(m)[i]
                         break
 
-            for m in range(MIN_MC_MINUTE, MAX_MC_MINUTE):
+            for m in range(MIN_MC_MINUTE, MAX_MC_MINUTE+1):
                 for i in range(0, len(self.days.get(m))):
                     if self.days.get(m)[i]==day:
-                        self.data.get(m)[i] = self.data(m)[i] / dailyVol
+                        self.data.get(m)[i] = self.data.get(m)[i] / dailyVol
                         break
                 
 
@@ -84,23 +86,24 @@ class TraversalCutter(Listener):
     ##
     def forecast(self, p, d, q):
         result = []
-        interpreteR.eval('predictor <- arimaPredictor(' + str(p) + \
+        interpreteR.eval('predictor <- arimaPredictor(' + str(p) + ',' + \
                 str(d) + ',' + str(q) + ')')
-        for m in range(0,MIN_MC_MINUTE-1): result.append(0)
+        for m in range(0,MIN_MC_MINUTE): result.append(0)
 
-        for m in range(MIN_MC_MINUTE, MAX_MC_MINUTE):
+        for m in range(MIN_MC_MINUTE, MAX_MC_MINUTE+1):
             interpreteR.eval('predictor$clean()')
-            if self.days.get(m) is None:
-                print "No hay datos para el minuto " + str(m)
 
             for i in range(0, len(self.days.get(m))):
-                interpreterR.eval('predictor$learn(' \
+                 interpreteR.eval('predictor$learn(' \
                         + str(self.data.get(m)[i]) + ')')
                 
-            predictedVol = interpreteR.evalDouble('predictor$forecast()')
+            interpreteR.eval('x<-predictor$forecast()')
+            predictedVol = interpreteR.evalDouble('x')
             result.append(predictedVol)
 
         for m in range(MAX_MC_MINUTE+1,60*24): result.append(0)
+
+        return result
 
 
 traversalCutter = TraversalCutter()
@@ -108,6 +111,7 @@ noAccumulator.addListener(traversalCutter)
 
 print "Collect data"
 source.run()
+traversalCutter.calculatePercents()
 forecastedVol=traversalCutter.forecast(0,0,1)
 
 

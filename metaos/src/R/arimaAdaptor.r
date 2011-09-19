@@ -21,12 +21,13 @@ arimaPredictor <- function(p,d,q) {
 
 
     forecast <- function() {
-        if(!learnClosed) {
-            learnClosed <<- TRUE
-            ar <- arima(x=yVals, order=pars)
-            f <<- predict(ar)
-        }
-        return(f)
+        return(3)
+#        if(!learnClosed) {
+#            learnClosed <<- TRUE
+#            ar <- arima(x=yVals, order=pars)
+#            f <<- predict(ar)
+#        }
+#        return(f)
     }
 
     return(list(forecast=forecast, learn=learn, clean=clean))
