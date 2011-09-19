@@ -82,7 +82,7 @@ class TraversalCutter(Listener):
     ##
     ## Returns a list of values for each minute of day.
     ##
-    def forcast(self, p, d, q):
+    def forecast(self, p, d, q):
         result = []
         interpreteR.eval('predictor <- arimaPredictor(' + str(p) + \
                 str(d) + ',' + str(q) + ')')
@@ -107,3 +107,5 @@ print "Collect data"
 source.run()
 forecastedVol=traversalCutter.forecast(0,0,1)
 
+
+interpreteR.end()
