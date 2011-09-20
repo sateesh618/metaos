@@ -121,12 +121,33 @@ public class SingleSymbolScanner implements LineScanner {
      * @return false if cannot move to next line (no more valid lines to read).
      */
     private boolean readNextLine() {
-        if(this.isClosed || this.endReached) return false;
+        int result;
+        do {
+            result = _readNextLine();
+        } while(result==0);
+        if(result==+1) return true;
+        if(result==-1) {
+            this.lastLine = this.currentLine;
+            return false;
+        }
+        throw new IllegalArgumentException("_readNextLine is not working as "
+                + "expected!");
+    }
+
+
+    /**
+     * Internal usage by <code>readNextLine</code> to avoid recurssion.
+     * @return -1 if <code>readNextLine</code> must return false,
+     * +1 if <code>readNextLine</code> must return true or 0 if
+     * this function should be reevaluated.
+     */
+    private int _readNextLine() {
+        if(this.isClosed || this.endReached) return -1;
         try {
             final String line = fileReader.readLine();
             if(line==null) {
                 this.endReached = true;
-                return false;
+                return -1;
             }
 
             final Calendar moment = this.lineParser.getTimestamp(line);
@@ -134,19 +155,14 @@ public class SingleSymbolScanner implements LineScanner {
                     && this.lineParser.isValid(line)) {
                 this.currentLine = line;
                 if(this.firstLine==null) this.firstLine = line;
-                return moment != null;
+                return moment != null ? +1 : -1;
             } else {
-                if(this.readNextLine()) {
-                    return true;
-                } else {
-                    this.lastLine = line;
-                    this.endReached = true;
-                    return false;
-                }
+                this.currentLine = line;
+                return 0;
             }
         } catch(Exception e) {
             this.endReached = true;
-            return false;
+            return -1;
         }
     }
 }
