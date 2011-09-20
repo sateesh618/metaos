@@ -66,12 +66,14 @@ class TraversalCutter(Listener):
         for day in self.seqOfDays:
             dailyVol = 0
             for m in range(MIN_MC_MINUTE, MAX_MC_MINUTE+1):
+                if self.days.get(m)==None: continue
                 for i in range(0, len(self.days.get(m))):
                     if self.days.get(m)[i]==day:
                         dailyVol = dailyVol + self.data.get(m)[i]
                         break
 
             for m in range(MIN_MC_MINUTE, MAX_MC_MINUTE+1):
+                if self.days.get(m)==None: continue
                 for i in range(0, len(self.days.get(m))):
                     if self.days.get(m)[i]==day:
                         self.data.get(m)[i] = self.data.get(m)[i] / dailyVol
@@ -91,8 +93,9 @@ class TraversalCutter(Listener):
         for m in range(0,MIN_MC_MINUTE): result.append(0)
 
         for m in range(MIN_MC_MINUTE, MAX_MC_MINUTE+1):
+            if self.days.get(m)==None: continue
             interpreteR.eval('predictor$clean()')
-
+    
             for i in range(0, len(self.days.get(m))):
                  interpreteR.eval('predictor$learn(' \
                         + str(self.data.get(m)[i]) + ')')
@@ -109,10 +112,14 @@ class TraversalCutter(Listener):
 traversalCutter = TraversalCutter()
 noAccumulator.addListener(traversalCutter)
 
-print "Collect data"
+# Collect data
 source.run()
+
+# Transform data
 traversalCutter.calculatePercents()
-forecastedVol=traversalCutter.forecast(0,0,1)
 
-
+# Predict using ARIMA
+forecastedVol=traversalCutter.forecast(1,0,1)
+print forecastedVol
 interpreteR.end()
+

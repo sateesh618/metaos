@@ -2,6 +2,7 @@
 # Predictor using ETS functions. 
 #
 arimaPredictor <- function(p,d,q) {
+#    firstTime <- TRUE
     yVals <- c()
     learnClosed <- FALSE
     f <- NULL
@@ -23,13 +24,17 @@ arimaPredictor <- function(p,d,q) {
     forecast <- function() {
         if(!learnClosed) {
             learnClosed <<- TRUE
-            #ar <- arima(x=yVals, order=pars)
-            #f <<- predict(ar)
-            f <<- sum(yVals)/length(yVals)
+            ar <- arima(x=yVals, order=pars)
+            f <<- predict(ar)
+#            if(firstTime) {
+#                firstTime <<- FALSE
+#                par(mfrow=c(2,1))
+#                acf(ar,main="ACF")
+#                pacf(ar,main="PACF")
+#            }
         }
-        # Existe el caso: un solo punto training => no hay ARIMA que valga
-        # ¿que hacemos?
-        return(f)
+
+        return(f$pred)
     }
 
     return(list(forecast=forecast, learn=learn, clean=clean))
