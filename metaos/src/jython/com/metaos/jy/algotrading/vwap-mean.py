@@ -13,7 +13,7 @@ cache = RandomAccessCache(5000)
 lineProcessor.addCacheWriteable(cache)
 
 MIN_MC_MINUTE = 540
-MAX_MC_MINUTE = 1049
+MAX_MC_MINUTE = 1056
 #
 # Stores for each instrument and minute in day, the list of %volumes/dailyVol 
 # for each minute.
@@ -42,10 +42,14 @@ class TraversalCutter(Listener):
 
             dayAndMonth = str(moment.get(Calendar.DAY_OF_MONTH)) \
                         + "-" + str(moment.get(Calendar.MONTH)+1)
+
+            if dayAndMonth != '18-1': return
             try:
                 self.data.get(minute).append(cache.get(moment, \
                         Field.VOLUME(), symbol))
                 self.days.get(minute).append(dayAndMonth)
+                print cache.get(moment, Field.VOLUME(), symbol)
+
 
                 if len(self.seqOfDays)==0 or self.seqOfDays[-1]!=dayAndMonth:
                     self.seqOfDays.append(dayAndMonth)
@@ -120,6 +124,7 @@ traversalCutter.calculatePercents()
 
 # Predict using ARIMA
 forecastedVol=traversalCutter.forecast(1,0,1)
-print forecastedVol
+#print forecastedVol
+print traversalCutter.data.get((MIN_MC_MINUTE+MAX_MC_MINUTE)/2)
 interpreteR.end()
 
