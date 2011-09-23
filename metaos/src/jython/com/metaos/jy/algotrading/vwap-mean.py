@@ -5,7 +5,7 @@ symbol = args[1]
 #interpreteR = R('arimaAdaptor.r')
 interpreteR = R('maAdaptor.r')
 
-TimeZone.setDefault(TimeZone.getTimeZone("GMT+10"))
+TimeZone.setDefault(TimeZone.getTimeZone("GMT"))
 
 noAccumulator = ZeroAccumulator()
 lineProcessor = ReutersCSVLineParser(fileName)
@@ -13,8 +13,18 @@ source = SingleSymbolScanner(fileName, symbol, lineProcessor, noAccumulator)
 cache = RandomAccessCache(5000)
 lineProcessor.addCacheWriteable(cache)
 
-MIN_MC_MINUTE = 540
-MAX_MC_MINUTE = 1056
+
+class MercadoContinuoIsOpen(Filter):
+    def filter(self, when, symbol, values):
+        minute = when.get(Calendar.HOUR_OF_DAY)*60 + when.get(Calendar.MINUTE)
+        minute = minute + 60*values.get(\
+                Field.EXTENDED(Field.Qualifier.NONE, "GMT"))
+        minute = int(minute)
+        return minute>=540 and minute <=1056
+
+MIN_MC_MINUTE=540
+MAX_MC_MINUTE=1056
+
 #
 # Stores for each instrument and minute in day, the list of %volumes/dailyVol 
 # for each minute.
@@ -61,6 +71,7 @@ class TraversalCutter(Listener):
         #data[minute].push(parseResult.values(symbol).get(VOLUME()))
 
 
+
     ##
     ## Calculates percent values for volume over the daily traded volume.
     ##
@@ -77,6 +88,17 @@ class TraversalCutter(Listener):
 
                 
 
+    ##
+    ## Shows sequence of data for the given day and month
+    ##
+    def showDay(self, dayAndMonth):
+        for i in range(0, len(self.seqOfDays)):
+            if self.seqOfDays[i] == dayAndMonth:
+                result = []
+                for m in range(MIN_MC_MINUTE, MAX_MC_MINUTE+1):
+                    result.append(self.data.get(m)[i])
+
+                return result
 
     ##
     ## Forecasts proportional volatilities for each minute of day
@@ -122,20 +144,16 @@ source.run()
 traversalCutter.calculatePercents()
 
 
-#s = 'rvol=['
-#for i in range(0, MAX_MC_MINUTE+1):
-#    if traversalCutter.data.get(i)==None or len(traversalCutter.data.get(i))==0 \
-#            or traversalCutter.data.get(i)[0]==None: 
-#        continue
-#    if i!=0: s = s + ','
-#    s = s + str(traversalCutter.data.get(i)[0])
-#s = s + '];'
-#print s
-    
+print traversalCutter.showDay('18-1')
+print traversalCutter.showDay('19-1')
+print traversalCutter.showDay('20-1')
 
+print traversalCutter.showDay('27-4')
+print traversalCutter.showDay('28-4')
+print traversalCutter.showDay('29-4')
 
 # Predict using the model
-forecastedVol=traversalCutter.forecast(0,0,5)
-print forecastedVol
+#forecastedVol=traversalCutter.forecast(0,0,5)
+#print forecastedVol
 interpreteR.end()
 
