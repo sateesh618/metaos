@@ -3,4 +3,12 @@ Recommended packages for R:
     Forecast http://cran.r-project.org/web/packages/forecast/index.html
         > install.packages("forecast")
 
+    Or, in MacOSX:
+        Download the package 
+        sudo /usr/bin/R CMD INSTALL  thepackage
+
+        See http://www.sysarchitects.com/node/94
+
+Then, to use the library, in R:
+    > library(forecast)
 

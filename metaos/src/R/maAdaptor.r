@@ -1,11 +1,12 @@
 #
-# Predictor using ETS functions. 
+# Predictor using moving average
 #
-Predictor <- function(p,d,q) {
+Predictor <- function(windowSize) {
+    library(TTR)
     yVals <- c()
     learnClosed <- FALSE
     f <- NULL
-    pars <- c(p,d,q)
+    windowSize <- windowSize
 
     
     clean <- function() {
@@ -23,11 +24,10 @@ Predictor <- function(p,d,q) {
     forecast <- function() {
         if(!learnClosed) {
             learnClosed <<- TRUE
-            ar <- arima(x=yVals, order=pars)
-            f <<- predict(ar)
+            f <<- SMA(yVals, windowSize)
         }
 
-        return(f$pred)
+        return(f[length(f)])
     }
 
     return(list(forecast=forecast, learn=learn, clean=clean))

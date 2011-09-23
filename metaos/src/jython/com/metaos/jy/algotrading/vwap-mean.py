@@ -2,7 +2,8 @@
 fileName = args[0]
 symbol = args[1]
 
-interpreteR = R('arimaAdaptor.r')
+#interpreteR = R('arimaAdaptor.r')
+interpreteR = R('maAdaptor.r')
 
 TimeZone.setDefault(TimeZone.getTimeZone("GMT+10"))
 
@@ -43,13 +44,10 @@ class TraversalCutter(Listener):
             dayAndMonth = str(moment.get(Calendar.DAY_OF_MONTH)) \
                         + "-" + str(moment.get(Calendar.MONTH)+1)
 
-            if dayAndMonth != '18-1': return
             try:
                 self.data.get(minute).append(cache.get(moment, \
                         Field.VOLUME(), symbol))
                 self.days.get(minute).append(dayAndMonth)
-                print cache.get(moment, Field.VOLUME(), symbol)
-
 
                 if len(self.seqOfDays)==0 or self.seqOfDays[-1]!=dayAndMonth:
                     self.seqOfDays.append(dayAndMonth)
@@ -67,21 +65,16 @@ class TraversalCutter(Listener):
     ## Calculates percent values for volume over the daily traded volume.
     ##
     def calculatePercents(self):
-        for day in self.seqOfDays:
+        for d in range(0, len(self.seqOfDays)):
             dailyVol = 0
             for m in range(MIN_MC_MINUTE, MAX_MC_MINUTE+1):
-                if self.days.get(m)==None: continue
-                for i in range(0, len(self.days.get(m))):
-                    if self.days.get(m)[i]==day:
-                        dailyVol = dailyVol + self.data.get(m)[i]
-                        break
+                if self.days.get(m)!=None and len(self.data.get(m))>d:
+                    dailyVol = dailyVol + self.data.get(m)[d]
 
             for m in range(MIN_MC_MINUTE, MAX_MC_MINUTE+1):
-                if self.days.get(m)==None: continue
-                for i in range(0, len(self.days.get(m))):
-                    if self.days.get(m)[i]==day:
-                        self.data.get(m)[i] = self.data.get(m)[i] / dailyVol
-                        break
+                if self.days.get(m)!=None and len(self.data.get(m))>d:
+                    self.data.get(m)[d] = self.data.get(m)[d] / dailyVol
+
                 
 
 
@@ -92,15 +85,16 @@ class TraversalCutter(Listener):
     ##
     def forecast(self, p, d, q):
         result = []
-        interpreteR.eval('predictor <- arimaPredictor(' + str(p) + ',' + \
-                str(d) + ',' + str(q) + ')')
-        for m in range(0,MIN_MC_MINUTE): result.append(0)
+        interpreteR.eval('predictor <- Predictor(' + str(q) + ')')
+#        interpreteR.eval('predictor <- Predictor(' + str(p) + ',' + \
+#                str(d) + ',' + str(q) + ')')
+#        for m in range(0,MIN_MC_MINUTE): result.append(0)
 
         for m in range(MIN_MC_MINUTE, MAX_MC_MINUTE+1):
-            if self.days.get(m)==None: continue
+            if self.data.get(m)==None: continue
             interpreteR.eval('predictor$clean()')
     
-            for i in range(0, len(self.days.get(m))):
+            for i in range(0, len(self.data.get(m))):
                  interpreteR.eval('predictor$learn(' \
                         + str(self.data.get(m)[i]) + ')')
                 
@@ -108,7 +102,12 @@ class TraversalCutter(Listener):
             predictedVol = interpreteR.evalDouble('x')
             result.append(predictedVol)
 
-        for m in range(MAX_MC_MINUTE+1,60*24): result.append(0)
+#        for m in range(MAX_MC_MINUTE+1,60*24): result.append(0)
+
+        # Integral must be 1.0
+        totalVol = 0
+        for i in range(0, len(result)): totalVol = totalVol + result[i]
+        for i in range(0, len(result)): result[i] = result[i] / totalVol
 
         return result
 
@@ -122,9 +121,21 @@ source.run()
 # Transform data
 traversalCutter.calculatePercents()
 
-# Predict using ARIMA
-forecastedVol=traversalCutter.forecast(1,0,1)
-#print forecastedVol
-print traversalCutter.data.get((MIN_MC_MINUTE+MAX_MC_MINUTE)/2)
+
+#s = 'rvol=['
+#for i in range(0, MAX_MC_MINUTE+1):
+#    if traversalCutter.data.get(i)==None or len(traversalCutter.data.get(i))==0 \
+#            or traversalCutter.data.get(i)[0]==None: 
+#        continue
+#    if i!=0: s = s + ','
+#    s = s + str(traversalCutter.data.get(i)[0])
+#s = s + '];'
+#print s
+    
+
+
+# Predict using the model
+forecastedVol=traversalCutter.forecast(0,0,5)
+print forecastedVol
 interpreteR.end()
 
