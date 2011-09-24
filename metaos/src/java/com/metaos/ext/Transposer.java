@@ -6,6 +6,7 @@ package com.metaos.ext;
 
 import java.util.*;
 import com.metaos.datamgt.*;
+import com.metaos.util.*;
 
 /**
  * Transposes data, resulting into a set of prices organized firstly by
@@ -47,8 +48,9 @@ public class Transposer implements Listener {
      */
     public void notify(final ParseResult parseResult) {
         if(parseResult.values(0).get(_volume_)==null) return;
+        final Calendar currentDay = CalUtils.clone(
+                parseResult.getTimestamp());
 
-        final Calendar currentDay = mod24hours(parseResult.getTimestamp());
         if(this.lastDay!=null && this.lastDay.before(currentDay)) {
             this.lastDay = currentDay;
             this.processedDays = this.processedDays + 1;    
@@ -102,7 +104,7 @@ public class Transposer implements Listener {
      * Gets the list of values for one day.
      */
     public List<Double> getInstantsDay(final Calendar day) {
-        final Calendar when = mod24hours(day);
+        final Calendar when = CalUtils.clone(day);
         for(int i=0; i<this.consideredDays.size(); i++) {
             final Calendar c = this.consideredDays.get(i);
             if(c.equals(when)) {
@@ -114,28 +116,5 @@ public class Transposer implements Listener {
             }
         }
         throw new NoSuchElementException("No such data for day " + when);
-    }
-
-
-
-public void test() {
-    System.out.println(this.valuesInstantDay.size());
-    System.out.println(this.valuesInstantDay.get(0).size());
-    System.out.println(this.consideredDays.size());
-}
-    //
-    // Private stuff -----------------------------
-    //
-
-    /**
-     * Gets the 24 hour modulus for the given date.
-     */
-    private Calendar mod24hours(final Calendar cal) {
-        final Calendar cal2 = (Calendar) cal.clone();
-        cal2.set(Calendar.HOUR_OF_DAY, 0);
-        cal2.set(Calendar.MINUTE, 0);
-        cal2.set(Calendar.SECOND, 0);
-        cal2.set(Calendar.MILLISECOND, 0);
-        return cal2;
     }
 }

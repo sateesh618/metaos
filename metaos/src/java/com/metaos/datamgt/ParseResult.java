@@ -5,12 +5,12 @@
 package com.metaos.datamgt;
 
 import java.util.*;
+import com.metaos.util.*;
 
 /**
  * Easy way to store and retreive parsed data from a line.
  */
 public class ParseResult {
-    private static final TimeZone GMT0 = TimeZone.getTimeZone("GMT");
     private final Map<String, Map<Field, Double>> values;
     private final List<String> symbols;
     private Calendar calendar;
@@ -43,8 +43,7 @@ public class ParseResult {
      * Creates a new calendar reset to time zero.
      */
     public void newTimestamp() {
-        this.calendar = Calendar.getInstance(GMT0, Locale.UK);
-        this.calendar.setTimeInMillis(0);
+        this.calendar = CalUtils.getZeroCalendar();
     }
 
 

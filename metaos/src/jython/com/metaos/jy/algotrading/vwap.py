@@ -31,11 +31,14 @@ class MercadoContinuoIsOpen(Filter):
         return minute>=540 and minute <=1056
 
 
-Transposer(noAccumulator, LocalTimeMinutes())
+t = Transposer(noAccumulator, LocalTimeMinutes())
 
 
 # Collect data
 source.run()
+
+# Show some data
+print t.getInstantsDay(CalUtils.createDate(18,4,2011))
 
 interpreteR.end()
 

@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 
 import com.metaos.datamgt.Field.*;
 import com.metaos.datamgt.Field.Qualifier;
+import com.metaos.util.*;
 
 /**
  * Line processor for Reuters CSV files with only one date and symbol per line.
@@ -133,11 +134,11 @@ public class ReutersCSVLineParser implements LineParser {
 
 
     private static final Format textFormat=new MessageFormat("{0}");
-    private static final DateFormat dateFormat =
-            new SimpleDateFormat("dd-MMM-yyyy", Locale.UK);
-    private static final DateFormat timeFormat = 
-            new SimpleDateFormat("HH:mm:ss.SSS", Locale.UK);
-    private static final Format doubleFormat=new DecimalFormat("#.##");
+    private static final Format dateFormat = 
+            CalUtils.getDateFormat("dd-MMM-yyyy");
+    private static final Format timeFormat = 
+            CalUtils.getDateFormat("HH:mm:ss.SSS");
+    private static final Format doubleFormat = new DecimalFormat("#.##");
 
     private static final Map<String, Format> formattersMap = 
             new HashMap<String, Format>();
@@ -145,8 +146,6 @@ public class ReutersCSVLineParser implements LineParser {
             new HashMap<String, Field>();
 
     static {
-        timeFormat.setTimeZone(TimeZone.getTimeZone("GMT+0"));
-        dateFormat.setTimeZone(TimeZone.getTimeZone("GMT+0"));
         fieldsMap.put("Ask Price", new CLOSE(Qualifier.ASK));
         fieldsMap.put("Ask Size", new VOLUME(Qualifier.ASK));
         fieldsMap.put("Ask Size", new VOLUME(Qualifier.BID));
