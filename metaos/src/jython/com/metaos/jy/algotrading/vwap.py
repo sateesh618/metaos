@@ -21,7 +21,9 @@ class LocalTimeMinutes(Transposer.InstantGenerator):
                 Field.EXTENDED(Field.Qualifier.NONE, "GMT"))
         return int(minute)
 
-
+##
+## Filters for open hours for M.C.
+##
 class MercadoContinuoIsOpen(Filter):
     def filter(self, when, symbol, values):
         minute = when.get(Calendar.HOUR_OF_DAY)*60 + when.get(Calendar.MINUTE)
@@ -30,6 +32,9 @@ class MercadoContinuoIsOpen(Filter):
         minute = int(minute)
         return minute>=540 and minute<=1056
 
+##
+## Filters only for the given day of week
+##
 class DayOfWeek(Filter):
     ##
     ## @param dayOfWeek according to Calendar.SUNDAY,... Calendar.SATURDAY
@@ -42,16 +47,37 @@ class DayOfWeek(Filter):
         return when.get(Calendar.DAY_OF_WEEK) == self.dayOfWeek
 
 
-lineProcessor.addFilter(MercadoContinuoIsOpen())\
-        .addFilter(DayOfWeek(Calendar.MONDAY))
+##
+## Filters only (or only not) third monthly friday.
+##
+class OnlyThirdFriday(Filter):
+    ##
+    ## @param positive is >0 to filter only for third friday in the month
+    ## or <0 to filter for not third friday in the month.
+    ##
+    def __init__(self, positive):
+        self.positive = positive
 
-t = Transposer(noAccumulator, LocalTimeMinutes())
+    def filter(self, when, symbol, values):
+        isThirdFriday = when.get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY \
+                and when.get(Calendar.DAY_OF_MONTH)>14 \
+                and when.get(Calendar.DAY_OF_MONTH)<22
+        
+        if self.positive>0: return isThirdFriday
+        else: return not isThirdFriday
 
 
-# Collect data
-source.run()
-t.consolidateDay(None)
 
+
+for dayOfWeek in [Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY,\
+                  Calendar.THURSDAY,Calendar.FRIDAY]:
+    lineProcessor.addFilter(MercadoContinuoIsOpen())\
+            .addFilter(DayOfWeek(dayOfWeek)).addFilter(OnlyThirdFriday(-1))
+    lineProcessor.addCacheWriteable(cache)
+    t = Transposer(noAccumulator, LocalTimeMinutes())
+    source.run()
+    t.consolidateDay(None)
+    source.reset()
 
 
 interpreteR.end()

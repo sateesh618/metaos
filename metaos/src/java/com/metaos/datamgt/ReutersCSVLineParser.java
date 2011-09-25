@@ -59,6 +59,10 @@ public class ReutersCSVLineParser implements LineParser {
         return this.inner.getTimestamp(line);
     }
 
+    public void reset() {
+        this.inner.reset();
+    }
+
     //
     // Private stuff ------------------ only useful for construction
     //

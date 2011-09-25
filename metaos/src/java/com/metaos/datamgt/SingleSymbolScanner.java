@@ -185,7 +185,7 @@ public class SingleSymbolScanner implements LineScanner {
                 this.currentLine = line;
                 return 0;
             }
-        } catch(Exception e) {
+        } catch(IOException e) {
             this.endReached = true;
             return -1;
         }

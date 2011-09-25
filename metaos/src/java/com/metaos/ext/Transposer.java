@@ -127,4 +127,13 @@ public class Transposer implements Listener {
         }
         throw new NoSuchElementException("No such data for day " + when);
     }
+
+
+
+    /**
+     * Gets the list of considered days.
+     */
+    public List<Calendar> getConsideredDays() {
+        return this.consideredDays;
+    }
 }

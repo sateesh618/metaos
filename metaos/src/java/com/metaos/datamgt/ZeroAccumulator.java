@@ -31,6 +31,13 @@ public class ZeroAccumulator implements LinesAccumulator {
     }
 
     /**
+     * Resets accumulator.
+     */
+    public void reset() {
+        this.listeners.clear();
+    }
+
+    /**
      * Ends forced accumulation process and notifies to listeners.
      */
     public void endAccumulation() {
