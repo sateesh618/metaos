@@ -41,12 +41,14 @@ public class ReutersCSVLineParser implements LineParser {
         return this.inner.parse(line);
     }
 
-    public void addFilter(final Filter filter) {
+    public LineParser addFilter(final Filter filter) {
         this.inner.addFilter(filter);
+        return this;
     }
 
-    public void addCacheWriteable(final CacheWriteable listener) {
+    public LineParser addCacheWriteable(final CacheWriteable listener) {
         this.inner.addCacheWriteable(listener);
+        return this;
     }
 
     public String getSymbol(final String line, final int index) {
