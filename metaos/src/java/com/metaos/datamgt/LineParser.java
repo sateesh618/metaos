@@ -34,8 +34,9 @@ public interface LineParser {
      * The set of <i>Listener</i>s will be notified after the set of
      * <i>CacheWriteable</i> has been invoked.
      * @see #addListener
+     * @return this object to chain adding several commands.
      */
-    public void addCacheWriteable(final CacheWriteable listener);
+    public LineParser addCacheWriteable(final CacheWriteable listener);
 
     /**
      * Analyzes the line getting the symbol, but not reporting to listeners
@@ -51,4 +52,11 @@ public interface LineParser {
      * @return null if there is no timestamp information
      */
     public Calendar getTimestamp(final String line);
+
+
+    /**
+     * Adds a filter to validate the line.
+     * @return the same object to chain adding filters.
+     */
+    public LineParser addFilter(final Filter filter);
 }

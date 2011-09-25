@@ -52,14 +52,7 @@ public class Transposer implements Listener {
                 parseResult.getTimestamp());
 
         if(this.lastDay!=null && this.lastDay.before(currentDay)) {
-            this.lastDay = currentDay;
-            this.processedDays = this.processedDays + 1;    
-            this.consideredDays.add(currentDay);
-
-            // Ballances all instants 
-            for(final List<Double> l : this.valuesInstantDay) {
-                while(l.size()<this.processedDays) l.add(null);
-            }
+            consolidateDay(currentDay);
         } else if(this.lastDay==null) {
             this.consideredDays.add(currentDay);
             this.lastDay = currentDay;
@@ -84,6 +77,24 @@ public class Transposer implements Listener {
     // Extra methods ---------------------------
     //
 
+
+    /**
+     * Ballances passed day and prepares object to process next day;
+     * Should be called when no more data will be notified.
+     * @param day ended day to ballance (may be null if no more days are going
+     * to be processed).
+     */
+    public void consolidateDay(final Calendar day) {
+        this.lastDay = day;
+        this.processedDays = this.processedDays + 1;    
+        this.consideredDays.add(day);
+
+        // Ballances all instants 
+        for(final List<Double> l : this.valuesInstantDay) {
+            while(l.size()<this.processedDays) l.add(null);
+        }
+    }
+
     /**
      * Normalizes data such that all values per day have the same accumulated
      * value, thus sum(x(i,day), i=0...) = K for every day.
@@ -97,7 +108,7 @@ public class Transposer implements Listener {
      * Gets the list of values for every day for a fixed moment in day.
      */
     public List<Double> getDayInstants(final int instant) {
-        throw new UnsupportedOperationException();
+        return this.valuesInstantDay.get(instant);
     }
 
     /**

@@ -38,6 +38,12 @@ public class SingleSymbolScanner implements LineScanner {
         this.symbol = symbol;
         this.lineParser = lineParser;
         this.linesAccumulator = linesAccumulator;
+        this.lineParser.addFilter(new Filter() {
+                public boolean filter(final Calendar w, final String s,
+                        final Map<Field, Double> v) {
+                    return symbol.equals(s);
+                }
+            });
     }
 
 
@@ -151,8 +157,7 @@ public class SingleSymbolScanner implements LineScanner {
             }
 
             final Calendar moment = this.lineParser.getTimestamp(line);
-            if(this.symbol.equals(this.lineParser.getSymbol(line, 0)) 
-                    && this.lineParser.isValid(line)) {
+            if(this.lineParser.isValid(line)) {
                 this.currentLine = line;
                 if(this.firstLine==null) this.firstLine = line;
                 return moment != null ? +1 : -1;

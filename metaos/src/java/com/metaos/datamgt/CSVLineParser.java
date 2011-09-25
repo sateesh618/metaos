@@ -28,6 +28,7 @@ public class CSVLineParser implements LineParser {
     private String parsedLine;
     private ParseResult parsedData;
     private boolean parsingResult;
+    private boolean isValid;
     
     /**
      * Creates a parser for CSV files.
@@ -66,10 +67,22 @@ public class CSVLineParser implements LineParser {
     public boolean isValid(final String line) {
         if( ! line.equals(this.parsedLine) ) {
             _parseLine(line);
-        }
-        return this.parsedData.getSymbol(0) != null 
+            this.isValid = this.parsedData.getSymbol(0) != null 
                 && this.parsedData.getTimestamp() != null
                 && this.parsingResult;
+            if(this.isValid) {
+                for(final Filter f : this.pricesFilters) {
+                    if( ! f.filter(this.parsedData.getTimestamp(),
+                            this.parsedData.getSymbol(0), 
+                            this.parsedData.values(0))) {
+                        this.isValid = false;
+                        break;
+                    }
+                }
+            }
+        }
+        return this.isValid;
+        
     }
 
 
@@ -93,13 +106,15 @@ public class CSVLineParser implements LineParser {
     }
 
 
-    public void addFilter(final Filter filter) {
+    public LineParser addFilter(final Filter filter) {
         this.pricesFilters.add(filter);
+        return this;
     }
 
 
-    public void addCacheWriteable(final CacheWriteable listener) {
+    public LineParser addCacheWriteable(final CacheWriteable listener) {
         this.cacheListeners.add(listener);
+        return this;
     }
 
 

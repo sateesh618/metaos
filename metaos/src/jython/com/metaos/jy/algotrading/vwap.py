@@ -30,15 +30,62 @@ class MercadoContinuoIsOpen(Filter):
         minute = int(minute)
         return minute>=540 and minute <=1056
 
+class DayOfWeek(Filter):
+    ##
+    ## @param dayOfWeek according to Calendar.SUNDAY,... Calendar.SATURDAY
+    ## constants, the day of week to filter.
+    ##
+    def __init__(self, dayOfWeek):
+        self.dayOfWek = dayOfWeek
+
+    def filter(self, when, symbol, values):
+        return when.get(Calendar.DAY_OF_WEEK) == self.dayOfWeek
+
+
+lineProcessor.addFilter(MercadoContinuoIsOpen())\
+        .addFilter(DayOfWeek(Calendar.MONDAY))
 
 t = Transposer(noAccumulator, LocalTimeMinutes())
 
 
 # Collect data
 source.run()
+t.consolidateDay(None)
 
 # Show some data
-print t.getInstantsDay(CalUtils.createDate(18,4,2011))
+v = t.getInstantsDay(CalUtils.createDate(28,3,2011))
+for i in range(0, v.size()):
+    if v.get(i)==None: v.set(i, 0)
+print 'mar07=' + str(v) + ';'
+
+v = t.getInstantsDay(CalUtils.createDate(29,3,2011))
+for i in range(0, v.size()):
+    if v.get(i)==None: v.set(i, 0)
+print 'mar14=' + str(v) + ';'
+
+v = t.getInstantsDay(CalUtils.createDate(30,3,2011))
+for i in range(0, v.size()):
+    if v.get(i)==None: v.set(i, 0)
+print 'mar21=' + str(v) + ';'
+
+v = t.getInstantsDay(CalUtils.createDate(31,3,2011))
+for i in range(0, v.size()):
+    if v.get(i)==None: v.set(i, 0)
+print 'mar28=' + str(v) + ';'
+
+v = ArrayList()
+for i in range(0,86400):
+    try:
+        w = t.getDayInstants(i)
+        if w.get(w.size()-1)==None: v.add(0)
+        else: v.add(w.get(w.size()-1))
+    except:
+        None
+
+print 'mar28_c=' + str(v) + ';'
+
+
+
 
 interpreteR.end()
 
