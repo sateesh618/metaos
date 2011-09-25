@@ -28,7 +28,7 @@ class MercadoContinuoIsOpen(Filter):
         minute = minute + 60*values.get(\
                 Field.EXTENDED(Field.Qualifier.NONE, "GMT"))
         minute = int(minute)
-        return minute>=540 and minute <=1056
+        return minute>=540 and minute<=1056
 
 class DayOfWeek(Filter):
     ##
@@ -36,9 +36,11 @@ class DayOfWeek(Filter):
     ## constants, the day of week to filter.
     ##
     def __init__(self, dayOfWeek):
-        self.dayOfWek = dayOfWeek
+        self.dayOfWeek = dayOfWeek
 
     def filter(self, when, symbol, values):
+        print 'Testing dayOfWeek ' + str(Calendar.DAY_OF_WEEK) + ' against '\
+                + str(when.get(Calendar.DAY_OF_WEEK))
         return when.get(Calendar.DAY_OF_WEEK) == self.dayOfWeek
 
 
@@ -53,22 +55,22 @@ source.run()
 t.consolidateDay(None)
 
 # Show some data
-v = t.getInstantsDay(CalUtils.createDate(28,3,2011))
+v = t.getInstantsDay(CalUtils.createDate(07,3,2011))
 for i in range(0, v.size()):
     if v.get(i)==None: v.set(i, 0)
 print 'mar07=' + str(v) + ';'
 
-v = t.getInstantsDay(CalUtils.createDate(29,3,2011))
+v = t.getInstantsDay(CalUtils.createDate(14,3,2011))
 for i in range(0, v.size()):
     if v.get(i)==None: v.set(i, 0)
 print 'mar14=' + str(v) + ';'
 
-v = t.getInstantsDay(CalUtils.createDate(30,3,2011))
+v = t.getInstantsDay(CalUtils.createDate(21,3,2011))
 for i in range(0, v.size()):
     if v.get(i)==None: v.set(i, 0)
 print 'mar21=' + str(v) + ';'
 
-v = t.getInstantsDay(CalUtils.createDate(31,3,2011))
+v = t.getInstantsDay(CalUtils.createDate(28,3,2011))
 for i in range(0, v.size()):
     if v.get(i)==None: v.set(i, 0)
 print 'mar28=' + str(v) + ';'

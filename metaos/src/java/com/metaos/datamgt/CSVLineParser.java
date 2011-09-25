@@ -52,6 +52,7 @@ public class CSVLineParser implements LineParser {
         this.pricesFilters = new ArrayList<Filter>();
         this.dateIndexes = dateIndexes;
         this.symbolIndex = symbolIndex;
+        this.parsedLine = "";
         this.fieldNames = new Field[fieldNames.length];
         this.formatters = new Format[formatters.length];
         this.parsePositions = new ParsePosition[formatters.length];
@@ -67,20 +68,7 @@ public class CSVLineParser implements LineParser {
     public boolean isValid(final String line) {
         if( ! line.equals(this.parsedLine) ) {
             _parseLine(line);
-            this.isValid = this.parsedData.getSymbol(0) != null 
-                && this.parsedData.getTimestamp() != null
-                && this.parsingResult;
-            if(this.isValid) {
-                for(final Filter f : this.pricesFilters) {
-                    if( ! f.filter(this.parsedData.getTimestamp(),
-                            this.parsedData.getSymbol(0), 
-                            this.parsedData.values(0))) {
-                        this.isValid = false;
-                        break;
-                    }
-                }
-            }
-        }
+       }
         return this.isValid;
         
     }
@@ -190,5 +178,20 @@ public class CSVLineParser implements LineParser {
             }
         }
         this.parsingResult = anyValuePresent;
+
+
+        this.isValid = this.parsedData.getSymbol(0) != null 
+                    && this.parsedData.getTimestamp() != null
+                    && this.parsingResult;
+        if(this.isValid) {
+            for(final Filter f : this.pricesFilters) {
+                if( ! f.filter(this.parsedData.getTimestamp(),
+                            this.parsedData.getSymbol(0), 
+                            this.parsedData.values(0))) {
+                    this.isValid = false;
+                    break;
+                }
+            }
+        }
     }
 }

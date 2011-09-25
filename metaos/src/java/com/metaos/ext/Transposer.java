@@ -50,7 +50,13 @@ public class Transposer implements Listener {
         if(parseResult.values(0).get(_volume_)==null) return;
         final Calendar currentDay = CalUtils.clone(
                 parseResult.getTimestamp());
-
+/*
+System.out.println(".");
+if(currentDay.get(Calendar.DAY_OF_MONTH)==7 && currentDay.get(Calendar.MONTH)==2) {
+System.out.println(currentDay);
+System.exit(1);
+}
+*/
         if(this.lastDay!=null && this.lastDay.before(currentDay)) {
             consolidateDay(currentDay);
         } else if(this.lastDay==null) {
@@ -118,7 +124,7 @@ public class Transposer implements Listener {
         final Calendar when = CalUtils.clone(day);
         for(int i=0; i<this.consideredDays.size(); i++) {
             final Calendar c = this.consideredDays.get(i);
-            if(c.equals(when)) {
+            if(c!=null && c.equals(when)) {
                 final List<Double> result = new ArrayList<Double>();
                 for(int m=0; m<this.valuesInstantDay.size(); m++) {
                     result.add(this.valuesInstantDay.get(m).get(i));
