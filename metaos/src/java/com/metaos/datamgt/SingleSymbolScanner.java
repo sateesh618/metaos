@@ -19,8 +19,8 @@ import java.util.logging.Logger;
  * Source of prices for ONE symbol ordered by date.
  */
 public class SingleSymbolScanner implements LineScanner {
-    private boolean isClosed = false;
-    private boolean endReached = false;
+    private boolean isClosed;
+    private boolean endReached;
     private BufferedReader fileReader;
     private final String filePath;
     private final LineParser lineParser;
@@ -35,6 +35,8 @@ public class SingleSymbolScanner implements LineScanner {
     public SingleSymbolScanner(final String filePath, final String symbol,
             final LineParser lineParser,final LinesAccumulator linesAccumulator)
             throws IOException {
+        this.isClosed = false;
+        this.endReached = false;
         this.filePath = filePath;
         this.fileReader = new BufferedReader(new FileReader(this.filePath));
         this.symbol = symbol;
@@ -57,6 +59,11 @@ public class SingleSymbolScanner implements LineScanner {
     public final void reset() {
         this.lineParser.reset();
         this.linesAccumulator.reset();
+        this.currentLine = null;
+        this.firstLine = null;
+        this.lastLine = null;
+        this.isClosed = false;
+        this.endReached = false;
         try {
             if(!this.isClosed) this.fileReader.close();
             this.fileReader = new BufferedReader(new FileReader(this.filePath));

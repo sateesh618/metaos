@@ -77,7 +77,20 @@ for dayOfWeek in [Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY,\
     t = Transposer(noAccumulator, LocalTimeMinutes())
     source.run()
     t.consolidateDay(None)
+
+    cds = t.getConsideredDays()
+    cds2 = ArrayList()
+    for d in cds:
+        if d==None:
+            print 'Carmba, falta un día'
+            continue
+
+        cds2.add(str(d.get(Calendar.DAY_OF_MONTH)) + '-' \
+                + str(d.get(Calendar.MONTH)))
+    print str(dayOfWeek) + '=' + str(cds2)
+
     source.reset()
+
 
 
 interpreteR.end()
