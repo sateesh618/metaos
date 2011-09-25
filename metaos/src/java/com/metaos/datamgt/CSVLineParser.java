@@ -121,6 +121,15 @@ public class CSVLineParser implements LineParser {
         return this.parsedData.getTimestamp();
     }
 
+    public void reset() {
+        this.pricesFilters.clear();
+        this.cacheListeners.clear();
+        this.parsedData = new ParseResult();
+        this.parsedLine = "";
+        this.isValid = false;
+        this.parsingResult = false;
+    }
+
 
     //
     // Private stuff ----------------------------------------------

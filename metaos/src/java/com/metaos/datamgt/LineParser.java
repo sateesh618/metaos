@@ -59,4 +59,10 @@ public interface LineParser {
      * @return the same object to chain adding filters.
      */
     public LineParser addFilter(final Filter filter);
+
+
+    /**
+     * Resets parser removing memory, filters, listeners...
+     */
+    public void reset();
 }

@@ -21,7 +21,8 @@ import java.util.logging.Logger;
 public class SingleSymbolScanner implements LineScanner {
     private boolean isClosed = false;
     private boolean endReached = false;
-    private final BufferedReader fileReader;
+    private BufferedReader fileReader;
+    private final String filePath;
     private final LineParser lineParser;
     private final LinesAccumulator linesAccumulator;
     protected final String symbol;
@@ -34,7 +35,8 @@ public class SingleSymbolScanner implements LineScanner {
     public SingleSymbolScanner(final String filePath, final String symbol,
             final LineParser lineParser,final LinesAccumulator linesAccumulator)
             throws IOException {
-        this.fileReader = new BufferedReader(new FileReader(filePath));
+        this.filePath = filePath;
+        this.fileReader = new BufferedReader(new FileReader(this.filePath));
         this.symbol = symbol;
         this.lineParser = lineParser;
         this.linesAccumulator = linesAccumulator;
@@ -49,6 +51,24 @@ public class SingleSymbolScanner implements LineScanner {
 
     public final void run() {
         while(this.next());
+    }
+
+
+    public final void reset() {
+        this.lineParser.reset();
+        this.linesAccumulator.reset();
+        try {
+            if(!this.isClosed) this.fileReader.close();
+            this.fileReader = new BufferedReader(new FileReader(this.filePath));
+            this.lineParser.addFilter(new Filter() {
+                public boolean filter(final Calendar w, final String s,
+                        final Map<Field, Double> v) {
+                    return symbol.equals(s);
+                }
+            });
+        } catch(IOException ioe) {
+            throw new RuntimeException(ioe);
+        }
     }
 
 

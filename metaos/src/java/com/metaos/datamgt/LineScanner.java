@@ -23,6 +23,11 @@ public interface LineScanner {
     public void run();
 
     /**
+     * Resets reader to the start of source.
+     */
+    public void reset();
+
+    /**
      * Gets the next set of prices.
      */
     public boolean next();

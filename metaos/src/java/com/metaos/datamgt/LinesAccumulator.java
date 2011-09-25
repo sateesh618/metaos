@@ -23,4 +23,10 @@ public interface LinesAccumulator {
      * Subscribes a listener to "end of accumulation" events.
      */
     public void addListener(final Listener listener);
+
+
+    /**
+     * Empties internal memory.
+     */
+    public void reset();
 }
