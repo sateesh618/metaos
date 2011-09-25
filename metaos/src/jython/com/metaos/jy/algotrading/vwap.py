@@ -39,8 +39,6 @@ class DayOfWeek(Filter):
         self.dayOfWeek = dayOfWeek
 
     def filter(self, when, symbol, values):
-        print 'Testing dayOfWeek ' + str(Calendar.DAY_OF_WEEK) + ' against '\
-                + str(when.get(Calendar.DAY_OF_WEEK))
         return when.get(Calendar.DAY_OF_WEEK) == self.dayOfWeek
 
 
@@ -55,6 +53,36 @@ source.run()
 t.consolidateDay(None)
 
 # Show some data
+v = t.getInstantsDay(CalUtils.createDate(24,1,2011))
+for i in range(0, v.size()):
+    if v.get(i)==None: v.set(i, 0)
+print 'jan24=' + str(v) + ';'
+
+v = t.getInstantsDay(CalUtils.createDate(31,1,2011))
+for i in range(0, v.size()):
+    if v.get(i)==None: v.set(i, 0)
+print 'jan31=' + str(v) + ';'
+
+v = t.getInstantsDay(CalUtils.createDate(7,2,2011))
+for i in range(0, v.size()):
+    if v.get(i)==None: v.set(i, 0)
+print 'feb7=' + str(v) + ';'
+
+v = t.getInstantsDay(CalUtils.createDate(14,2,2011))
+for i in range(0, v.size()):
+    if v.get(i)==None: v.set(i, 0)
+print 'feb14=' + str(v) + ';'
+
+v = t.getInstantsDay(CalUtils.createDate(21,2,2011))
+for i in range(0, v.size()):
+    if v.get(i)==None: v.set(i, 0)
+print 'feb21=' + str(v) + ';'
+
+v = t.getInstantsDay(CalUtils.createDate(28,2,2011))
+for i in range(0, v.size()):
+    if v.get(i)==None: v.set(i, 0)
+print 'feb28=' + str(v) + ';'
+
 v = t.getInstantsDay(CalUtils.createDate(07,3,2011))
 for i in range(0, v.size()):
     if v.get(i)==None: v.set(i, 0)
@@ -75,16 +103,24 @@ for i in range(0, v.size()):
     if v.get(i)==None: v.set(i, 0)
 print 'mar28=' + str(v) + ';'
 
-v = ArrayList()
-for i in range(0,86400):
-    try:
-        w = t.getDayInstants(i)
-        if w.get(w.size()-1)==None: v.add(0)
-        else: v.add(w.get(w.size()-1))
-    except:
-        None
+v = t.getInstantsDay(CalUtils.createDate(4,4,2011))
+for i in range(0, v.size()):
+    if v.get(i)==None: v.set(i, 0)
+print 'apr4=' + str(v) + ';'
 
-print 'mar28_c=' + str(v) + ';'
+v = t.getInstantsDay(CalUtils.createDate(11,4,2011))
+for i in range(0, v.size()):
+    if v.get(i)==None: v.set(i, 0)
+print 'apr11=' + str(v) + ';'
+
+v = t.getInstantsDay(CalUtils.createDate(18,4,2011))
+for i in range(0, v.size()):
+    if v.get(i)==None: v.set(i, 0)
+print 'apr18=' + str(v) + ';'
+
+
+
+
 
 
 

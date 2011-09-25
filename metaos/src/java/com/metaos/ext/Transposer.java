@@ -50,13 +50,6 @@ public class Transposer implements Listener {
         if(parseResult.values(0).get(_volume_)==null) return;
         final Calendar currentDay = CalUtils.clone(
                 parseResult.getTimestamp());
-/*
-System.out.println(".");
-if(currentDay.get(Calendar.DAY_OF_MONTH)==7 && currentDay.get(Calendar.MONTH)==2) {
-System.out.println(currentDay);
-System.exit(1);
-}
-*/
         if(this.lastDay!=null && this.lastDay.before(currentDay)) {
             consolidateDay(currentDay);
         } else if(this.lastDay==null) {
