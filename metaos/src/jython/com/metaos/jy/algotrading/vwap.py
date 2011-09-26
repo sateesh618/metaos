@@ -3,8 +3,6 @@ from com.metaos.ext import *
 fileName = args[0]
 symbol = args[1]
 
-#interpreteR = R('arimaAdaptor.r')
-interpreteR = R('maAdaptor.r')
 
 TimeZone.setDefault(TimeZone.getTimeZone("GMT"))
 
@@ -31,7 +29,7 @@ class MercadoContinuoIsOpen(Filter):
         minute = minute + 60*values.get(\
                 Field.EXTENDED(Field.Qualifier.NONE, "GMT"))
         minute = int(minute)
-        return minute>=540 and minute<=1056
+        return minute<=1056 and minute>=540
 
 ##
 ## Filters only for the given day of week
@@ -70,6 +68,7 @@ class OnlyThirdFriday(Filter):
 
 
 
+#interpreteR = R()
 for dayOfWeek in [Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY,\
                   Calendar.THURSDAY,Calendar.FRIDAY]:
     lineProcessor.addFilter(MercadoContinuoIsOpen())\
@@ -78,14 +77,29 @@ for dayOfWeek in [Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY,\
     t = Transposer(noAccumulator, LocalTimeMinutes())
     source.run()
     t.consolidateDay(None)
+    t.normalizeDays(100)
 
-    #if dayOfWeek==Calendar.WEDNESDAY:
-    #   print 'prenorm=' + str(t.getInstantsDay(CalUtils.createDate(26,1,2011)))
-    #   t.normalizeDays(100)
-    #   print 'postnorm='+str(t.getInstantsDay(CalUtils.createDate(26,1,2011)))
+    
+    totalQuadError = 0
+    for i in range(0, t.getInstantsDay(CalUtils.createDate(26,1,2011))):
+        vals = t.getDayInstants(i)
+        k = len(vals)
+        learningVals = vals.subList(0, k-1)
+        pvals = predictWith(learningVals)
+        quadError = 0
+        for j in range(0, vals):
+            quadError += math.pow((vals.get(k-1).get(j)-pvals.get(j)), 2)
+        totalQuadError = totalQuadError + quadError
+
+    print 'error=' + totalQuadError
+        
+        
+
+
+#    for algos in ['arimaAdaptor.r', 'maAdaptor.r']:
+#        for i in range(11, t.getInstantsDay(CalUtils.createDate(26,1,2011))):
 
     source.reset()
 
 
-interpreteR.end()
-
+#interpreteR.end()
