@@ -13,6 +13,7 @@ lineProcessor = ReutersCSVLineParser(fileName)
 source = SingleSymbolScanner(fileName, symbol, lineProcessor, noAccumulator)
 cache = RandomAccessCache(5000)
 lineProcessor.addCacheWriteable(cache)
+
 class LocalTimeMinutes(Transposer.InstantGenerator):
     def generate(self, result):
         when = result.getTimestamp()
@@ -78,10 +79,10 @@ for dayOfWeek in [Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY,\
     source.run()
     t.consolidateDay(None)
 
-    if dayOfWeek==Calendar.WEDNESDAY:
-        print 'prenorm=' + str(t.getInstantsDay(CalUtils.createDate(26,1,2011)))
-        t.normalizeDays(100)
-        print 'postnorm='+str(t.getInstantsDay(CalUtils.createDate(26,1,2011)))
+    #if dayOfWeek==Calendar.WEDNESDAY:
+    #   print 'prenorm=' + str(t.getInstantsDay(CalUtils.createDate(26,1,2011)))
+    #   t.normalizeDays(100)
+    #   print 'postnorm='+str(t.getInstantsDay(CalUtils.createDate(26,1,2011)))
 
     source.reset()
 
