@@ -31,7 +31,6 @@ public class Transposer implements Listener {
     }
 
 
-
     /**
      * Creates a transposer subscribed to given lines accumulator.
      */
@@ -42,6 +41,7 @@ public class Transposer implements Listener {
         this.valuesInstantDay = new ArrayList<List<Double>>();
         this.consideredDays = new ArrayList<Calendar>();
     }
+
 
     /**
      * Receives notification signals.
@@ -93,13 +93,27 @@ public class Transposer implements Listener {
             while(l.size()<this.processedDays) l.add(null);
         }
     }
+    
 
     /**
      * Normalizes data such that all values per day have the same accumulated
      * value, thus sum(x(i,day), i=0...) = K for every day.
      */
     public void normalizeDays(final double k) {
-        throw new UnsupportedOperationException();
+        for(int i=0; i<this.valuesInstantDay.get(0).size(); i++) {
+            double total = 0;
+            for(int j=0; j<this.valuesInstantDay.size(); j++) {
+                if(this.valuesInstantDay.get(j)==null) continue;
+                if(this.valuesInstantDay.get(j).get(i)==null) continue;
+                total += this.valuesInstantDay.get(j).get(i);
+            }
+            for(int j=0; j<this.valuesInstantDay.size(); j++) {
+                if(this.valuesInstantDay.get(j)==null) continue;
+                if(this.valuesInstantDay.get(j).get(i)==null) continue;
+                this.valuesInstantDay.get(j).set(i,
+                            k * this.valuesInstantDay.get(j).get(i) / total);
+            }
+        }
     }
 
 
@@ -109,6 +123,7 @@ public class Transposer implements Listener {
     public List<Double> getDayInstants(final int instant) {
         return this.valuesInstantDay.get(instant);
     }
+
 
     /**
      * Gets the list of values for one day.
