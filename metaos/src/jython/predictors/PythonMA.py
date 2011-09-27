@@ -1,7 +1,13 @@
+import math
+
 class PythonMA:
     def __init__(self, history):
         self.history = history
 
     def predictWith(self, vector):
-        subvector = vector[-self.history:]
-        return math.fsum(subvector) / self.history
+        vector = vector.toArray()
+        subvector = vector[-1:]
+        sum = 0
+        for x in subvector: 
+            if x!=None : sum = sum + x
+        return sum / self.history

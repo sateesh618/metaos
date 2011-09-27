@@ -144,6 +144,13 @@ public class Transposer implements Listener {
     }
 
 
+    /**
+     * Gets the number of instants for each considered day.
+     */
+    public int numberOfInstants() {
+        return this.valuesInstantDay.size();
+    }
+
 
     /**
      * Gets the list of considered days.
