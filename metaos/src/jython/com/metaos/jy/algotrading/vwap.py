@@ -1,4 +1,7 @@
 from com.metaos.ext import *
+from predictors.PythonMA import PythonMA
+
+PythonMA(8)
 
 fileName = args[0]
 symbol = args[1]
@@ -80,12 +83,13 @@ for dayOfWeek in [Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY,\
     t.normalizeDays(100)
 
     
+    predictor = PythonMA(10)
     totalQuadError = 0
     for i in range(0, t.getInstantsDay(CalUtils.createDate(26,1,2011))):
         vals = t.getDayInstants(i)
         k = len(vals)
         learningVals = vals.subList(0, k-1)
-        pvals = predictWith(learningVals)
+        pvals = predictor.predictWith(learningVals)
         quadError = 0
         for j in range(0, vals):
             quadError += math.pow((vals.get(k-1).get(j)-pvals.get(j)), 2)
