@@ -93,7 +93,7 @@ for dayOfWeek in [Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY,\
             quadError = math.pow(vals.get(k-1)-pvals, 2)
             totalQuadError = totalQuadError + quadError
 
-    print 'error=' + totalQuadError
+    print 'error=' + str(totalQuadError)
         
         
 
