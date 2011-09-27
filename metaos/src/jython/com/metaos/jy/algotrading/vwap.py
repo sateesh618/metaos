@@ -87,10 +87,11 @@ for dayOfWeek in [Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY,\
     for i in range(0, t.numberOfInstants()):
         vals = t.getDayInstants(i)
         k = len(vals)
-        learningVals = vals.subList(0, k-1)
-        pvals = predictor.predictWith(learningVals)
-        quadError = math.pow(vals.get(k-1)-pvals, 2)
-        totalQuadError = totalQuadError + quadError
+        if vals.get(k-1)!=None:
+            learningVals = vals.subList(0, k-1)
+            pvals = predictor.predictWith(learningVals)
+            quadError = math.pow(vals.get(k-1)-pvals, 2)
+            totalQuadError = totalQuadError + quadError
 
     print 'error=' + totalQuadError
         
