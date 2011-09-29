@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 
 /**
  * Source of prices for ONE symbol ordered by date.
+ * This class is NOT thread safe.
  */
 public class SingleSymbolScanner implements LineScanner {
     private boolean isClosed;
@@ -163,7 +164,7 @@ public class SingleSymbolScanner implements LineScanner {
             this.lastLine = this.currentLine;
             return false;
         }
-        throw new IllegalArgumentException("_readNextLine is not working as "
+        throw new IllegalArgumentException("_readNextLine is not working as"
                 + "expected!");
     }
 

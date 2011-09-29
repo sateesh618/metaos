@@ -1,6 +1,6 @@
-import math
+import Predictor
 
-class PythonMA:
+class PythonMA(Predictor):
     def __init__(self, history):
         self.history = history
 

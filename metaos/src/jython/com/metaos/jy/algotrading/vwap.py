@@ -81,19 +81,25 @@ for dayOfWeek in [Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY,\
     t.consolidateDay(None)
     t.normalizeDays(100)
 
-    
-    predictor = PythonMA(10)
-    totalQuadError = 0
-    for i in range(0, t.numberOfInstants()):
-        vals = t.getDayInstants(i)
-        k = len(vals)
-        if vals.get(k-1)!=None:
-            learningVals = vals.subList(0, k-1)
-            pvals = predictor.predictWith(learningVals)
-            quadError = math.pow(vals.get(k-1)-pvals, 2)
-            totalQuadError = totalQuadError + quadError
+    errors = []
+    for memory in range(5,11): 
+        predictor = MovingAverage(memory)
+        totalQuadError = 0
 
-    print 'error=' + str(totalQuadError)
+        for i in range(0, t.numberOfInstants()):
+            vals = t.getDayInstants(i)
+            k = len(vals)
+            if vals.get(k-1)!=None:
+                learningVals = vals.subList(0, k-1)
+                predictor.learn(learningVals)
+                pvals = predictor.predictWith(learningVals)
+                quadError = math.pow(vals.get(k-1)-pvals, 2)
+                totalQuadError = totalQuadError + quadError
+
+        erros.append(totalQuadError);
+
+    # erros contains the list of errors for different MA(n)
+    
         
         
 
