@@ -39,6 +39,12 @@ public class R {
         this(new String[] {rFile});
     }
 
+
+    public void evalFile(final String rFile) throws IOException {
+        this.engine.eval("source(\"" + rFile + "\")");
+    }
+
+
     public void end() {
         this.engine.stop();
     }

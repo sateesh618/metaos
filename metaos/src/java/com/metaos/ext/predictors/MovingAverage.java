@@ -30,8 +30,8 @@ public class MovingAverage implements Predictor {
 
 
     public void learn(final double[] vals) {
-        if(vals.length>memorySize) {
-            for(int i=vals.length-memorySize-1;i<vals.length; i++) {
+        if(vals.length>memory.length) {
+            for(int i=vals.length-memory.length-1;i<vals.length; i++) {
                 this.learn(vals[i]);
             }
         } else {
