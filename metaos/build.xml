@@ -68,7 +68,7 @@
     <javac destdir="build/classes"
                classpathref="compile.class.path" 
                debug="yes" deprecation="yes">
-        <src path="src/java"/>
+        <src path="src/main/java"/>
     </javac>
 </target>
 
@@ -80,9 +80,9 @@
       <fileset dir="lib/swing-layout" includes="**/*.*"/>
     </copy>
     <copy todir="distrib/bin">
-      <fileset dir="src/jython" includes="**/*.*"/>
-      <fileset dir="src/R" includes="**/*.*"/>
-      <fileset dir="src/sh" includes="**/*.*"/>
+      <fileset dir="src/main/jython" includes="**/*.*"/>
+      <fileset dir="src/main/R" includes="**/*.*"/>
+      <fileset dir="src/main/sh" includes="**/*.*"/>
       <fileset dir="src/testdata" includes="**/*.*"/>
     </copy>
     <chmod file="distrib/bin/run.sh" perm="+x"/>
@@ -92,7 +92,7 @@
 <!-- ============================================================ -->
 <target name="javadoc" depends="init" description="Creates javadoc">
     <javadoc packagenames="com.metaos.*"
-             sourcepath="src/java" destdir="build/javadoc"
+             sourcepath="src/main/java" destdir="build/javadoc"
              classpathref="compile.class.path" private="true"
              use="true" author="true"
              windowtitle="Technical Analysis for Stock Prices"

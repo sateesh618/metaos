@@ -21,8 +21,9 @@ public class ErrorsStatistics {
      * R file.
      */
     public ErrorsStatistics(final R rEngine) throws IOException {
-        this.rEngine.evalFile("errors/errorsStatistics.r");
         this.rEngine = rEngine;
+        this.rEngine.evalFile("errors/errorsStatistics.r");
+        this.rEngine.eval("errorsStatistics <- ErrorsStatistics()");
     }
 
 
@@ -39,4 +40,37 @@ public class ErrorsStatistics {
     public void addError(final double val) {
         this.rEngine.eval("errorsStatistics$addError(" + val + ")");
     }
+
+    /**
+     * Gets mean of erros.
+     */
+    public double mean() {
+        this.rEngine.eval("x <- errorsStatistics$listAll()");
+        return this.rEngine.evalDouble("mean(x)");
+    }
+
+    /**
+     * Gets variance of errors.
+     */
+    public double var() {
+        this.rEngine.eval("x <- errorsStatistics$listAll()");
+        return this.rEngine.evalDouble("var(x)");
+    }
+
+    /**
+     * Gets maximum value.
+     */
+    public double max() {
+        this.rEngine.eval("x <- errorsStatistics$listAll()");
+        return this.rEngine.evalDouble("max(x)");
+    }
+
+    /**
+     * Gets minimum value.
+     */
+    public double min() {
+        this.rEngine.eval("x <- errorsStatistics$listAll()");
+        return this.rEngine.evalDouble("min(x)");
+    }
+
 }

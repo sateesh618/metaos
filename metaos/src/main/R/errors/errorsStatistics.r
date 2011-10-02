@@ -1,28 +1,23 @@
 #
-# REIMPLEMENT !!!
+# See com.metaos.ext.error.ErrosStatistics for more information.
 #
-etsPredictor <- function() {
-    yVals <- c()
-    learnClosed <- FALSE
-    r <- NULL
-    f <- NULL
+# Represents a collector of data to show error statistics.
+#
+ErrorsStatistics <- function() {
+    eVals <- c()
 
-    learn <- function(y) {
-        yVals <<- append(yVals, y)
+    reset <- function() {
+        eVals <<- c()
     }
 
 
-    forecast <- function(x) {
-        if(!learnClosed) {
-            learnClosed <<- TRUE
-            r <<- ets(yVals)
-            f <<- forecast(r)
-        }
+    addError <- function(x) {
+        eVals <<- append(eVals, x)
     }
 
-    plot <- plot() {
-        plot(f)
+    listAll <- function() {
+        return(eVals)
     }
 
-    return(list(forecast=forecast, learn=learn, plot=plot))
+    return(list(reset=reset, addError=addError, listAll=listAll))
 }
