@@ -1,9 +1,4 @@
-##
-## Root code for volume predictions to calculate VWAP.
-## 
-
 from com.metaos.datamgt import Filter
-import math
 
 ##
 ## Filters for open hours for M.C.

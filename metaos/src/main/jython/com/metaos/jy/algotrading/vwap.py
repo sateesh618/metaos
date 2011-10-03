@@ -7,6 +7,7 @@ from com.metaos.ext import *
 from com.metaos.jy.filters import MercadoContinuoIsOpen
 from com.metaos.jy.filters import OnlyThirdFriday
 from com.metaos.jy.filters import DayOfWeek
+from com.metaos.jy.predictors import PredictorsFactory
 
 fileName = args[0]
 symbol = args[1]
