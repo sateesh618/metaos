@@ -57,4 +57,9 @@ public class MovingAverage implements Predictor {
         }
         this.head = 0;
     }
+
+
+    public String toString() {
+        return "MA(" + this.memory.length + ")";
+    }
 }

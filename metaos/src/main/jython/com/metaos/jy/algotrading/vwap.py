@@ -1,6 +1,12 @@
+##
+## Root code for volume predictions to calculate VWAP.
+## 
+
 from com.metaos.ext import *
-from predictors.PythonMA import PythonMA
 import math
+from filters import MercadoContinuoIsOpen
+from filters import DayOfWeek
+from filters import OnlyThirdFriday
 
 fileName = args[0]
 symbol = args[1]
@@ -70,7 +76,8 @@ class OnlyThirdFriday(Filter):
 
 
 
-#interpreteR = R()
+
+# Tests all predictors for each day of week.
 for dayOfWeek in [Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY,\
                   Calendar.THURSDAY,Calendar.FRIDAY]:
     lineProcessor.addFilter(MercadoContinuoIsOpen())\
@@ -82,8 +89,8 @@ for dayOfWeek in [Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY,\
     t.normalizeDays(100)
 
     errors = []
-    for memory in range(5,11): 
-        predictor = MovingAverage(memory)
+    predictorFactory.reset()
+    while (predictor = predictorFactory.next()) != None :
         totalQuadError = 0
 
         for i in range(0, t.numberOfInstants()):
@@ -97,15 +104,6 @@ for dayOfWeek in [Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY,\
                 totalQuadError = totalQuadError + quadError
 
         erros.append(totalQuadError);
-
-    # erros contains the list of errors for different MA(n)
-    
-        
-        
-
-
-#    for algos in ['arimaAdaptor.r', 'maAdaptor.r']:
-#        for i in range(11, t.getInstantsDay(CalUtils.createDate(26,1,2011))):
 
     source.reset()
 
