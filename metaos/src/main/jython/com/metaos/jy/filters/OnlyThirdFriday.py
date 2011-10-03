@@ -2,11 +2,9 @@
 ## Root code for volume predictions to calculate VWAP.
 ## 
 
-import math
 from com.metaos.ext import *
+import math
 from com.metaos.jy.filters import MercadoContinuoIsOpen
-from com.metaos.jy.filters import OnlyThirdFriday
-from com.metaos.jy.filters import DayOfWeek
 
 fileName = args[0]
 symbol = args[1]
@@ -27,6 +25,41 @@ class LocalTimeMinutes(Transposer.InstantGenerator):
         minute = minute + 60*result.values(0).get(\
                 Field.EXTENDED(Field.Qualifier.NONE, "GMT"))
         return int(minute)
+
+
+##
+## Filters only for the given day of week
+##
+class DayOfWeek(Filter):
+    ##
+    ## @param dayOfWeek according to Calendar.SUNDAY,... Calendar.SATURDAY
+    ## constants, the day of week to filter.
+    ##
+    def __init__(self, dayOfWeek):
+        self.dayOfWeek = dayOfWeek
+
+    def filter(self, when, symbol, values):
+        return when.get(Calendar.DAY_OF_WEEK) == self.dayOfWeek
+
+
+##
+## Filters only (or only not) third monthly friday.
+##
+class OnlyThirdFriday(Filter):
+    ##
+    ## @param positive is >0 to filter only for third friday in the month
+    ## or <0 to filter for not third friday in the month.
+    ##
+    def __init__(self, positive):
+        self.positive = positive
+
+    def filter(self, when, symbol, values):
+        isThirdFriday = when.get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY \
+                and when.get(Calendar.DAY_OF_MONTH)>14 \
+                and when.get(Calendar.DAY_OF_MONTH)<22
+        
+        if self.positive>0: return isThirdFriday
+        else: return not isThirdFriday
 
 
 

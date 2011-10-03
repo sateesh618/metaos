@@ -2,7 +2,7 @@
 ## Root code for volume predictions to calculate VWAP.
 ## 
 
-from com.metaos.ext import *
+from com.metaos.datamgt import Filter
 import math
 
 ##
