@@ -12,7 +12,7 @@ import java.util.*;
  */
 public interface Predictor {
     public double predict();
-    public void learn(final double[] vals);
-    public void learn(final double val);
+    public void learnVector(final double[] vals);
+    public void learnValue(final double val);
     public void reset();
 }

@@ -29,7 +29,7 @@ public class MovingAverage implements Predictor {
     }
 
 
-    public void learn(final double[] vals) {
+    public void learnVector(final double[] vals) {
         if(vals.length>memory.length) {
             for(int i=vals.length-memory.length-1;i<vals.length; i++) {
                 this.learn(vals[i]);
@@ -42,7 +42,7 @@ public class MovingAverage implements Predictor {
     }
 
 
-    public void learn(final double val) {
+    public void learnVals(final double val) {
         this.memory[this.head] = val;
         this.head = this.head + 1;
         if(this.head >= this.memory.length) {
