@@ -4,9 +4,7 @@
 
 from com.metaos.ext import *
 import math
-from filters import MercadoContinuoIsOpen
-from filters import DayOfWeek
-from filters import OnlyThirdFriday
+from com.metaos.jy.filters import MercadoContinuoIsOpen
 
 fileName = args[0]
 symbol = args[1]
@@ -28,16 +26,6 @@ class LocalTimeMinutes(Transposer.InstantGenerator):
                 Field.EXTENDED(Field.Qualifier.NONE, "GMT"))
         return int(minute)
 
-##
-## Filters for open hours for M.C.
-##
-class MercadoContinuoIsOpen(Filter):
-    def filter(self, when, symbol, values):
-        minute = when.get(Calendar.HOUR_OF_DAY)*60 + when.get(Calendar.MINUTE)
-        minute = minute + 60*values.get(\
-                Field.EXTENDED(Field.Qualifier.NONE, "GMT"))
-        minute = int(minute)
-        return minute<=1056 and minute>=540
 
 ##
 ## Filters only for the given day of week
