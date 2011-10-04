@@ -1,4 +1,5 @@
-from com.metaos.datamgt import Filter
+from com.metaos.datamgt import *
+from java.util import *
 
 ##
 ## Filters for open hours for M.C.

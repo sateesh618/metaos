@@ -34,6 +34,10 @@ public class R {
 
     }
 
+    public R() throws IOException {
+        this(new String[0]);
+    }
+
 
     public R(final String rFile) throws IOException {
         this(new String[] {rFile});
