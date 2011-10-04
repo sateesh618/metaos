@@ -4,6 +4,8 @@
  */
 package com.metaos.ext.predictors;
 
+import java.util.List;
+
 /**
  * Most general interface for a single value predictor, 
  * able to learn and to be reset.
@@ -18,6 +20,12 @@ public interface Predictor {
      * Memorizes several values at the same time.
      */
     public void learnVector(final double[] vals);
+
+    /**
+     * Memorizes several values at the same time.
+     */
+    public void learnVector(final List<Double> vals);
+
 
     /**
      * Memorizes one single value.

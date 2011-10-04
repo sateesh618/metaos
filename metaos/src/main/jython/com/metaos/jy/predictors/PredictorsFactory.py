@@ -13,7 +13,7 @@ class PredictorsFactory:
     #
     # Gets the next predictor or None if no more predictors are to be built.
     def next(self):
-        if index>=self.predictos.size: 
+        if self.index>=len(self.predictors): 
             return None
         else:
             self.index = self.index + 1

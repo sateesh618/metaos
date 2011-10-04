@@ -42,6 +42,19 @@ public class MovingAverage implements Predictor {
     }
 
 
+    public void learnVector(final List<Double> vals) {
+        if(vals.size()>memory.length) {
+            for(int i=vals.size()-memory.length-1;i<vals.size(); i++) {
+                if(vals.get(i)!=null) this.learnValue(vals.get(i));
+            }
+        } else {
+            for(int i=0; i<vals.size(); i++) {
+                if(vals.get(i)!=null) this.learnValue(vals.get(i));
+            }
+        }
+    }
+
+
     public void learnValue(final double val) {
         this.memory[this.head] = val;
         this.head = this.head + 1;

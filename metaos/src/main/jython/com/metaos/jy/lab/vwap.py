@@ -53,7 +53,7 @@ for dayOfWeek in [Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY,\
 
     predictorsFactory.reset()
     predictor = predictorsFactory.next()
-    while preddictor != None :
+    while predictor != None :
         errors = Errors()
         errorsStatistics.reset() 
         for i in range(0, t.numberOfInstants()):
@@ -62,17 +62,18 @@ for dayOfWeek in [Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY,\
             if vals.get(k-1)!=None:
                 learningVals = vals.subList(0, k-1)
                 predictor.learnVector(learningVals)
-                pvals = predictor.predictWith(learningVals)
+                pvals = predictor.predict()
                 quadError = math.pow(vals.get(k-1)-pvals, 2)
                 errors.addError(i, quadError);
 
-        error.report(errorsStatistics)
-        print 'Day: ' + str(dayOfWeek) + ', predictor: ' + predictor.toString()
+        errors.report(errorsStatistics)
+        print 'Day: ' + str(dayOfWeek) + ', predictor: ' \
+            + predictor.toString().encode('utf-8')
         print '-----------------------------------------------------------'
-        print 'Quad Error max ' + str(error.max())
-        print 'Quad Error min ' + str(error.max())
-        print 'Quad Error mean ' + str(error.mean())
-        print 'Quad Error variance ' + str(error.var())
+        print 'Quad Error max ' + str(errorsStatistics.max())
+        print 'Quad Error min ' + str(errorsStatistics.min())
+        print 'Quad Error mean ' + str(errorsStatistics.mean())
+        print 'Quad Error variance ' + str(errorsStatistics.var())
         print 
         predictor = predictorsFactory.next()
 
