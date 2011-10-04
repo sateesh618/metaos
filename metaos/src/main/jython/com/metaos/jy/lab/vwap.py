@@ -9,6 +9,8 @@ from com.metaos.jy.filters.OnlyThirdFriday import OnlyThirdFriday
 from com.metaos.jy.filters.DayOfWeek import DayOfWeek
 from com.metaos.jy.predictors.PredictorsFactory import PredictorsFactory
 
+print args
+
 fileName = args[0]
 symbol = args[1]
 
@@ -74,6 +76,7 @@ for dayOfWeek in [Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY,\
         print 'Quad Error min ' + str(errorsStatistics.min())
         print 'Quad Error mean ' + str(errorsStatistics.mean())
         print 'Quad Error variance ' + str(errorsStatistics.var())
+        print 'Quad Error deciles ' + str(errorsStatistics.quantiles(10))
         print 
         predictor = predictorsFactory.next()
 

@@ -73,4 +73,15 @@ public class ErrorsStatistics {
         return this.rEngine.evalDouble("min(x)");
     }
 
+    /**
+     * Gets the N-quantiles.
+     */
+    public double[] quantiles(final int N) {
+        double c = 1.0/N;
+        this.rEngine.eval("x <- errorsStatistics$listAll()");
+        this.rEngine.eval("q <- quantile(x, probs=seq(" +c+ ",1," +c+ "), "
+                + "names=FALSE)");
+        return this.rEngine.evalDoubleArray("q");
+    }
+
 }
