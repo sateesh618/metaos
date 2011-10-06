@@ -4,7 +4,9 @@
 
 <project name="metaos" basedir="." default="compile">
     
-<property name="python-test" value="test-correlation.py"/>
+<property name="python-test" value="com/metaos/jy/lab/vwap.py"/>
+<property name="args-test1" value="TEF1min-N24033945.csv"/>
+<property name="args-test2" value="TEF.MC"/>
 <path id="compile.class.path">
     <!-- <pathelement location="path,mybrother"/> -->
     <fileset dir="lib">
@@ -42,8 +44,12 @@
             </fileset>
             <pathelement path="distrib/lib/metaos.jar"/>
         </classpath>
+        <sysproperty key="python.path" value="."/>
+        <sysproperty key="java.library.path" value="../lib"/>
         <arg value="init.py"/>
         <arg value="${python-test}"/>
+        <arg value="${args-test1}"/>
+        <arg value="${args-test2}"/>
     </java>
 </target>
 
