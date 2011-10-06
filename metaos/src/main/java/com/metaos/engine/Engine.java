@@ -47,7 +47,7 @@ public class Engine {
 
         this.interpreter.exec(pyCode);
         
-        interpreteR.end()
+        interpreteR.end();
         return "ok";
     }
 
