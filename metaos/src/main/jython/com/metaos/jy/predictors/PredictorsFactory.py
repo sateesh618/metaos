@@ -4,9 +4,8 @@ from com.metaos.ext.predictors import *
 ## Factory of predictors.
 ##
 class PredictorsFactory:
-    def __init__(self):
-        self.predictors = [ MovingAverage(5),MovingAverage(6),MovingAverage(7),\
-                MovingAverage(8),MovingAverage(9),MovingAverage(10) ]
+    def __init__(self, predictors):
+        self.predictors = predictors
         self.index = 0
 
 

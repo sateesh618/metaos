@@ -9,7 +9,6 @@ from com.metaos.jy.filters.OnlyThirdFriday import OnlyThirdFriday
 from com.metaos.jy.filters.DayOfWeek import DayOfWeek
 from com.metaos.jy.predictors.PredictorsFactory import PredictorsFactory
 
-print args
 
 fileName = args[0]
 symbol = args[1]
@@ -17,16 +16,16 @@ symbol = args[1]
 
 TimeZone.setDefault(TimeZone.getTimeZone("GMT"))
 
-noAccumulator = ZeroAccumulator()
-lineProcessor = ReutersCSVLineParser(fileName)
-source = SingleSymbolScanner(fileName, symbol, lineProcessor, noAccumulator)
-cache = RandomAccessCache(5000)
-lineProcessor.addCacheWriteable(cache)
+
+lineParser = ReutersCSVLineParser(fileName)
+noAccummulator = TransparentSTMgr()
+source = SingleSymbolScanner(fileName, symbol, lineParser, noAccummulator)
+
 
 ##
-## Generator of "instants" for Transposer
+## Generator of "instants" for VolumeViews
 ##
-class LocalTimeMinutes(Transposer.InstantGenerator):
+class LocalTimeMinutes(VolumeViews.InstantGenerator):
     def generate(self, result):
         when = result.getTimestamp()
         minute = when.get(Calendar.HOUR_OF_DAY)*60 + when.get(Calendar.MINUTE)
@@ -41,14 +40,13 @@ class LocalTimeMinutes(Transposer.InstantGenerator):
 # Tests all predictors for each day of week.
 interpreteR = R()
 errorsStatistics = ErrorsStatistics(interpreteR)
-predictorsFactory = PredictorsFactory()
+predictorsFactory = PredictorsFactory([MovingAverage(4),MovingAverage(5),MovingAverage(6)])
 for dayOfWeek in [Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY,\
                   Calendar.THURSDAY,Calendar.FRIDAY]:
-    lineProcessor.addFilter(MercadoContinuoIsOpen())\
-            .addFilter(DayOfWeek(dayOfWeek)).addFilter(OnlyThirdFriday(-1))
-    lineProcessor.addCacheWriteable(cache)
+    lineParser.addFilter(MercadoContinuoIsOpen())\
+            .addFilter(DayOfWeek(dayOfWeek)).addFilter(OnlyThirdFriday(1))
 
-    t = Transposer(noAccumulator, LocalTimeMinutes())
+    t = VolumeViews(noAccumulator, LocalTimeMinutes())
     source.run()
     t.consolidateDay(None)
     t.normalizeDays(100)
@@ -58,6 +56,7 @@ for dayOfWeek in [Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY,\
     while predictor != None :
         errors = Errors()
         errorsStatistics.reset() 
+        # Remember: range(0, N)=0,1,2,...,N-1
         for i in range(0, t.numberOfInstants()):
             vals = t.getDayInstants(i)
             k = len(vals)

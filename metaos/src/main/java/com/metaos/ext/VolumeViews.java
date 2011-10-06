@@ -10,10 +10,13 @@ import com.metaos.util.*;
 
 /**
  * Transposes data, resulting into a set of prices organized firstly by
- * minute and secondly by day.
+ * instant and secondly by day.
+ * Internally, its implemented as a dense matrix - ie it wouldn't be efficient
+ * for parse matrices as in tick-data
  */
-public class Transposer implements Listener {
+public class VolumeViews implements Listener {
     private final InstantGenerator instantGenerator;
+    // valuesInstantDay is a dense matrix
     private final List<List<Double>> valuesInstantDay;  // First index:instant
     private final List<Calendar> consideredDays;
 
@@ -34,7 +37,7 @@ public class Transposer implements Listener {
     /**
      * Creates a transposer subscribed to given lines accumulator.
      */
-    public Transposer(final LinesAccumulator accumulator, 
+    public VolumeViews(final SpreadTradesMgr accumulator, 
             final InstantGenerator instantGenerator) {
         accumulator.addListener(this);
         this.instantGenerator = instantGenerator;
@@ -93,6 +96,14 @@ public class Transposer implements Listener {
             while(l.size()<this.processedDays) l.add(null);
         }
     }
+
+
+    /**
+     * Returns true if there is no element.
+     */
+    public boolean isEmpty() {
+        return this.valuesInstantDay.size()==0;
+    }
     
 
     /**
@@ -120,7 +131,7 @@ public class Transposer implements Listener {
     /**
      * Gets the list of values for every day for a fixed moment in day.
      */
-    public List<Double> getDayInstants(final int instant) {
+    public List<Double> getValueAcrossDays(final int instant) {
         return this.valuesInstantDay.get(instant);
     }
 
@@ -128,7 +139,7 @@ public class Transposer implements Listener {
     /**
      * Gets the list of values for one day.
      */
-    public List<Double> getInstantsDay(final Calendar day) {
+    public List<Double> getValuesWithinDay(final Calendar day) {
         final Calendar when = CalUtils.clone(day);
         for(int i=0; i<this.consideredDays.size(); i++) {
             final Calendar c = this.consideredDays.get(i);

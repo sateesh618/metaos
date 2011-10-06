@@ -25,7 +25,7 @@ public class SingleSymbolScanner implements LineScanner {
     private BufferedReader fileReader;
     private final String filePath;
     private final LineParser lineParser;
-    private final LinesAccumulator linesAccumulator;
+    private final SpreadTradesMgr spreadTradesMgr;
     protected final String symbol;
     private String currentLine, firstLine, lastLine;
 
@@ -34,7 +34,7 @@ public class SingleSymbolScanner implements LineScanner {
      * To be used by extending classes.
      */
     public SingleSymbolScanner(final String filePath, final String symbol,
-            final LineParser lineParser,final LinesAccumulator linesAccumulator)
+            final LineParser lineParser,final SpreadTradesMgr spreadTradesMgr)
             throws IOException {
         this.isClosed = false;
         this.endReached = false;
@@ -42,7 +42,7 @@ public class SingleSymbolScanner implements LineScanner {
         this.fileReader = new BufferedReader(new FileReader(this.filePath));
         this.symbol = symbol;
         this.lineParser = lineParser;
-        this.linesAccumulator = linesAccumulator;
+        this.spreadTradesMgr = spreadTradesMgr;
         this.lineParser.addFilter(new Filter() {
                 public boolean filter(final Calendar w, final String s,
                         final Map<Field, Double> v) {
@@ -59,7 +59,7 @@ public class SingleSymbolScanner implements LineScanner {
 
     public final void reset() {
         this.lineParser.reset();
-        this.linesAccumulator.reset();
+        this.spreadTradesMgr.reset();
         this.currentLine = null;
         this.firstLine = null;
         this.lastLine = null;
@@ -83,10 +83,10 @@ public class SingleSymbolScanner implements LineScanner {
     public final boolean next() {
         if(this.readNextLine()) {
             final ParseResult result = this.lineParser.parse(this.currentLine);
-            this.linesAccumulator.accumulate(result);
+            this.spreadTradesMgr.accumulate(result);
             return true;
         } else {
-            this.linesAccumulator.endAccumulation();
+            this.spreadTradesMgr.endAccumulation();
             return false;
         }
     }
@@ -104,8 +104,8 @@ public class SingleSymbolScanner implements LineScanner {
             return false;
         } else {
             final ParseResult result = this.lineParser.parse(this.firstLine);
-            this.linesAccumulator.accumulate(result);
-            this.linesAccumulator.endAccumulation();
+            this.spreadTradesMgr.accumulate(result);
+            this.spreadTradesMgr.endAccumulation();
             return true;
         }
     }
@@ -129,8 +129,8 @@ public class SingleSymbolScanner implements LineScanner {
             else return false;
         } else {
             final ParseResult result = this.lineParser.parse(this.lastLine);
-            this.linesAccumulator.accumulate(result);
-            this.linesAccumulator.endAccumulation();
+            this.spreadTradesMgr.accumulate(result);
+            this.spreadTradesMgr.endAccumulation();
             return true;
         }
     }

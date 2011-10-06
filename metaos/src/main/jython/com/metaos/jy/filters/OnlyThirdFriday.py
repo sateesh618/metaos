@@ -13,9 +13,9 @@ class OnlyThirdFriday(Filter):
         self.positive = positive
 
     def filter(self, when, symbol, values):
+        isThirdWeek = when.get(Calendar.WEEK_OF_MONTH) == 3
         isThirdFriday = when.get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY \
-                and when.get(Calendar.DAY_OF_MONTH)>14 \
-                and when.get(Calendar.DAY_OF_MONTH)<22
+                and isThirdWeek                
         
         if self.positive>0: return isThirdFriday
         else: return not isThirdFriday

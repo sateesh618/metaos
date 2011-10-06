@@ -45,14 +45,19 @@ public class ErrorsStatistics {
      * Gets mean of erros.
      */
     public double mean() {
+        // R-bridge doesn't work in this way:
+        //      this.rEngine.evalDouble("mean(errorsStatistics$listAll())")
         this.rEngine.eval("x <- errorsStatistics$listAll()");
         return this.rEngine.evalDouble("mean(x)");
     }
+
 
     /**
      * Gets variance of errors.
      */
     public double var() {
+        // R-bridge doesn't work in this way:
+        //      this.rEngine.evalDouble("var(errorsStatistics$listAll())")
         this.rEngine.eval("x <- errorsStatistics$listAll()");
         return this.rEngine.evalDouble("var(x)");
     }
@@ -61,6 +66,8 @@ public class ErrorsStatistics {
      * Gets maximum value.
      */
     public double max() {
+        // R-bridge doesn't work in this way:
+        //      this.rEngine.evalDouble("max(errorsStatistics$listAll())")
         this.rEngine.eval("x <- errorsStatistics$listAll()");
         return this.rEngine.evalDouble("max(x)");
     }
@@ -84,4 +91,11 @@ public class ErrorsStatistics {
         return this.rEngine.evalDoubleArray("q");
     }
 
+    /**
+     * Plots errors
+     */
+    public void plot() {
+        this.rEngine.eval("x <- errorsStatistics$listAll()");
+        this.rEngine.eval("plot(x)");
+    }
 }

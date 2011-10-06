@@ -10,7 +10,6 @@ ErrorsStatistics <- function() {
         eVals <<- c()
     }
 
-
     addError <- function(x) {
         eVals <<- append(eVals, x)
     }

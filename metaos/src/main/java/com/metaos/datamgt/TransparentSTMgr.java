@@ -7,16 +7,15 @@ package com.metaos.datamgt;
 import java.util.*;
 
 /**
- * The way to not accumulate anything: notifies to listener after every
- * line is accumulated.
+ * Valid when trades are not spread across lines. It's the most trivial case.
  */
-public class ZeroAccumulator implements LinesAccumulator {
+public class TransparentSTMgr implements SpreadTradesMgr {
     private final List<Listener> listeners;
 
     /**
      * Creates a zero capacity accumulator.
      */
-    public ZeroAccumulator() {
+    public TransparentSTMgr() {
         this.listeners = new ArrayList<Listener>();
     }
 
