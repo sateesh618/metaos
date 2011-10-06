@@ -38,12 +38,16 @@ public class Engine {
             throws IOException {
         // TODO: execfile
         this.interpreter.set("args", args);
+        final R interpreteR = new R();
+        this.interpreter.set("interpreteR", interpreteR);
         final FileReader reader = new FileReader(pyFile);
         final char[] pyBuffer = new char[(int) new File(pyFile).length()];
         reader.read(pyBuffer);
         final String pyCode = new String(pyBuffer);
 
         this.interpreter.exec(pyCode);
+        
+        interpreteR.end()
         return "ok";
     }
 
