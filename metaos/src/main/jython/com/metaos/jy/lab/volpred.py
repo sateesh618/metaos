@@ -113,13 +113,13 @@ for dayOfWeek in [Calendar.TUESDAY]:
         errorsInDay = Errors()
         errorsStatistics.reset()         
 
-
         for k in range(5, maxDays):
             dailyPrediction = []
             dailyVol = []
 
             # Remember: range(0, N)=0,1,2,...,N-1
             for i in range(0, t.numberOfInstantsInADay()):
+                predictor.reset()       # Empties predictor memory
                 vals = t.getValueAcrossDays(i)
                 learningVals = vals.subList(0, k-1)
                 predictor.learnVector(learningVals)
