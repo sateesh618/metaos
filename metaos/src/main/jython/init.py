@@ -8,3 +8,9 @@ from com.metaos.ext.predictors import *
 from java.util import *
 from java.lang import *
 from java.text import *
+
+from com.metaos.jy.filters.MercadoContinuoIsOpen import MercadoContinuoIsOpen
+from com.metaos.jy.filters.OnlyThirdFriday import OnlyThirdFriday
+from com.metaos.jy.filters.DayOfWeek import DayOfWeek
+from com.metaos.jy.predictors.PredictorsFactory import PredictorsFactory
+

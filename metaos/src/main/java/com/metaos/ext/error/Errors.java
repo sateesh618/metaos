@@ -45,6 +45,21 @@ public class Errors {
 
 
     /**
+     * Adds a set of errors notification associated to the prediction 
+     * at a moment.
+     */
+    public void addErrors(final int moment, final double[] errors) {
+        List<Double> es = this.errors.get(moment);
+        if(es==null) {
+            es = new ArrayList<Double>();
+        }
+        for(final double e : errors) es.add(e);
+        this.errors.put(moment, es);
+    }
+
+
+
+    /**
      * Reports memorized erros associated to a moment.
      */
     public void report(final int moment, final ErrorsStatistics statistics) {

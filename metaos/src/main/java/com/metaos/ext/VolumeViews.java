@@ -158,7 +158,7 @@ public class VolumeViews implements Listener {
     /**
      * Gets the number of instants for each considered day.
      */
-    public int numberOfInstants() {
+    public int numberOfInstantsInADay() {
         return this.valuesInstantDay.size();
     }
 

@@ -38,6 +38,7 @@ public class ErrorsStatistics {
      * Adds an error to statistics register.
      */
     public void addError(final double val) {
+        if(val<0) return;
         this.rEngine.eval("errorsStatistics$addError(" + val + ")");
     }
 

@@ -4,11 +4,6 @@
 
 import math
 from com.metaos.ext import *
-from com.metaos.jy.filters.MercadoContinuoIsOpen import MercadoContinuoIsOpen 
-from com.metaos.jy.filters.OnlyThirdFriday import OnlyThirdFriday
-from com.metaos.jy.filters.DayOfWeek import DayOfWeek
-from com.metaos.jy.predictors.PredictorsFactory import PredictorsFactory
-
 
 fileName = args[0]
 symbol = args[1]
@@ -34,12 +29,66 @@ class LocalTimeMinutes(VolumeViews.InstantGenerator):
         return int(minute)
 
 
+##
+## Function to calculate forecast predictions for a day.
+## 
+## param forecast: vector of forecasted volumes, normalized to N
+## param real: vector of real volumes, normalized to N, len(real)=len(forecast)
+## param windowSize: size of moving window to test forecasts 
+## param norm: value of 1-norm for normalized vectors
+## return: vector of size len(forecast)-windowSize with maximum absolute error
+##          for each window position.
+##
+## Description: tests forecast and real values moving the window continuously
+##          from the begining to the end of the real and forecast vectors.
+##      
+def calculateErrors(forecast, real, windowSize, norm):
+    L = len(forecast)
+    if len(forecast)!=len(real): 
+        raise "Error, 'real' and 'forecast' must have the same size"
+
+    errorVector = []
+    for i in range(0, L - windowSize):
+        forecastWindow = forecast[i:i+windowSize]
+        realWindow = real[i:i+windowSize]
+
+        # Normalizes
+        total = 0
+        for j in range(0, len(forecastWindow)): total = total+forecastWindow[j]
+        if total==0: 
+            errorVector.append(-1)
+            continue
+
+        for j in range(0, len(forecastWindow)): 
+            forecastWindow[j] = norm * forecastWindow[j] / total
+            
+        total = 0
+        for j in range(0, len(realWindow)): 
+            if realWindow[j] != None : total = total + realWindow[j]
+        for j in range(0, len(realWindow)): 
+            if realWindow[j] != None : 
+                realWindow[j] = norm * realWindow[j] / total
+
+        
+        # Checks errors
+        maxError = 0
+        for j in range(0, len(realWindow)):
+            if realWindow[j] != None:
+                err = realWindow[j] - forecastWindow[j]
+                err = err * err
+                if err > maxError: maxError = err
+        
+        if maxError!=0: errorVector.append(maxError)
+        else: errorVector.append(-1)
+
+    return errorVector
+
 
 
 
 # Tests all predictors for each day of week.
 errorsStatistics = ErrorsStatistics(interpreteR)
-predictorsFactory = PredictorsFactory([MovingAverage(10)])
+predictorsFactory = PredictorsFactory([MovingAverage(5)])
 
 for dayOfWeek in [Calendar.TUESDAY]: 
     #[Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY,\
@@ -53,20 +102,25 @@ for dayOfWeek in [Calendar.TUESDAY]:
     t.consolidateDay(None)
     t.normalizeDays(100)
 
+    maxDays = len(t.getValueAcrossDays(0))
+
     predictorsFactory.reset()
     predictor = predictorsFactory.next()
     while predictor != None :
-        errors = Errors()
+        # 
+        # TODO: create a backtesting specific class...
+        #
+        errorsInDay = Errors()
         errorsStatistics.reset()         
 
-        dailyPrediction = []
-        dailyVol = []
 
-        # Remember: range(0, N)=0,1,2,...,N-1
-        for i in range(0, t.numberOfInstants()):
-            vals = t.getValueAcrossDays(i)
-            k = len(vals)
-            if vals.get(k-1)!=None:
+        for k in range(5, maxDays):
+            dailyPrediction = []
+            dailyVol = []
+
+            # Remember: range(0, N)=0,1,2,...,N-1
+            for i in range(0, t.numberOfInstantsInADay()):
+                vals = t.getValueAcrossDays(i)
                 learningVals = vals.subList(0, k-1)
                 predictor.learnVector(learningVals)
                 pval = predictor.predict()
@@ -74,12 +128,25 @@ for dayOfWeek in [Calendar.TUESDAY]:
                 dailyPrediction.append(pval)
                 dailyVol.append(vals.get(k-1))
 
-                quadError = math.pow(vals.get(k-1)-pval, 2)
-                errors.addError(i, quadError);
+            # Normalize prediction
+            total = 0
+            for i in range(0, len(dailyPrediction)): 
+                total = total + dailyPrediction[i]
+            for i in range(0, len(dailyPrediction)): 
+                dailyPrediction[i] = 100 * dailyPrediction[i] / total 
 
-        errors.report(errorsStatistics)
+            windowSize = 10
+            dailyErrors = calculateErrors(dailyPrediction, dailyVol, \
+                    windowSize, 100)
+
+            errorsInDay.addErrors(k, dailyErrors)
+
+        errorsInDay.report(errorsStatistics)
+
+
+
         print 'Day: ' + str(dayOfWeek) + ', predictor: ' \
-            + predictor.toString().encode('utf-8')
+                + predictor.toString().encode('utf-8')
         print '-----------------------------------------------------------'
         print 'Quad Error max ' + str(errorsStatistics.max())
         print 'Quad Error min ' + str(errorsStatistics.min())
