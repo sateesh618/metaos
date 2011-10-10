@@ -52,6 +52,7 @@ public class SingleSymbolScanner implements LineScanner {
     }
 
 
+
     public final void run() {
         while(this.next());
     }

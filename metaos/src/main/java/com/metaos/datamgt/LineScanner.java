@@ -18,7 +18,7 @@ import java.util.logging.Logger;
  */
 public interface LineScanner {
     /**
-     * Starts source to get all prices.
+     * Starts running scanner to get all prices from source.
      */
     public void run();
 

@@ -13,6 +13,7 @@ import com.metaos.util.*;
  * instant and secondly by day.
  * Internally, its implemented as a dense matrix - ie it wouldn't be efficient
  * for parse matrices as in tick-data
+ * @deprecated.
  */
 public class VolumeViews implements Listener {
     private final InstantGenerator instantGenerator;
