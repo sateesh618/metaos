@@ -74,6 +74,7 @@ public class BacktesterAgent implements Listener {
      * Receives notification signals as <i>future events</i>.
      */
     public void notify(final ParseResult parseResult) {
+        // TODO: Dar la vuelta: primero predecir, luego contrastar
         final Calendar currentDay = CalUtils.clone(parseResult.getTimestamp());
 
         if(this.forecastingTime.shouldContinue(currentDay)) {
