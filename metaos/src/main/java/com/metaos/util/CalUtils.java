@@ -23,6 +23,17 @@ public class CalUtils {
 
 
     /**
+     * Template method to generate instants from timestamps.
+     */
+    public interface InstantGenerator {
+        public int generate(final Calendar when);
+        public int maxInstantValue();
+    }
+
+
+
+
+    /**
      * Gets a date format which sets GMT+0 to created dates.
      */
     public static DateFormat getDateFormat(final String format) {

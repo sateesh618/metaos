@@ -2,6 +2,23 @@
 ## Root code for volume predictions to calculate VWAP.
 ## 
 
+##
+## Generator of "instants" for VolumeViews
+##
+## TODO: move to another place....
+##
+class LocalTimeMinutes(CalUtils.InstantGenerator):
+    def generate(self, when):
+        minute = when.get(Calendar.HOUR_OF_DAY)*60 + when.get(Calendar.MINUTE)
+        minute = minute + 60*result.values(0).get(\
+                Field.EXTENDED(Field.Qualifier.NONE, "GMT"))
+        return int(minute)
+    def maxInstantValue(self):
+        return 60*24
+
+
+
+
 
 fileName = args[0]
 symbol = args[1]
@@ -11,15 +28,15 @@ TimeZone.setDefault(TimeZone.getTimeZone("GMT"))
 
 lineParser = ReutersCSVLineParser(fileName)
 noAccumulator = TransparentSTMgr()
-errorsStatistics = ErrorsStatistics()
+errors = Errors()
 source = SingleSymbolScanner(fileName, symbol, lineParser, noAccumulator)
 
 lineParser.addFilter(MercadoContinuoIsOpen()) \
           .addFilter(MainOutliers())
 
 predictor = VolumeProfilePredictor(LocalTimeMinutes(), MA(5))
-backtester = BacktesterAgent(source, predictor, OneDayAvoidingWeekEnds(),
-            MobileWindow([5,10,15]))
+backtester = BacktesterAgent(source, predictor, OneDayAvoidingWeekEnds(), \
+            MobileWindowVolumeProfileComparator(5, errors, LocalTimeMinutes()))
 
 noAccumulator.addListener(backtester)
 backtester.run()

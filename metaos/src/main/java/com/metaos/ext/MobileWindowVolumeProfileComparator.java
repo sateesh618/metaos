@@ -14,29 +14,86 @@ import com.metaos.ext.error.*;
 
 /**
  * Tester of volume profile predictions using mobile windows.
- *
-// TODO
  */
 public class MobileWindowVolumeProfileComparator implements ForecastingTest {
-    private final ErrorsStatistics errorsCollector;
+    private static final Field _volume_ = new Field.VOLUME();
 
-    public MobileWindowVolumeProfileComparator(final int windowSizes[],
-            final ErrorsStatistics errorsCollector) {
+    private final Errors errorsCollector;
+    private final int windowSize;
+    private final double[] dailyVolume;
+    private final CalUtils.InstantGenerator instantGenerator;
+
+    public MobileWindowVolumeProfileComparator(final int windowSize,
+            final Errors errorsCollector, 
+            final CalUtils.InstantGenerator instantGenerator) {
+        this.instantGenerator = instantGenerator;
         this.errorsCollector = errorsCollector;
+        this.windowSize = windowSize;
+        this.dailyVolume = new double[this.instantGenerator.maxInstantValue()];
     }
 
 
     public void notify(final ParseResult parseResult) {
-        // index = minute in the day
-        //this.dailyVolume[index] = parseResult.get(__volume__);
+        final int index = this.instantGenerator.generate(
+                parseResult.getTimestamp());
+        this.dailyVolume[index] = parseResult.values(0).get(_volume_);
     }
 
 
     public void evaluate(final Calendar when, final Predictor predictor) {
-        // Normaliza this.dailyVolume
+        // Normalizes dailyVolume
+        /* Not necesary!!!
+        double sum = 0;
+        for(int i=0; i<this.dailyVolume; i++) sum += this.dailyVolume[i];
+        for(int i=0; i<this.dailyVolume; i++) 100 * this.dailyVolume[i] /= sum;
+        */
 
         final double predictedProfile[] = predictor.predictVector(when);
+        final double errors[] = 
+                contrast(predictedProfile, dailyVolume, windowSize);
         
-        // Reportamos las diferencias a errorsCollector
+        for(int i=0; i<errors.length; i++) {
+            if(errors[i]>=0) this.errorsCollector.addError(i, errors[i]);
+        }
+        
+
+        // Cleans dailyVolume
+        for(int i=0; i<this.dailyVolume.length; i++) this.dailyVolume[i] = -1;
+    }
+
+
+    //
+    // Private stuff -------------------------------
+    //
+
+    /**
+     * Calculates quadratic differences between normalized windows of 
+     * size 'windowSize' for vectors a and b and returns the maximum 
+     * value for the each sample.
+     * Values less than 0 are ignored and not considered for contrast.
+     */
+    private double[] contrast(final double a[], final double b[], 
+            final int windowSize) {
+        assert a.length==b.length;
+        final double diffs[] = new double[a.length-windowSize];
+        for(int i=0; i<a.length-windowSize; i++) {
+            double sumA = 0;
+            double sumB = 0;
+            for(int j=i; j<i+windowSize; j++) {
+                sumA += a[j];
+                sumB += b[j];
+            }
+
+            double maxDiff = -1;
+            for(int j=i; j<i+windowSize; j++) {
+                if(a[j]>=0 && b[j]>=0) {
+                    double e = (a[j] / sumA) - (b[j] / sumB);
+                    e = e*e;
+                    if(maxDiff < e) maxDiff=e;
+                }
+            }
+            diffs[i] = maxDiff;
+        }
+        return diffs;
     }
 }

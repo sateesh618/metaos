@@ -20,13 +20,14 @@ source = SingleSymbolScanner(fileName, symbol, lineParser, noAccumulator)
 ##
 ## Generator of "instants" for VolumeViews
 ##
-class LocalTimeMinutes(VolumeViews.InstantGenerator):
-    def generate(self, result):
-        when = result.getTimestamp()
+class LocalTimeMinutes(CalcUtils.InstantGenerator):
+    def generate(self, when):
         minute = when.get(Calendar.HOUR_OF_DAY)*60 + when.get(Calendar.MINUTE)
         minute = minute + 60*result.values(0).get(\
                 Field.EXTENDED(Field.Qualifier.NONE, "GMT"))
         return int(minute)
+    def maxInstantValue(self):
+        return 24*60
 
 
 ##

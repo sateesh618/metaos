@@ -1,6 +1,8 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2011 - 2012
+ * All rights reserved. License and terms according to LICENSE.txt file.
+ * The LICENSE.txt file and this header must be included or referenced 
+ * in each piece of code derived from this project.
  */
 package com.metaos.ext;
 
@@ -16,7 +18,7 @@ import com.metaos.util.*;
  * @deprecated.
  */
 public class VolumeViews implements Listener {
-    private final InstantGenerator instantGenerator;
+    private final CalUtils.InstantGenerator instantGenerator;
     // valuesInstantDay is a dense matrix
     private final List<List<Double>> valuesInstantDay;  // First index:instant
     private final List<Calendar> consideredDays;
@@ -25,21 +27,12 @@ public class VolumeViews implements Listener {
     private int processedDays = 0;
     private static final Field _volume_ = new Field.VOLUME();
 
-    //
-    // Public inner class -----
-    /**
-     * Template method to generate instants from timestamps.
-     */
-    public interface InstantGenerator {
-        public int generate(final ParseResult parseResult);
-    }
-
 
     /**
      * Creates a transposer subscribed to given lines accumulator.
      */
     public VolumeViews(final SpreadTradesMgr accumulator, 
-            final InstantGenerator instantGenerator) {
+            final CalUtils.InstantGenerator instantGenerator) {
         accumulator.addListener(this);
         this.instantGenerator = instantGenerator;
         this.valuesInstantDay = new ArrayList<List<Double>>();
@@ -61,7 +54,8 @@ public class VolumeViews implements Listener {
             this.lastDay = currentDay;
         }
 
-        final int instant = this.instantGenerator.generate(parseResult);
+        final int instant = this.instantGenerator.generate(
+                parseResult.getTimestamp());
         
         while(this.valuesInstantDay.size()<=instant) {
             final List<Double> l = new ArrayList<Double>();
