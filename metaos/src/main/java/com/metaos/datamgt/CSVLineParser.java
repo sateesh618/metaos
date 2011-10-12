@@ -188,6 +188,13 @@ public class CSVLineParser implements LineParser {
                     } else if(obj instanceof Date) {
                         for(int j=0; j<dateIndexes.length; j++) {
                             if(i==this.dateIndexes[j]) {
+                                // Remember:
+                                //  Calendar.setTimeInMillis sets time
+                                //  in GMT+0
+                                //  Calendar.get(field) gets the value of time
+                                //  in selected GMT time zone.
+                                //  Calendar.getTimeInMillis, in the other side,
+                                //  gets milliseconds in GMT+0
                                 if(this.parsedData.getTimestamp()==null) {
                                     this.parsedData.newTimestamp();
                                 }

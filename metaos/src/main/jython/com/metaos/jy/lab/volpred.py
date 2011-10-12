@@ -20,11 +20,11 @@ source = SingleSymbolScanner(fileName, symbol, lineParser, noAccumulator)
 ##
 ## Generator of "instants" for VolumeViews
 ##
-class LocalTimeMinutes(CalcUtils.InstantGenerator):
+class LocalTimeMinutes(CalUtils.InstantGenerator):
     def generate(self, when):
         minute = when.get(Calendar.HOUR_OF_DAY)*60 + when.get(Calendar.MINUTE)
-        minute = minute + 60*result.values(0).get(\
-                Field.EXTENDED(Field.Qualifier.NONE, "GMT"))
+        #minute = minute + 60*result.values(0).get(\
+        #        Field.EXTENDED(Field.Qualifier.NONE, "GMT"))
         return int(minute)
     def maxInstantValue(self):
         return 24*60
@@ -123,8 +123,8 @@ for dayOfWeek in [Calendar.TUESDAY]:
                 predictor.reset()       # Empties predictor memory
                 vals = t.getValueAcrossDays(i)
                 learningVals = vals.subList(0, k-1)
-                predictor.learnVector(learningVals)
-                pval = predictor.predict()
+                predictor.learnVector(None, learningVals)
+                pval = predictor.predict(None)
 
                 dailyPrediction.append(pval)
                 dailyVol.append(vals.get(k-1))
