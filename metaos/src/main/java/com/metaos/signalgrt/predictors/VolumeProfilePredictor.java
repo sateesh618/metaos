@@ -42,8 +42,11 @@ public class VolumeProfilePredictor implements PredictorListener {
 
     public void notify(final ParseResult parseResult) {
         final Calendar when = parseResult.getTimestamp();
-        final double val = parseResult.values(0).get(field);
-        this.learnValue(when, val);
+        if(parseResult.values(0) != null 
+                && parseResult.values(0).get(field)!=null) {
+            final double val = parseResult.values(0).get(field);
+            this.learnValue(when, val);
+        }
     }
 
 
