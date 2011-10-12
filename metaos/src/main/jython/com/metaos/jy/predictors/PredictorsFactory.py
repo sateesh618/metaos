@@ -1,5 +1,3 @@
-from com.metaos.ext.predictors import *
-
 ##
 ## Factory of predictors.
 ##

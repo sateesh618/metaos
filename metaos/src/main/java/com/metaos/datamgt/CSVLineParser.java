@@ -157,24 +157,44 @@ public class CSVLineParser implements LineParser {
                                     ((Object[])obj)[0]);
                         }
                     } else if(obj instanceof Number) {
-                        this.parsedData.putValue(
-                                this.fieldNames[i],((Number)obj).doubleValue());
-                        anyValuePresent = true;
+                        boolean isFieldIndex = false;
+                        double val = ((Number)obj).doubleValue();
+                        for(int j=0; j<dateIndexes.length; j++) {
+                            if(i==this.dateIndexes[j]) {
+                                isFieldIndex = true;
+                                if(this.parsedData.getTimestamp()==null) {
+                                    this.parsedData.newTimestamp();
+                                }
+                                
+                                if(val>0) {
+                                    this.parsedData.getTimestamp()
+                                            .setTimeZone(TimeZone.getTimeZone(
+                                                    "GMT+"+(int)(val)));
+                                } else if(val==0) {
+                                    this.parsedData.getTimestamp()
+                                            .setTimeZone(TimeZone.getTimeZone(
+                                                    "GMT"));
+                                } else {
+                                    this.parsedData.getTimestamp()
+                                            .setTimeZone(TimeZone.getTimeZone(
+                                                    "GMT-"+(int)((-val))));
+                                }
+                            }
+                        }
+                        if(!isFieldIndex) {
+                            this.parsedData.putValue(this.fieldNames[i],val);
+                            anyValuePresent = true;
+                        }
                     } else if(obj instanceof Date) {
                         for(int j=0; j<dateIndexes.length; j++) {
                             if(i==this.dateIndexes[j]) {
                                 if(this.parsedData.getTimestamp()==null) {
                                     this.parsedData.newTimestamp();
-                                    this.parsedData.getTimestamp()
-                                            .setTimeInMillis(((Date) obj)
-                                                .getTime());
-                                } else {
-                                    this.parsedData.getTimestamp()
-                                        .setTimeInMillis(this.parsedData
-                                            .getTimestamp().getTimeInMillis() 
-                                            + ((Date) obj).getTime());
                                 }
-
+                                this.parsedData.getTimestamp().setTimeInMillis(
+                                        this.parsedData.getTimestamp()
+                                                .getTimeInMillis() 
+                                        + ((Date) obj).getTime());
                                 break;
                             }
                         }
