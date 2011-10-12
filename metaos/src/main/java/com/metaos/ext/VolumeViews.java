@@ -45,7 +45,7 @@ public class VolumeViews implements Listener {
      */
     public void notify(final ParseResult parseResult) {
         if(parseResult.values(0).get(_volume_)==null) return;
-        final Calendar currentDay = CalUtils.clone(
+        final Calendar currentDay = CalUtils.normalizedClone(
                 parseResult.getTimestamp());
         if(this.lastDay!=null && this.lastDay.before(currentDay)) {
             consolidateDay(currentDay);
@@ -135,7 +135,7 @@ public class VolumeViews implements Listener {
      * Gets the list of values for one day.
      */
     public List<Double> getValuesWithinDay(final Calendar day) {
-        final Calendar when = CalUtils.clone(day);
+        final Calendar when = CalUtils.normalizedClone(day);
         for(int i=0; i<this.consideredDays.size(); i++) {
             final Calendar c = this.consideredDays.get(i);
             if(c!=null && c.equals(when)) {

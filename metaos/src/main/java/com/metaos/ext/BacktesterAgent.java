@@ -42,6 +42,7 @@ public class BacktesterAgent implements Listener {
     private final ForecastingTest forecastingTest;
     private final List<Listener> listeners;
     private final List<ParseResult> futureParseResults;
+    private double[] lastForecast;
 
     /**
      * Creates a backtesting for volume.
@@ -59,11 +60,12 @@ public class BacktesterAgent implements Listener {
         this.forecastingTime = forecastingTime;
 
         this.addListener(predictor);
+        this.addListener(forecastingTest);
     }
 
 
     /**
-     * Adds listener to <i>present events</i>.
+     * Adds listener.
      */
     private void addListener(final Listener listener) {
         this.listeners.add(listener);
@@ -71,24 +73,24 @@ public class BacktesterAgent implements Listener {
 
 
     /**
-     * Receives notification signals as <i>future events</i>.
+     * Receives notification signals as time goes on.
      */
     public void notify(final ParseResult parseResult) {
-        // TODO: Dar la vuelta: primero predecir, luego contrastar
-        final Calendar currentDay = CalUtils.clone(parseResult.getTimestamp());
+        for(final Listener l : this.listeners) l.notify(parseResult);
 
-        if(this.forecastingTime.shouldContinue(currentDay)) {
-            this.futureParseResults.add(parseResult);
-            this.forecastingTest.notify(parseResult);
-        } else {
-            this.forecastingTest.evaluate(currentDay, this.predictor);
-            for(final ParseResult pr : this.futureParseResults) {
-                for(final Listener listener : this.listeners) {
-                    listener.notify(pr);
-                }
+        final Calendar currentDay = parseResult.getTimestamp();
+
+        // Is it the moment to test previous forecasting?
+        if(this.forecastingTime.shouldEvaluatePrediction(currentDay)) {
+            if(this.lastForecast != null) {
+                this.forecastingTest.evaluate(currentDay, this.lastForecast);
             }
-            this.futureParseResults.clear();
-            this.forecastingTime.setPresentTime(currentDay);
+        }
+
+        // Is it the moment to generate a new prediction?
+        if(this.forecastingTime.shouldPredict(currentDay)) {
+            this.lastForecast = (double[]) this.predictor
+                    .predictVector(currentDay).clone();
         }
     }
 }

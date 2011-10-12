@@ -14,14 +14,13 @@ import com.metaos.datamgt.*;
  */
 public interface ForecastingTime extends Listener {
     /**
-     * Tests if backtesting agent should continue collecting data "in the
-     * future" or should evalute forecasting.
+     * Tests if it's moment to evaluate a previous prediction.
      */
-    public boolean shouldContinue(final Calendar when);
+    public boolean shouldEvaluatePrediction(final Calendar when);
 
     /**
-     * Notifies the moment considered "present" in backtesting routine.
+     * Tests if it's moment to predict.
      */
-    public void setPresentTime(final Calendar when);
+    public boolean shouldPredict(final Calendar when);
 
 }

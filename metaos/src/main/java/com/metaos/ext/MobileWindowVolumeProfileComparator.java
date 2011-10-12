@@ -14,10 +14,11 @@ import com.metaos.ext.error.*;
 
 /**
  * Tester of volume profile predictions using mobile windows.
+ *
+ * TODO: Generalize, since it's not implemented only for volume.
  */
 public class MobileWindowVolumeProfileComparator implements ForecastingTest {
-    private static final Field _volume_ = new Field.VOLUME();
-
+    private final Field field;
     private final Errors errorsCollector;
     private final int windowSize;
     private final double[] dailyVolume;
@@ -25,10 +26,12 @@ public class MobileWindowVolumeProfileComparator implements ForecastingTest {
 
     public MobileWindowVolumeProfileComparator(final int windowSize,
             final Errors errorsCollector, 
-            final CalUtils.InstantGenerator instantGenerator) {
+            final CalUtils.InstantGenerator instantGenerator,
+            final Field field) {
         this.instantGenerator = instantGenerator;
         this.errorsCollector = errorsCollector;
         this.windowSize = windowSize;
+        this.field = field;
         this.dailyVolume = new double[this.instantGenerator.maxInstantValue()];
     }
 
@@ -36,28 +39,21 @@ public class MobileWindowVolumeProfileComparator implements ForecastingTest {
     public void notify(final ParseResult parseResult) {
         final int index = this.instantGenerator.generate(
                 parseResult.getTimestamp());
-        this.dailyVolume[index] = parseResult.values(0).get(_volume_);
+        // Effect:only takes memory of the each minute for the last received day
+        this.dailyVolume[index] = parseResult.values(0).get(field);
     }
 
 
-    public void evaluate(final Calendar when, final Predictor predictor) {
-        // Normalizes dailyVolume
-        /* Not necesary!!!
-        double sum = 0;
-        for(int i=0; i<this.dailyVolume; i++) sum += this.dailyVolume[i];
-        for(int i=0; i<this.dailyVolume; i++) 100 * this.dailyVolume[i] /= sum;
-        */
-
-        final double predictedProfile[] = predictor.predictVector(when);
+    public void evaluate(final Calendar when, final double[] predictedValues) {
         final double errors[] = 
-                contrast(predictedProfile, dailyVolume, windowSize);
+                contrast(predictedValues, dailyVolume, windowSize);
         
         for(int i=0; i<errors.length; i++) {
             if(errors[i]>=0) this.errorsCollector.addError(i, errors[i]);
         }
         
 
-        // Cleans dailyVolume
+        // Cleans dailyVolume, to avoid contamination
         for(int i=0; i<this.dailyVolume.length; i++) this.dailyVolume[i] = -1;
     }
 

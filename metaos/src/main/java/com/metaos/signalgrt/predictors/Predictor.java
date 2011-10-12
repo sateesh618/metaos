@@ -13,7 +13,7 @@ import java.util.*;
  */
 public interface Predictor {
     /**
-     * Emits a forecast based on learned values.
+     * Emits a single forecast based on learned values.
      */
     public double predict(final Calendar when);
 

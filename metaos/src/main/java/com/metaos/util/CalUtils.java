@@ -88,7 +88,7 @@ public class CalUtils {
     /**
      * Clones and normalizes a calendar.
      */
-    public static Calendar clone(final Calendar cal) {
+    public static Calendar normalizedClone(final Calendar cal) {
         final Calendar cl = (Calendar) cal.clone();
         normalize(cl);
         return cl;

@@ -34,9 +34,10 @@ source = SingleSymbolScanner(fileName, symbol, lineParser, noAccumulator)
 lineParser.addFilter(MercadoContinuoIsOpen()) \
           .addFilter(MainOutliers())
 
-predictor = VolumeProfilePredictor(LocalTimeMinutes(), MA(5))
+predictor = VolumeProfilePredictor(LocalTimeMinutes(), Field.VOLUME())
 backtester = BacktesterAgent(source, predictor, OneDayAvoidingWeekEnds(), \
-            MobileWindowVolumeProfileComparator(5, errors, LocalTimeMinutes()))
+            MobileWindowVolumeProfileComparator(5, errors, LocalTimeMinutes(), \
+                Field.VOLUME()))
 
 noAccumulator.addListener(backtester)
 backtester.run()

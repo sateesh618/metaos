@@ -17,5 +17,5 @@ public interface ForecastingTest extends Listener {
     /**
      * Evaluates forecasting.
      */
-    public void evaluate(final Calendar when, final Predictor predictor);
+    public void evaluate(final Calendar when, final double[] prediction);
 }
