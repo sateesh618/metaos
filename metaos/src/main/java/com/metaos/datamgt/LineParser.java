@@ -51,8 +51,7 @@ public interface LineParser {
      * the result.
      * @return null if there is no timestamp information
      */
-    public Calendar getTimestamp(final String line);
-
+    public Calendar getLocalTimestamp(final String line);
 
     /**
      * Adds a filter to validate the line.
