@@ -85,7 +85,7 @@ public class CSVLineParser implements LineParser {
                 for(final Map.Entry<Field, Double> entry
                         : this.parsedData.values(symbol).entrySet()) {
                     entry.getKey().notify(listener, 
-                            this.parsedData.getTimestamp(),
+                            this.parsedData.getLocalTimestamp(),
                             symbol, entry.getValue());
                 }
             }
@@ -114,11 +114,11 @@ public class CSVLineParser implements LineParser {
     }
 
 
-    public Calendar getTimestamp(final String line) {
+    public Calendar getLocalTimestamp(final String line) {
         if( ! line.equals(this.parsedLine) ) {
             _parseLine(line);
         }
-        return this.parsedData.getTimestamp();
+        return this.parsedData.getLocalTimestamp();
     }
 
     public void reset() {
@@ -162,20 +162,20 @@ public class CSVLineParser implements LineParser {
                         for(int j=0; j<dateIndexes.length; j++) {
                             if(i==this.dateIndexes[j]) {
                                 isFieldIndex = true;
-                                if(this.parsedData.getTimestamp()==null) {
+                                if(this.parsedData.getLocalTimestamp()==null) {
                                     this.parsedData.newTimestamp();
                                 }
                                 
                                 if(val>0) {
-                                    this.parsedData.getTimestamp()
+                                    this.parsedData.getLocalTimestamp()
                                             .setTimeZone(TimeZone.getTimeZone(
                                                     "GMT+"+(int)(val)));
                                 } else if(val==0) {
-                                    this.parsedData.getTimestamp()
+                                    this.parsedData.getLocalTimestamp()
                                             .setTimeZone(TimeZone.getTimeZone(
                                                     "GMT"));
                                 } else {
-                                    this.parsedData.getTimestamp()
+                                    this.parsedData.getLocalTimestamp()
                                             .setTimeZone(TimeZone.getTimeZone(
                                                     "GMT-"+(int)((-val))));
                                 }
@@ -195,11 +195,12 @@ public class CSVLineParser implements LineParser {
                                 //  in selected GMT time zone.
                                 //  Calendar.getTimeInMillis, in the other side,
                                 //  gets milliseconds in GMT+0
-                                if(this.parsedData.getTimestamp()==null) {
+                                if(this.parsedData.getLocalTimestamp()==null) {
                                     this.parsedData.newTimestamp();
                                 }
-                                this.parsedData.getTimestamp().setTimeInMillis(
-                                        this.parsedData.getTimestamp()
+                                this.parsedData.getLocalTimestamp()
+                                    .setTimeInMillis(
+                                        this.parsedData.getLocalTimestamp()
                                                 .getTimeInMillis() 
                                         + ((Date) obj).getTime());
                                 break;
@@ -217,11 +218,11 @@ public class CSVLineParser implements LineParser {
 
 
         this.isValid = this.parsedData.getSymbol(0) != null 
-                    && this.parsedData.getTimestamp() != null
+                    && this.parsedData.getLocalTimestamp() != null
                     && this.parsingResult;
         if(this.isValid) {
             for(final Filter f : this.pricesFilters) {
-                if( ! f.filter(this.parsedData.getTimestamp(),
+                if( ! f.filter(this.parsedData.getLocalTimestamp(),
                             this.parsedData.getSymbol(0), 
                             this.parsedData.values(0))) {
                     this.isValid = false;

@@ -78,7 +78,7 @@ public class BacktesterAgent implements Listener {
     public void notify(final ParseResult parseResult) {
         for(final Listener l : this.listeners) l.notify(parseResult);
 
-        final Calendar currentDay = parseResult.getTimestamp();
+        final Calendar currentDay = parseResult.getLocalTimestamp();
 
         // Is it the moment to test previous forecasting?
         if(this.forecastingTime.shouldEvaluatePrediction(currentDay)) {

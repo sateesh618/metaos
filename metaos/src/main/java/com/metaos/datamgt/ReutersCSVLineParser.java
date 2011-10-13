@@ -55,8 +55,8 @@ public class ReutersCSVLineParser implements LineParser {
         return this.inner.getSymbol(line, index);
     }
 
-    public Calendar getTimestamp(final String line) {
-        return this.inner.getTimestamp(line);
+    public Calendar getLocalTimestamp(final String line) {
+        return this.inner.getLocalTimestamp(line);
     }
 
     public void reset() {

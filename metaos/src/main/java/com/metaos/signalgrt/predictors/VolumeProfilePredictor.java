@@ -22,6 +22,7 @@ public class VolumeProfilePredictor implements PredictorListener {
     private final Predictor[][] predictors;
     private final CalUtils.InstantGenerator instantGenerator;
     private final Field field;
+    private Calendar lastLearningTime = CalUtils.getZeroCalendar();
 
 
     public VolumeProfilePredictor(
@@ -41,7 +42,7 @@ public class VolumeProfilePredictor implements PredictorListener {
 
 
     public void notify(final ParseResult parseResult) {
-        final Calendar when = parseResult.getTimestamp();
+        final Calendar when = parseResult.getLocalTimestamp();
         if(parseResult.values(0) != null 
                 && parseResult.values(0).get(field)!=null) {
             final double val = parseResult.values(0).get(field);
@@ -64,6 +65,7 @@ public class VolumeProfilePredictor implements PredictorListener {
      */
     public double[] predictVector(final Calendar when) {
         final int index = daySelector(when);
+System.out.println("Prediction for day " + when.get(Calendar.DAY_OF_MONTH) + "-" + when.get(Calendar.MONTH) + " " + when.get(Calendar.HOUR_OF_DAY) + ":" + when.get(Calendar.MINUTE));
         final double prediction[] = new double[
                 this.instantGenerator.maxInstantValue()];
         for(int i=0; i<predictors[index].length; i++) {
@@ -119,6 +121,10 @@ public class VolumeProfilePredictor implements PredictorListener {
      * Memorizes one single value.
      */
     public void learnValue(final Calendar when, final double val) {
+        // Date Control: noitified date should not be before previous date
+        assert( ! when.before(this.lastLearningTime) );
+        this.lastLearningTime = when;
+
         final int i = daySelector(when);
         final int j = this.instantGenerator.generate(when);
         predictors[i][j].learnValue(when, val);

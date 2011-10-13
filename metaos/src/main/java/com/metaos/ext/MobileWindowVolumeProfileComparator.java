@@ -38,7 +38,7 @@ public class MobileWindowVolumeProfileComparator implements ForecastingTest {
 
     public void notify(final ParseResult parseResult) {
         final int index = this.instantGenerator.generate(
-                parseResult.getTimestamp());
+                parseResult.getLocalTimestamp());
         // Effect:only takes memory of the each minute for the last received day
         if(parseResult.values(0) != null &&
                 parseResult.values(0).get(field) != null) {

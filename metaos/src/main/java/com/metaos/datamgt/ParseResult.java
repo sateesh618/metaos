@@ -34,9 +34,20 @@ public class ParseResult {
     }
 
     /**
-     * Returns null if calendar is reset and has not been set.
+     * Gets local time calendar (with adjusted time zone) for parsed date.
+     * @return eturns null if calendar is reset and has not been set.
      */
-    public Calendar getTimestamp() { return this.calendar; }
+    public Calendar getLocalTimestamp() { return this.calendar; }
+
+
+    /**
+     * Returns A COPY of the local timestamp set to GMT+0
+     */
+    public Calendar getUTCTimestampCopy() { 
+        final Calendar cloned = (Calendar) this.calendar.clone();
+        cloned.setTimeZone(TimeZone.getTimeZone("GMT"));
+        return cloned;
+    }
 
 
     /**
