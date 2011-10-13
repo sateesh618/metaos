@@ -46,15 +46,36 @@ public class MobileWindowVolumeProfileComparator implements ForecastingTest {
         }
     }
 
-
+//int counter = 0;
     public void evaluate(final Calendar when, final double[] predictedValues) {
         final double errors[] = 
-                contrast(predictedValues, dailyVolume, windowSize);
-        
+                contrast(predictedValues, this.dailyVolume, windowSize);
+
         for(int i=0; i<errors.length; i++) {
             if(errors[i]>=0) this.errorsCollector.addError(i, errors[i]);
         }
         
+/*
+System.out.print("pred" + counter + "=[");
+for(int i=0; i<predictedValues.length; i++) {
+    if(i!=0) System.out.print(",");
+    System.out.print(predictedValues[i]);
+}
+System.out.println("];");
+System.out.print("real" + counter + "=[");
+for(int i=0; i<this.dailyVolume.length; i++) {
+    if(i!=0) System.out.print(",");
+    System.out.print(this.dailyVolume[i]);
+}
+System.out.println("];");
+System.out.print("error" + counter + "=[");
+for(int i=0; i<errors.length; i++) {
+    if(i!=0) System.out.print(",");
+    System.out.print(errors[i]);
+}
+System.out.println("];");
+counter++;
+*/
 
         // Cleans dailyVolume, to avoid contamination
         for(int i=0; i<this.dailyVolume.length; i++) this.dailyVolume[i] = -1;

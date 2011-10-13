@@ -10,8 +10,6 @@
 class LocalTimeMinutes(CalUtils.InstantGenerator):
     def generate(self, when):
         minute = when.get(Calendar.HOUR_OF_DAY)*60 + when.get(Calendar.MINUTE)
-        # minute = minute + 60*result.values(0).get(\
-        #        Field.EXTENDED(Field.Qualifier.NONE, "GMT"))
         return int(minute)
     def maxInstantValue(self):
         return 60*24

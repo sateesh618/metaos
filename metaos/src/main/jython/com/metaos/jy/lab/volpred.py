@@ -3,7 +3,7 @@
 ## 
 
 import math
-from com.metaos.ext import *
+from com.metaos.jy.util.LocalTimeMinutes import LocalTimeMinutes
 
 fileName = args[0]
 symbol = args[1]
@@ -15,19 +15,6 @@ TimeZone.setDefault(TimeZone.getTimeZone("GMT"))
 lineParser = ReutersCSVLineParser(fileName)
 noAccumulator = TransparentSTMgr()
 source = SingleSymbolScanner(fileName, symbol, lineParser, noAccumulator)
-
-
-##
-## Generator of "instants" for VolumeViews
-##
-class LocalTimeMinutes(CalUtils.InstantGenerator):
-    def generate(self, when):
-        minute = when.get(Calendar.HOUR_OF_DAY)*60 + when.get(Calendar.MINUTE)
-        #minute = minute + 60*result.values(0).get(\
-        #        Field.EXTENDED(Field.Qualifier.NONE, "GMT"))
-        return int(minute)
-    def maxInstantValue(self):
-        return 24*60
 
 
 ##

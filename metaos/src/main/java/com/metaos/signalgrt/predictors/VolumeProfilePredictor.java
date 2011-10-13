@@ -65,7 +65,6 @@ public class VolumeProfilePredictor implements PredictorListener {
      */
     public double[] predictVector(final Calendar when) {
         final int index = daySelector(when);
-System.out.println("Prediction for day " + when.get(Calendar.DAY_OF_MONTH) + "-" + when.get(Calendar.MONTH) + " " + when.get(Calendar.HOUR_OF_DAY) + ":" + when.get(Calendar.MINUTE));
         final double prediction[] = new double[
                 this.instantGenerator.maxInstantValue()];
         for(int i=0; i<predictors[index].length; i++) {

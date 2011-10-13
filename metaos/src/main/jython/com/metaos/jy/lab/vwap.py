@@ -8,6 +8,8 @@ from com.metaos.jy.filters.MercadoContinuoIsOpen import MercadoContinuoIsOpen
 from com.metaos.jy.filters.OnlyThirdFriday import OnlyThirdFriday
 from com.metaos.jy.filters.DayOfWeek import DayOfWeek
 from com.metaos.jy.predictors.PredictorsFactory import PredictorsFactory
+from com.metaos.jy.util.LocalTimeMinutes import LocalTimeMinutes
+
 
 
 fileName = args[0]
@@ -20,21 +22,6 @@ TimeZone.setDefault(TimeZone.getTimeZone("GMT"))
 lineParser = ReutersCSVLineParser(fileName)
 noAccummulator = TransparentSTMgr()
 source = SingleSymbolScanner(fileName, symbol, lineParser, noAccummulator)
-
-
-##
-## Generator of "instants" for VolumeViews
-##
-class LocalTimeMinutes(CalcUtils.InstantGenerator):
-    def generate(self, when):
-        minute = when.get(Calendar.HOUR_OF_DAY)*60 + when.get(Calendar.MINUTE)
-        minute = minute + 60*result.values(0).get(\
-                Field.EXTENDED(Field.Qualifier.NONE, "GMT"))
-        return int(minute)
-    def maxInstantValue(self):
-        return 60*24
-
-
 
 
 
