@@ -185,7 +185,7 @@ public class SingleSymbolScanner implements LineScanner {
                 return -1;
             }
 
-            final Calendar moment = this.lineParser.getTimestamp(line);
+            final Calendar moment = this.lineParser.getLocalTimestamp(line);
             if(this.lineParser.isValid(line)) {
                 this.currentLine = line;
                 if(this.firstLine==null) this.firstLine = line;
