@@ -122,7 +122,6 @@ public class VolumeProfilePredictor implements PredictorListener {
         final int i = daySelector(when);
         final int j = this.instantGenerator.generate(when);
         predictors[i][j].learnValue(when, val);
-System.out.println(when.get(Calendar.DAY_OF_MONTH) + "-" + when.get(Calendar.MONTH) + " " + when.get(Calendar.HOUR_OF_DAY) + ":" + when.get(Calendar.MINUTE) + " vol=" + val);
     }
 
 
