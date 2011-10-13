@@ -74,6 +74,7 @@ public class VolumeProfilePredictor implements PredictorListener {
         double sum = 0;
         for(int i=0; i<prediction.length; i++) sum += prediction[i];
         for(int i=0; i<prediction.length; i++) prediction[i] /= sum;
+
         return prediction;
     }
 
@@ -120,6 +121,9 @@ public class VolumeProfilePredictor implements PredictorListener {
     public void learnValue(final Calendar when, final double val) {
         final int i = daySelector(when);
         final int j = this.instantGenerator.generate(when);
+System.out.println("Primer dato recibido para el díade la semana " + i 
+    + ", instante (minuto): " + j + ", valor=" + val + ", fecha real " + when);
+System.exit(1);
         predictors[i][j].learnValue(when, val);
     }
 
