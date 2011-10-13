@@ -49,8 +49,8 @@ noAccumulator = TransparentSTMgr()
 errors = Errors()
 source = SingleSymbolScanner(fileName, symbol, lineParser, noAccumulator)
 
-lineParser.addFilter(MercadoContinuoIsOpen()) \
-          .addFilter(MainOutliers())
+lineParser.addFilter(MercadoContinuoIsOpen())
+#          .addFilter(MainOutliers())
 
 predictor = VolumeProfilePredictor(LocalTimeMinutes(), Field.VOLUME())
 backtester = BacktesterAgent(source, predictor, OneDayAvoidingWeekEnds(), \

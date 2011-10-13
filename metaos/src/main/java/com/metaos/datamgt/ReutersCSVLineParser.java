@@ -122,6 +122,8 @@ public class ReutersCSVLineParser implements LineParser {
             parts[i] = parts[i].replaceAll("#","");
             if(parts[i].equals("RIC")) {
                 this.symbolIndex = i;
+            } else if(parts[i].equals("GMT Offset")) {
+                this.dateIndexes.add(i);
             } else if(parts[i].equals("Date[G]")) {
                 this.dateIndexes.add(i);
             } else if(parts[i].equals("Time[G]")) {

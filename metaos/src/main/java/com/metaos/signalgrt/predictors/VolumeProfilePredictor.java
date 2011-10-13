@@ -121,10 +121,8 @@ public class VolumeProfilePredictor implements PredictorListener {
     public void learnValue(final Calendar when, final double val) {
         final int i = daySelector(when);
         final int j = this.instantGenerator.generate(when);
-System.out.println("Primer dato recibido para el díade la semana " + i 
-    + ", instante (minuto): " + j + ", valor=" + val + ", fecha real " + when);
-System.exit(1);
         predictors[i][j].learnValue(when, val);
+System.out.println(when.get(Calendar.DAY_OF_MONTH) + "-" + when.get(Calendar.MONTH) + " " + when.get(Calendar.HOUR_OF_DAY) + ":" + when.get(Calendar.MINUTE) + " vol=" + val);
     }
 
 
