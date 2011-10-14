@@ -19,17 +19,19 @@ import com.metaos.ext.error.*;
  */
 public class MobileWindowVolumeProfileComparator implements ForecastingTest {
     private final Field field;
-    private final Errors errorsCollector;
+    private final Errors<Integer> minuteErrors;
+    private final Errors<String> dayErrors;
     private final int windowSize;
     private final double[] dailyVolume;
     private final CalUtils.InstantGenerator instantGenerator;
 
     public MobileWindowVolumeProfileComparator(final int windowSize,
-            final Errors errorsCollector, 
+            final Errors<Integer> minuteErrors, final Errors<String> dayErrors,
             final CalUtils.InstantGenerator instantGenerator,
             final Field field) {
         this.instantGenerator = instantGenerator;
-        this.errorsCollector = errorsCollector;
+        this.minuteErrors = minuteErrors;
+        this.dayErrors = dayErrors;
         this.windowSize = windowSize;
         this.field = field;
         this.dailyVolume = new double[this.instantGenerator.maxInstantValue()];
@@ -51,8 +53,14 @@ public class MobileWindowVolumeProfileComparator implements ForecastingTest {
         final double errors[] = 
                 contrast(predictedValues, this.dailyVolume, windowSize);
 
+        final String dayAsString = when.get(Calendar.YEAR) + "-"
+                + (when.get(Calendar.MONTH)+1) + "-" 
+                + when.get(Calendar.DAY_OF_MONTH);
         for(int i=0; i<errors.length; i++) {
-            if(errors[i]>=0) this.errorsCollector.addError(i, errors[i]);
+            if(errors[i]>=0) {
+                this.minuteErrors.addError(i, errors[i]);
+                this.dayErrors.addError(dayAsString, errors[i]);
+            }
         }
         
 /*

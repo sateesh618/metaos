@@ -43,6 +43,7 @@ public class BacktesterAgent implements Listener {
     private final List<Listener> listeners;
     private final List<ParseResult> futureParseResults;
     private double[] lastForecast;
+    private int numberOfForecastings;
 
     /**
      * Creates a backtesting for volume.
@@ -84,6 +85,7 @@ public class BacktesterAgent implements Listener {
         if(this.forecastingTime.shouldEvaluatePrediction(currentDay)) {
             if(this.lastForecast != null) {
                 this.forecastingTest.evaluate(currentDay, this.lastForecast);
+                this.numberOfForecastings++;
             }
         }
 
@@ -92,5 +94,13 @@ public class BacktesterAgent implements Listener {
             this.lastForecast = (double[]) this.predictor
                     .predictVector(currentDay).clone();
         }
+    }
+
+
+    /**
+     * Gets the number of realized forecastings.
+     */
+    public int numberOfTests() {
+        return this.numberOfForecastings;
     }
 }
