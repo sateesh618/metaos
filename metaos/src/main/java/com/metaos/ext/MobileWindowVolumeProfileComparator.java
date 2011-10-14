@@ -26,16 +26,31 @@ public class MobileWindowVolumeProfileComparator implements ForecastingTest {
     private final CalUtils.InstantGenerator instantGenerator;
 
     public MobileWindowVolumeProfileComparator(final int windowSize,
-            final Errors<Integer> minuteErrors, final Errors<String> dayErrors,
             final CalUtils.InstantGenerator instantGenerator,
             final Field field) {
         this.instantGenerator = instantGenerator;
-        this.minuteErrors = minuteErrors;
-        this.dayErrors = dayErrors;
+        this.minuteErrors = new Errors<Integer>();
+        this.dayErrors = new Errors<String>();
         this.windowSize = windowSize;
         this.field = field;
         this.dailyVolume = new double[this.instantGenerator.maxInstantValue()];
     }
+
+
+    /**
+     * Gets collector for daily (intra-day) error vectors.
+     */
+    public Errors<String> getDayErrors() {
+        return this.dayErrors;
+    }
+
+    /**
+     * Gets collector for minute by minute (inter-day) error vectors.
+     */
+    public Errors<Integer> getMinuteErrors() {
+        return this.minuteErrors;
+    }
+
 
 
     public void notify(final ParseResult parseResult) {

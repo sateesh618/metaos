@@ -44,26 +44,24 @@ TimeZone.setDefault(TimeZone.getTimeZone("GMT"))
 
 lineParser = ReutersCSVLineParser(fileName)
 noAccumulator = TransparentSTMgr()
-minuteErrors = Errors<Integer>()
-dayErrors = Errors<String>()
 source = SingleSymbolScanner(fileName, symbol, lineParser, noAccumulator)
 
 lineParser.addFilter(MercadoContinuoIsOpen())
 #          .addFilter(MainOutliers())
 predictor = VolumeProfilePredictor(LocalTimeMinutes(), Field.VOLUME())
+mobileWindowVolumeProfileComparator = MobileWindowVolumeProfileComparator(\
+            5, LocalTimeMinutes(), Field.VOLUME())
 backtester = BacktesterAgent(source, predictor, OneDayAvoidingWeekEnds(), \
-            MobileWindowVolumeProfileComparator(5, minuteErrors, dayErrors,
-                    LocalTimeMinutes(), Field.VOLUME()))
+            mobileWindowVolumeProfileComparator)
 
 noAccumulator.addListener(backtester)
 source.run()
 
+minuteErrors = mobileWindowVolumeProfileComparator.getMinuteErrors();
+dayErrors = mobileWindowVolumeProfileComparator.getDayErrors();
 
 for predictionNumber in range(0, backtester.numberOfTests()):
     errorsStatistics = ErrorsStatistics(interpreteR)
-    errors.report(predictionNumber, errorsStatistics)
-    print "Forecasting " + str(predictionNumber)
-    errorsStatistics.
 
 
 
