@@ -22,7 +22,7 @@ public class Statistics {
      */
     public Statistics(final R rEngine) throws IOException {
         this.rEngine = rEngine;
-        this.rEngine.evalFile("errors/statistics.r");
+        this.rEngine.evalFile("util/statistics.r");
         this.rEngine.eval("statistics <- Statistics()");
     }
 
