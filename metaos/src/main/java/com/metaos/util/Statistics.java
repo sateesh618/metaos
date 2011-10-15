@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.metaos.ext.error;
+package com.metaos.util;
 
 import java.io.*;
 import java.util.*;
@@ -13,17 +13,17 @@ import com.metaos.engine.*;
 /**
  * Interface with R engine to deal with errors.
  */
-public class ErrorsStatistics {
+public class Statistics {
     private final R rEngine;
 
     /**
-     * Creates a new object wrapping <i>errors/errorsStatistics.r</i>
+     * Creates a new object wrapping <i>errors/statistics.r</i>
      * R file.
      */
-    public ErrorsStatistics(final R rEngine) throws IOException {
+    public Statistics(final R rEngine) throws IOException {
         this.rEngine = rEngine;
-        this.rEngine.evalFile("errors/errorsStatistics.r");
-        this.rEngine.eval("errorsStatistics <- ErrorsStatistics()");
+        this.rEngine.evalFile("errors/statistics.r");
+        this.rEngine.eval("statistics <- Statistics()");
     }
 
 
@@ -31,15 +31,15 @@ public class ErrorsStatistics {
      * Resets statistics.
      */
     public void reset() {
-        this.rEngine.eval("errorsStatistics$reset()");
+        this.rEngine.eval("statistics$reset()");
     }
 
     /**
      * Adds an error to statistics register.
      */
-    public void addError(final double val) {
+    public void addValue(final double val) {
         if(val<0) return;
-        this.rEngine.eval("errorsStatistics$addError(" + val + ")");
+        this.rEngine.eval("statistics$addValue(" + val + ")");
     }
 
     /**
@@ -47,8 +47,8 @@ public class ErrorsStatistics {
      */
     public double mean() {
         // R-bridge doesn't work in this way:
-        //      this.rEngine.evalDouble("mean(errorsStatistics$listAll())")
-        this.rEngine.eval("x <- errorsStatistics$listAll()");
+        //      this.rEngine.evalDouble("mean(statistics$listAll())")
+        this.rEngine.eval("x <- statistics$listAll()");
         return this.rEngine.evalDouble("mean(x)");
     }
 
@@ -58,8 +58,8 @@ public class ErrorsStatistics {
      */
     public double var() {
         // R-bridge doesn't work in this way:
-        //      this.rEngine.evalDouble("var(errorsStatistics$listAll())")
-        this.rEngine.eval("x <- errorsStatistics$listAll()");
+        //      this.rEngine.evalDouble("var(statistics$listAll())")
+        this.rEngine.eval("x <- statistics$listAll()");
         return this.rEngine.evalDouble("var(x)");
     }
 
@@ -68,8 +68,8 @@ public class ErrorsStatistics {
      */
     public double max() {
         // R-bridge doesn't work in this way:
-        //      this.rEngine.evalDouble("max(errorsStatistics$listAll())")
-        this.rEngine.eval("x <- errorsStatistics$listAll()");
+        //      this.rEngine.evalDouble("max(statistics$listAll())")
+        this.rEngine.eval("x <- statistics$listAll()");
         return this.rEngine.evalDouble("max(x)");
     }
 
@@ -77,7 +77,7 @@ public class ErrorsStatistics {
      * Gets minimum value.
      */
     public double min() {
-        this.rEngine.eval("x <- errorsStatistics$listAll()");
+        this.rEngine.eval("x <- statistics$listAll()");
         return this.rEngine.evalDouble("min(x)");
     }
 
@@ -86,7 +86,7 @@ public class ErrorsStatistics {
      */
     public double[] quantiles(final int N) {
         double c = 1.0/N;
-        this.rEngine.eval("x <- errorsStatistics$listAll()");
+        this.rEngine.eval("x <- statistics$listAll()");
         this.rEngine.eval("q <- quantile(x, probs=seq(" +c+ ",1," +c+ "), "
                 + "names=FALSE)");
         return this.rEngine.evalDoubleArray("q");
@@ -96,7 +96,7 @@ public class ErrorsStatistics {
      * Plots errors
      */
     public void plot() {
-        this.rEngine.eval("x <- errorsStatistics$listAll()");
+        this.rEngine.eval("x <- statistics$listAll()");
         this.rEngine.eval("plot(x)");
     }
 }

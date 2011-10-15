@@ -62,11 +62,11 @@ public class Errors<T> {
     /**
      * Reports memorized erros associated to a moment.
      */
-    public void report(final T moment, final ErrorsStatistics statistics) {
+    public void report(final T moment, final Statistics statistics) {
         List<Double> es = this.errors.get(moment);
         if(es!=null) {
             for(final double e : es) {
-                statistics.addError(e);
+                statistics.addValue(e);
             }
         }
     }
@@ -75,12 +75,19 @@ public class Errors<T> {
     /**
      * Reports all memorized erros associated to any moment.
      */
-    public void report(final ErrorsStatistics statistics) {
+    public void report(final Statistics statistics) {
         for(final List<Double> es : this.errors.values()) {
             for(final double e : es) {
-                statistics.addError(e);
+                statistics.addValue(e);
             }
         }
     }
 
+
+    /**
+     * Gets index set for vectors of errors.
+     */
+    public Set<T> indexes() {
+        return this.errors.keySet();
+    }
 }

@@ -27,7 +27,7 @@ source = SingleSymbolScanner(fileName, symbol, lineParser, noAccummulator)
 
 # Tests all predictors for each day of week.
 interpreteR = R()
-errorsStatistics = ErrorsStatistics(interpreteR)
+statistics = Statistics(interpreteR)
 predictorsFactory = PredictorsFactory([MovingAverage(4),MovingAverage(5),MovingAverage(6)])
 for dayOfWeek in [Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY,\
                   Calendar.THURSDAY,Calendar.FRIDAY]:
@@ -43,7 +43,7 @@ for dayOfWeek in [Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY,\
     predictor = predictorsFactory.next()
     while predictor != None :
         errors = Errors()
-        errorsStatistics.reset() 
+        statistics.reset() 
         # Remember: range(0, N)=0,1,2,...,N-1
         for i in range(0, t.numberOfInstants()):
             vals = t.getDayInstants(i)
@@ -55,15 +55,15 @@ for dayOfWeek in [Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY,\
                 quadError = math.pow(vals.get(k-1)-pvals, 2)
                 errors.addError(i, quadError);
 
-        errors.report(errorsStatistics)
+        errors.report(statistics)
         print 'Day: ' + str(dayOfWeek) + ', predictor: ' \
             + predictor.toString().encode('utf-8')
         print '-----------------------------------------------------------'
-        print 'Quad Error max ' + str(errorsStatistics.max())
-        print 'Quad Error min ' + str(errorsStatistics.min())
-        print 'Quad Error mean ' + str(errorsStatistics.mean())
-        print 'Quad Error variance ' + str(errorsStatistics.var())
-        print 'Quad Error deciles ' + str(errorsStatistics.quantiles(10))
+        print 'Quad Error max ' + str(statistics.max())
+        print 'Quad Error min ' + str(statistics.min())
+        print 'Quad Error mean ' + str(statistics.mean())
+        print 'Quad Error variance ' + str(statistics.var())
+        print 'Quad Error deciles ' + str(statistics.quantiles(10))
         print 
         predictor = predictorsFactory.next()
 

@@ -75,7 +75,7 @@ def calculateErrors(forecast, real, windowSize, norm):
 
 
 # Tests all predictors for each day of week.
-errorsStatistics = ErrorsStatistics(interpreteR)
+statistics = Statistics(interpreteR)
 predictorsFactory = PredictorsFactory([MovingAverage(5)])
 
 for dayOfWeek in [Calendar.TUESDAY]: 
@@ -99,7 +99,7 @@ for dayOfWeek in [Calendar.TUESDAY]:
         # TODO: create a backtesting specific class...
         #
         errorsInDay = Errors()
-        errorsStatistics.reset()         
+        statistics.reset()         
 
         for k in range(5, maxDays):
             dailyPrediction = []
@@ -129,21 +129,21 @@ for dayOfWeek in [Calendar.TUESDAY]:
 
             errorsInDay.addErrors(k, dailyErrors)
 
-        errorsInDay.report(errorsStatistics)
+        errorsInDay.report(statistics)
 
 
 
         print 'Day: ' + str(dayOfWeek) + ', predictor: ' \
                 + predictor.toString().encode('utf-8')
         print '-----------------------------------------------------------'
-        print 'Quad Error max ' + str(errorsStatistics.max())
-        print 'Quad Error min ' + str(errorsStatistics.min())
-        print 'Quad Error mean ' + str(errorsStatistics.mean())
-        print 'Quad Error variance ' + str(errorsStatistics.var())
-        print 'Quad Error deciles ' + str(errorsStatistics.quantiles(10))
+        print 'Quad Error max ' + str(statistics.max())
+        print 'Quad Error min ' + str(statistics.min())
+        print 'Quad Error mean ' + str(statistics.mean())
+        print 'Quad Error variance ' + str(statistics.var())
+        print 'Quad Error deciles ' + str(statistics.quantiles(10))
         print 'volpred=' + str(dailyPrediction)
         print 'vol=' + str(dailyVol)
-        errorsStatistics.plot()
+        statistics.plot()
         print 
         predictor = predictorsFactory.next()
 

@@ -48,8 +48,13 @@ source.run()
 minuteErrors = mobileWindowVolumeProfileComparator.getMinuteErrors();
 dayErrors = mobileWindowVolumeProfileComparator.getDayErrors();
 
-for predictionNumber in range(0, backtester.numberOfTests()):
-    errorsStatistics = ErrorsStatistics(interpreteR)
+print "Day\tMaxError\t\MeanError\tErrorVariance"
+for day in dayErrors.indexes():
+    dayStatistics = Statistics(interpreteR)
+    dayErrors.report(day, dayStatistics)
+    print day + "\t" + str(dayStatistics.max()) + "\t"  \
+            + str(dayStatistics.mean()) + "\t"
+            + str(dayStatistics.var())
 
 
 
