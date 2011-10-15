@@ -1,19 +1,7 @@
 ##
 ## Root code for volume predictions to calculate VWAP.
 ## 
-
-##
-## Generator of "instants" for VolumeViews
-##
-## TODO: move to another place....
-##
-class LocalTimeMinutes(CalUtils.InstantGenerator):
-    def generate(self, when):
-        minute = when.get(Calendar.HOUR_OF_DAY)*60 + when.get(Calendar.MINUTE)
-        return int(minute)
-    def maxInstantValue(self):
-        return 60*24
-
+from com.metaos.jy.util.LocalTimeMinutes import *
 
 ##
 ##
