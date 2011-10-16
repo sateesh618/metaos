@@ -77,8 +77,8 @@ class Vol4WapBase(object):
                     + str(dayStatistics.max()) + "\t"  \
                     + str(dayStatistics.mean()) + "\t" \
                     + str(dayStatistics.var()) + "\t" \
-                    + str(dayStatistics.quantiles(10)[8]) + "\t" \
-                    + str(dayStatistics.quantiles(10)[9])
+                    + str(dayStatistics.quantiles(10)[7]) + "\t" \
+                    + str(dayStatistics.quantiles(10)[8])
         
         
         print
@@ -90,5 +90,5 @@ class Vol4WapBase(object):
                     + str(minuteStatistics.max()) + "\t" \
                     + str(minuteStatistics.mean()) + "\t" \
                     + str(minuteStatistics.var()) + "\t" \
-                    + str(minuteStatistics.quantiles(10)[8]) + "\t" \
-                    + str(minuteStatistics.quantiles(10)[9])
+                    + str(minuteStatistics.quantiles(10)[7]) + "\t" \
+                    + str(minuteStatistics.quantiles(10)[8])

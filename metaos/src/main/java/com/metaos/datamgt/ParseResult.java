@@ -60,7 +60,7 @@ public class ParseResult {
 
     /** 
      * Stores the value for the given field associated to 
-     * last inserted symbol symbol.
+     * last inserted symbol.
      * If no symbol has been inserted yet, an exception occurs.
      */
     public void putValue(final Field field, final double val) {
@@ -71,9 +71,27 @@ public class ParseResult {
         this.values.put(symbol, vs);
     }
 
+    /** 
+     * Stores the value for the given field associated to 
+     * given symbol.
+     * Be careful: If symbol has not been previously inserted, object will
+     * become incoherent.
+     */
+    public void putValue(final String symbol, final Field field, 
+            final double val) {
+        Map<Field, Double> vs = values.get(symbol);
+        if(vs==null) vs = new HashMap<Field, Double>();
+        vs.put(field, val);
+        this.values.put(symbol, vs);
+    }
+
+
+
 
     /**
      * Gets the list of parsed values for the given symbol
+     * @return null if object has no news about given symbol or an empty
+     * map if symbol has been inserted but no elements have been associated.
      */
     public Map<Field, Double> values(final String symbol) {
         return values.get(symbol);
@@ -93,6 +111,7 @@ public class ParseResult {
      */
     public void addSymbol(final String symbol) {
         this.symbols.add(symbol);
+        this.values.put(symbol, new HashMap<Field, Double>());
     }
 
 
