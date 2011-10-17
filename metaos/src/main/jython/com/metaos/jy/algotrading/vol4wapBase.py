@@ -31,7 +31,7 @@ class OneDayAvoidingWeekEnds(ForecastingTime):
     def isLastMinuteInDay(self, when):
         minute = when.get(Calendar.HOUR_OF_DAY)*60 + when.get(Calendar.MINUTE)
         minute = int(minute)
-        return minute==1056
+        return minute>=1056
 
 
 

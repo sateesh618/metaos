@@ -76,6 +76,8 @@ public class VolumeProfilePredictor implements PredictorListener {
         for(int i=0; i<prediction.length; i++) sum += prediction[i];
         for(int i=0; i<prediction.length; i++) prediction[i] /= sum;
 
+System.out.println("Predicting " + prediction.length);
+
         return prediction;
     }
 
@@ -120,6 +122,7 @@ public class VolumeProfilePredictor implements PredictorListener {
      * Memorizes one single value.
      */
     public void learnValue(final Calendar when, final double val) {
+System.out.println("Learning for minute " + when.get(Calendar.MINUTE));
         // Date Control: noitified date should not be before previous date
         assert( ! when.before(this.lastLearningTime) );
         this.lastLearningTime = when;

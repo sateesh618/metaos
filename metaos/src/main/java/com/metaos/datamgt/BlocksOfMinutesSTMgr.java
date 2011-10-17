@@ -39,7 +39,7 @@ public class BlocksOfMinutesSTMgr implements SpreadTradesMgr {
         }
 
         if(result.getLocalTimestamp().getTimeInMillis()-this.lastTimestamp 
-                > this.accumulationWindow) {
+                >= this.accumulationWindow) {
             this.endAccumulation();
             this.lastTimestamp = result.getLocalTimestamp().getTimeInMillis();
         }
@@ -111,6 +111,15 @@ public class BlocksOfMinutesSTMgr implements SpreadTradesMgr {
         }
 
 
+        accumResult.newTimestamp();
+        final Calendar lastMemoryTime = memory.get(memory.size()-1)
+                .getLocalTimestamp();
+
+        accumResult.getLocalTimestamp().setTimeInMillis(
+                lastMemoryTime.getTimeInMillis());
+        accumResult.getLocalTimestamp().setTimeZone(
+                lastMemoryTime.getTimeZone());
+        
         for(final Listener listener : this.listeners) {
             listener.notify(accumResult);
         }
