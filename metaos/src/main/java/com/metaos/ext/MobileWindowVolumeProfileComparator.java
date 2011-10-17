@@ -25,6 +25,13 @@ public class MobileWindowVolumeProfileComparator implements ForecastingTest {
     private final double[] dailyVolume;
     private final CalUtils.InstantGenerator instantGenerator;
 
+    /**
+     * Compares forecasting with real volume profiles.
+     * @param windowSize size in 'instants' of window to test forecastings.
+     * @param instantGenerator definition of 'instant', coherent with one
+     * used in predictors.
+     * @param field the field to compare profile.
+     */
     public MobileWindowVolumeProfileComparator(final int windowSize,
             final CalUtils.InstantGenerator instantGenerator,
             final Field field) {

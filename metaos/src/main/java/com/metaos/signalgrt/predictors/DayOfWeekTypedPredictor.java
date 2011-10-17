@@ -11,21 +11,18 @@ import com.metaos.util.*;
 import com.metaos.datamgt.*;
 
 /**
- * Set of predictors for volume profile daily forecasting.
+ * Set of predictors for daily forecasting, one for each day of week and
+ * one more for third friday in month.
  *
- * Six different predictors are used, one for each day of the week and one
- * more for third friday. 
- *
- * TODO: Generalize, since it's not implemented only for Volume Field.
  */
-public class VolumeProfilePredictor implements PredictorListener {
+public class DayOfWeekTypedPredictor implements PredictorListener {
     private final Predictor[][] predictors;
     private final CalUtils.InstantGenerator instantGenerator;
     private final Field field;
     private Calendar lastLearningTime = CalUtils.getZeroCalendar();
 
 
-    public VolumeProfilePredictor(
+    public DayOfWeekTypedPredictor(
             final CalUtils.InstantGenerator instantGenerator,
             final Field field) {
         this.field = field;
@@ -76,8 +73,6 @@ public class VolumeProfilePredictor implements PredictorListener {
         for(int i=0; i<prediction.length; i++) sum += prediction[i];
         for(int i=0; i<prediction.length; i++) prediction[i] /= sum;
 
-System.out.println("Predicting " + prediction.length);
-
         return prediction;
     }
 
@@ -122,7 +117,6 @@ System.out.println("Predicting " + prediction.length);
      * Memorizes one single value.
      */
     public void learnValue(final Calendar when, final double val) {
-System.out.println("Learning for minute " + when.get(Calendar.MINUTE));
         // Date Control: noitified date should not be before previous date
         assert( ! when.before(this.lastLearningTime) );
         this.lastLearningTime = when;

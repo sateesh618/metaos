@@ -3,11 +3,11 @@ from com.metaos.jy.util.LocalTimeMinutes import LocalTimeMinutes
 
 class Vol4Wap1MinMA5(Vol4WapBase):
     def createPredictor(self):
-        return VolumeProfilePredictor(LocalTimeMinutes(), Field.VOLUME())
+        return DayOfWeekTypedPredictor(LocalTimeMinutes(), Field.VOLUME())
 
     def createProfileComparator(self):
         return MobileWindowVolumeProfileComparator(\
-                5, LocalTimeMinutes(), Field.VOLUME())
+                300, LocalTimeMinutes(), Field.VOLUME())
 
     def createSpreadTradesMgr(self):
             return TransparentSTMgr()

@@ -1,3 +1,4 @@
+
 ##
 ## Root code for volume predictions to calculate VWAP.
 ## 
@@ -6,6 +7,7 @@ from com.metaos.datamgt import *
 from com.metaos.engine import *
 from com.metaos.util import *
 from com.metaos.ext import *
+from com.metaos.ext.filters import *
 from com.metaos.ext.error import *
 from com.metaos.signalgrt import *
 from com.metaos.signalgrt.predictors import *
@@ -50,8 +52,8 @@ class Vol4WapBase(object):
         accumulator = self.createSpreadTradesMgr()
         source = SingleSymbolScanner(fileName,symbol,lineParser,accumulator)
 
-        lineParser.addFilter(MercadoContinuoIsOpen())
-        #          .addFilter(MainOutliers())
+        lineParser.addFilter(MercadoContinuoIsOpen())\
+                .addFilter(MainOutliers(0.75))
 
         ## 
         ## Functions 'createPredictor()' and 'createProfileComparator()' must 
