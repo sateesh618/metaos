@@ -9,5 +9,7 @@ class Vol4Wap1MinMA5(Vol4WapBase):
         return MobileWindowVolumeProfileComparator(\
                 10, LocalTimeMinutes(), Field.VOLUME())
 
+    def createSpreadTradesMgr(self):
+            return TransparentSTMgr()
 
 Vol4Wap1MinMA5().run(args, interpreteR)

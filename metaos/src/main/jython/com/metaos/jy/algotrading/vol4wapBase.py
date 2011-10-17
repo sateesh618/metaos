@@ -47,8 +47,8 @@ class Vol4WapBase(object):
         TimeZone.setDefault(TimeZone.getTimeZone("GMT"))
 
         lineParser = ReutersCSVLineParser(fileName)
-        noAccumulator = TransparentSTMgr()
-        source = SingleSymbolScanner(fileName,symbol,lineParser,noAccumulator)
+        accumulator = self.createSpreadTradesMgr()
+        source = SingleSymbolScanner(fileName,symbol,lineParser,accumulator)
 
         lineParser.addFilter(MercadoContinuoIsOpen())
         #          .addFilter(MainOutliers())
@@ -63,7 +63,7 @@ class Vol4WapBase(object):
         backtester = BacktesterAgent(source, predictor, \
                     OneDayAvoidingWeekEnds(), profileComparator)
         
-        noAccumulator.addListener(backtester)
+        accumulator.addListener(backtester)
         source.run()
         
         minuteErrors = profileComparator.getMinuteErrors();
