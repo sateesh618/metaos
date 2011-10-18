@@ -55,7 +55,7 @@ public class DayOfWeekTypedPredictorMA implements PredictorListener {
         this.kernelStrategy = kernelStrategy;
         this.field = field;
         this.instantGenerator = instantGenerator;
-        this.predictors = new Predictor[6][];
+        this.predictors = new KernelMovingAverage[6][];
         for(int i=0; i<6; i++) {
             this.predictors[i] = new KernelMovingAverage[
                     this.instantGenerator.maxInstantValue()];

@@ -15,6 +15,7 @@ import java.util.*;
 public class KernelMovingAverage implements Predictor {
     private final double memory[];
     private int head;
+    private Kernel kernel;
 
     public KernelMovingAverage(final int memorySize) {
         this.memory = new double[memorySize];

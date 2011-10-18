@@ -16,7 +16,8 @@ class VariableSizeStrategy(DayOfWeekTypedPredictorMA.KernelStrategy):
 
     def injectKernel(self, predictor):
         core = predictor.getCore()
-        if self.stdev(core)>self.varLimit: predictor.setKernel(self.largeKernel)
+        if self.variance(core)>self.varLimit: 
+            predictor.setKernel(self.largeKernel)
         else: predictor.setKernel(self.smallKernel)
         
     def kernelSize(self):
@@ -24,7 +25,18 @@ class VariableSizeStrategy(DayOfWeekTypedPredictorMA.KernelStrategy):
 
 
     ## Calculates vector standard deviation.
-    def stdev(self, vector):
+    def variance(self, vector):
+        total = 0
+        for i in range(0, len(vector)): total = total + vector[i]
+        mean = total / len(vector)
+
+        total = 0
+        for i in range(0, len(vector)): 
+            dif = mean - vector[i]
+            total = total + (dif*dif)
+        return total / (len(vector)-1)
+
+
 
 
 

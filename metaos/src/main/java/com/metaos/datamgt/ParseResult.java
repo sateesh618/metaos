@@ -71,6 +71,7 @@ public class ParseResult {
         this.values.put(symbol, vs);
     }
 
+
     /** 
      * Stores the value for the given field associated to 
      * given symbol.
@@ -84,8 +85,6 @@ public class ParseResult {
         vs.put(field, val);
         this.values.put(symbol, vs);
     }
-
-
 
 
     /**
@@ -121,6 +120,7 @@ public class ParseResult {
     public List<String> getSymbols() {
         return Collections.unmodifiableList(this.symbols);
     }
+
 
     /**
      * Empties all values.
