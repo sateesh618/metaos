@@ -11,28 +11,57 @@ import com.metaos.util.*;
 import com.metaos.datamgt.*;
 
 /**
- * Set of predictors for daily forecasting, one for each day of week and
+ * Set of moving averages for daily forecasting, one for each day of week and
  * one more for third friday in month.
- *
  */
-public class DayOfWeekTypedPredictor implements PredictorListener {
-    private final Predictor[][] predictors;
+public class DayOfWeekTypedPredictorMA implements PredictorListener {
+    private final KernelMovingAverage[][] predictors;
     private final CalUtils.InstantGenerator instantGenerator;
     private final Field field;
+    private final KernelStrategy kernelStrategy;
     private Calendar lastLearningTime = CalUtils.getZeroCalendar();
 
 
-    public DayOfWeekTypedPredictor(
+    //
+    // Inner interface --------------------------------------------
+    //
+
+    /**
+     * Decission algorithm to select kernel for kernel-moving-average
+     * predictors.
+     */
+    public static interface KernelStrategy {
+        /**
+         * Injects kernel to kernel-MA according to predictor internal data.
+         */
+        public void injectKernel(final KernelMovingAverage predictor);
+
+        /**
+         * Maximum size of kernels
+         */
+        public int kernelSize();
+    }
+
+
+
+
+    /**
+     *
+     */
+    public DayOfWeekTypedPredictorMA(
+            final KernelStrategy kernelStrategy,
             final CalUtils.InstantGenerator instantGenerator,
             final Field field) {
+        this.kernelStrategy = kernelStrategy;
         this.field = field;
         this.instantGenerator = instantGenerator;
         this.predictors = new Predictor[6][];
         for(int i=0; i<6; i++) {
-            this.predictors[i] = new Predictor[
+            this.predictors[i] = new KernelMovingAverage[
                     this.instantGenerator.maxInstantValue()];
             for(int j=0; j<this.predictors[i].length; j++) {
-                this.predictors[i][j] = new MovingAverage(5);
+                this.predictors[i][j] = new KernelMovingAverage(
+                        kernelStrategy.kernelSize());
             }
         }
     }
@@ -65,6 +94,7 @@ public class DayOfWeekTypedPredictor implements PredictorListener {
         final double prediction[] = new double[
                 this.instantGenerator.maxInstantValue()];
         for(int i=0; i<predictors[index].length; i++) {
+            this.kernelStrategy.injectKernel(predictors[index][i]);
             prediction[i] = predictors[index][i].predict(when);
         }
 
