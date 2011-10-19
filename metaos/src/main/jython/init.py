@@ -3,7 +3,6 @@ from com.metaos.datamgt import *
 from com.metaos.engine import *
 from com.metaos.util import *
 from com.metaos.ext import *
-from com.metaos.ext.filters import *
 from com.metaos.ext.error import *
 from com.metaos.signalgrt import *
 from com.metaos.signalgrt.predictors import *
