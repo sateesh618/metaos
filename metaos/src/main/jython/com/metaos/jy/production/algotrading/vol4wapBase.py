@@ -37,15 +37,15 @@ class OneDayAvoidingWeekEnds(ForecastingTime):
 
 class NotifiedDay(Listener):
     def notify(self, parseResult):
-        self.when = CalUtils.normalizeAndClone(\
+        self.when = CalUtils.normalizedClone(\
             parseResult.getLocalTimestamp())
 
     def nextDay(self):
-        self.when.add(Calendar.DAY)
+        self.when.add(Calendar.DAY_OF_MONTH, 1)
         while self.when.get(Calendar.DAY_OF_WEEK)==Calendar.SATURDAY \
-                and self.when.get(Calendar.DAY_OF_WEEK)==Calendar.SUNDAY:
-            self.when.add(Calendar.DAY)
-        return self
+                or self.when.get(Calendar.DAY_OF_WEEK)==Calendar.SUNDAY:
+            self.when.add(Calendar.DAY_OF_MONTH, 1)
+        return self.when
 
 
 
@@ -73,7 +73,7 @@ class Vol4WapBase(object):
         ##
         predictor = self.createPredictor()
         profileComparator = self.createProfileComparator()
-        notifiedDay = NoitifiedDay()
+        notifiedDay = NotifiedDay()
         
         accumulator.addListener(predictor)
         accumulator.addListener(notifiedDay)
@@ -82,5 +82,14 @@ class Vol4WapBase(object):
         for i in range(0,5):
             nextDay = notifiedDay.nextDay()
             forecasting = predictor.predictVector(nextDay)
-            print str(forecasting)
+
+            file = open(symbol + "-" + str(nextDay.get(Calendar.DAY_OF_MONTH)) \
+                    + "-" + str(nextDay.get(Calendar.MONTH)+1) \
+                    + "-" + str(nextDay.get(Calendar.YEAR)) \
+                    + ".forecasting.txt", "w")
+
+            for j in range(0,len(forecasting)):
+                file.write(str(forecasting[j]))
+                file.write('\n')
+            file.close()
 
