@@ -1,4 +1,5 @@
-from com.metaos.jy.algotrading.vol4wapBase import Vol4WapBase
+from com.metaos.jy.production.algotrading.vol4wap1minVarKerMABase \
+    import Vol4Wap1MinVarKernelMABase
 from com.metaos.jy.util.LocalTimeMinutes import LocalTimeMinutes
 
 class Vol4Wap1MinVarKernelMA(Vol4Wap1MinVarKernelMABase):

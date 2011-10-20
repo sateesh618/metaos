@@ -64,9 +64,8 @@ class Vol4WapBase(object):
         accumulator = self.createSpreadTradesMgr()
         source = SingleSymbolScanner(fileName,symbol,lineParser,accumulator)
 
-        lineParser.addFilter(MercadoContinuoIsOpen())
-        #        .addFilter(MainOutliers(0.75))
-        print "Please, activate MainOutliers"
+        lineParser.addFilter(MercadoContinuoIsOpen())\
+                .addFilter(MainOutliers(0.75))
 
         ## 
         ## Functions 'createPredictor()' and 'createProfileComparator()' must 
@@ -80,7 +79,8 @@ class Vol4WapBase(object):
         accumulator.addListener(notifiedDay)
         source.run()
         
-        forecasting = predictor.predictVector(notifiedDay.nextDay())
-
-        print str(forecasting)
+        for i in range(0,5):
+            nextDay = notifiedDay.nextDay()
+            forecasting = predictor.predictVector(nextDay)
+            print str(forecasting)
 

@@ -1,4 +1,4 @@
-from com.metaos.jy.algotrading.vol4wapBase import Vol4WapBase
+from com.metaos.jy.lab.algotrading.vol4wapBase import Vol4WapBase
 from com.metaos.jy.util.LocalTimeMinutes import LocalTimeMinutes
 
 from com.metaos.jy.predictors.MAKernels import ConstantMAKernel
