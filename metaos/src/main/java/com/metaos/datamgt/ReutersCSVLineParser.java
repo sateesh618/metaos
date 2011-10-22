@@ -141,17 +141,19 @@ public class ReutersCSVLineParser implements LineParser {
     }
 
 
-    private static final Format textFormat=new MessageFormat("{0}");
-    private static final Format dateFormat = 
+    public static final Format textFormat=new MessageFormat("{0}");
+    public static final Format dateFormat = 
             CalUtils.getDateFormat("dd-MMM-yyyy");
-    private static final Format timeFormat = 
+    public static final Format timeFormat = 
             CalUtils.getDateFormat("HH:mm:ss.SSS");
-    private static final Format doubleFormat = new DecimalFormat("#.##");
+    public static final Format doubleFormat = new DecimalFormat("#.##");
 
-    private static final Map<String, Format> formattersMap = 
+    public static final Map<String, Format> formattersMap = 
             new HashMap<String, Format>();
-    private static final Map<String, Field> fieldsMap = 
+    public static final Map<String, Field> fieldsMap = 
             new HashMap<String, Field>();
+    public static final Map<Field, String> reverseFieldsMap = 
+            new HashMap<Field, String>();
 
     static {
         fieldsMap.put("Ask Price", new CLOSE(Qualifier.ASK));
@@ -208,5 +210,9 @@ public class ReutersCSVLineParser implements LineParser {
         formattersMap.put("VWAP", doubleFormat);
         formattersMap.put("Volume", doubleFormat);
         formattersMap.put("GMT Offset", new DecimalFormat("+#;-#"));
+
+        for(final Map.Entry<String, Field> entry : fieldsMap.entrySet()) {
+            reverseFieldsMap.put(entry.getValue(), entry.getKey());
+        }
     }
 }
