@@ -28,7 +28,7 @@ public class FileSplitting {
      */
     public static String getFileName(final Calendar when, final String symbol) {
         final StringBuffer fileName = new StringBuffer(symbol).append(".");
-        fileName.append(fileDateParser.format(when)).append(".csv");
+        fileName.append(fileDateParser.format(when.getTime())).append(".csv");
         return fileName.toString();
     }
 
@@ -110,9 +110,11 @@ public class FileSplitting {
             // Writes over previously open output file
             output.print(symbol);
             output.print(",");
-            output.print(ReutersCSVLineParser.dateFormat.format(when));
+            output.print(ReutersCSVLineParser.dateFormat.format(
+                    when.getTime()));
             output.print(",");
-            output.print(ReutersCSVLineParser.timeFormat.format(when));
+            output.print(ReutersCSVLineParser.timeFormat.format(
+                    when.getTime()));
             output.print(",");
             output.print(when.get(Calendar.ZONE_OFFSET) / (1000 * 60 * 60));
 
