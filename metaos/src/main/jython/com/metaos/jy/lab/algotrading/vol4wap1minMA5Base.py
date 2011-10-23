@@ -23,7 +23,7 @@ class Vol4Wap1MinMA5Base(Vol4WapBase):
     def createPredictor(self):
         fixedStrategy = FixedStrategy(5)
         return DayOfWeekTypedPredictorMA(fixedStrategy, LocalTimeMinutes(), \
-                Field.VOLUME())
+                Field.VOLUME(), 1.0)
 
     def createSpreadTradesMgr(self):
             return TransparentSTMgr()

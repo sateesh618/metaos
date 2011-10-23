@@ -47,7 +47,7 @@ class Vol4Wap1MinVarKernelMABase(Vol4WapBase):
     def createPredictor(self):
         kernelStrategy = VariableSizeStrategy(5, 0.10, 10)
         return DayOfWeekTypedPredictorMA(kernelStrategy, LocalTimeMinutes(), \
-                Field.VOLUME())
+                Field.VOLUME(), 1.0)
 
     def createSpreadTradesMgr(self):
             return TransparentSTMgr()
