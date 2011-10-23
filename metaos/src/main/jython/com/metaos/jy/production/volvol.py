@@ -42,6 +42,8 @@ class VolatilityCalculator:
                     if instantValues[j] != None:
                         dif = mean - instantValues[j]
                         volatility = volatility + (dif * dif)
+                        N = N + 1
+                    j = j - 1 
 
                 volatility = volatility / (N-1)
                 volatilities.append(volatility)
