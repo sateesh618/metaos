@@ -124,6 +124,85 @@ public class FileSplitting {
                         .doubleFormat.format(values.get(f)) : "-");
             }
             output.println();
+
+            this.processingDays.put(symbol, currentDay);
+        }
+    }
+
+
+
+    /**
+     * Prices source for only one symbol for data split in different files,  
+     * one for each day.
+     */
+    public static class SingleSymbolSplitFiles implements LineScanner {
+        private final Calendar initDay, endDay;
+        private final String symbol;
+        private final LineParser lineParser;
+        private final SpreadTradesMgr spreadTradesMgr
+
+        /**
+         * @param path complete path to file repository.
+         * @param initDay first included day for scanning.
+         * @param endDay last included day for scanning.
+         */
+        public SingleSymbolSplitFiles(final String path, final String symbol, 
+                final LineParser lineParser, 
+                final SpreadTradesMgr spreadTradesMgr, final Calendar initDay, 
+                final Calendar endDay) {
+            this.path = path;
+            this.symbol = symbol;
+            this.lineParser = lineParser;
+            this.spreadTradesMgr = spreadTradesMgr;
+            this.initDay = CalUtils.normalizedClone(initDay);
+            this.endDay = CalUtils.normalizedClone(endDay);
+        }
+
+
+        /**
+         * Starts running scanner to get all prices from source.
+         */
+        public void run() {
+            Calendar currentDay = initDay;
+            while( ! currentDay.after(endDay) ) {
+                final String fileName = getFileName(this.symbol, currentDay);
+                final LineScanner source = new SingleSymbolScanner(
+                        this.path + "/" + fileName, this.symbol, 
+                        this.lineParser, this.spreadTradesMgr);
+                source.run();
+                currentDay.add(Calendar.DAY_OF_MONTH, 1);
+            }
+        }
+
+
+        /**
+         * Resets reader to the start of source.
+         */
+        public void reset() {
+        }
+
+
+        /**
+         * Gets the next set of prices.
+         */
+        public boolean next() {
+            throw new UnsupportedOperationException("Not implemented");
+        }
+
+        /**
+         * Gets the first set of prices.
+         * Optional method: maybe has no sense for realtime sources.
+         */
+        public boolean first() {
+            throw new UnsupportedOperationException("Not implemented");
+        }
+
+        /**
+         * Gets the last set of prices.
+         * Optional method: maybe has no sense for realtime sources.
+         */
+        public boolean last() {
+            throw new UnsupportedOperationException("Not implemented");
         }
     }
 }
