@@ -84,7 +84,8 @@ for dayOfWeek in [Calendar.TUESDAY]:
     lineParser.addFilter(MercadoContinuoIsOpen())\
             .addFilter(DayOfWeek(dayOfWeek)).addFilter(OnlyThirdFriday(-1))
 
-    t = VolumeViews(noAccumulator, LocalTimeMinutes())
+    t = VolumeViews(LocalTimeMinutes())
+    noAccumulator.addListener(t)
     source.run()
     if t.isEmpty() : continue
     t.consolidateDay(None)

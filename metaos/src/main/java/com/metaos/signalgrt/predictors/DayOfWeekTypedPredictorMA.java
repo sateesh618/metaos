@@ -19,6 +19,8 @@ public class DayOfWeekTypedPredictorMA implements PredictorListener {
     private final CalUtils.InstantGenerator instantGenerator;
     private final Field field;
     private final KernelStrategy kernelStrategy;
+    private final List<Pair> learnedValues;
+    private final double scale;
     private Calendar lastLearningTime = CalUtils.getZeroCalendar();
 
 
@@ -44,14 +46,24 @@ public class DayOfWeekTypedPredictorMA implements PredictorListener {
 
 
 
+    //
+    // Public methods ---------------------------------------
+    //
+
 
     /**
+     * Creates a combined predictor: 5 days (labour days) + third friday,
+     * kernelMovingAverages with defined strategy to change kernels
+     * and scaling learned and predicted values.
      *
+     * @param scale value to scale daily predictions, 
+     *      0 or less if no scale is wanted.
      */
     public DayOfWeekTypedPredictorMA(
             final KernelStrategy kernelStrategy,
             final CalUtils.InstantGenerator instantGenerator,
-            final Field field) {
+            final Field field, final double scale) {
+        this.scale = scale;
         this.kernelStrategy = kernelStrategy;
         this.field = field;
         this.instantGenerator = instantGenerator;
@@ -64,6 +76,11 @@ public class DayOfWeekTypedPredictorMA implements PredictorListener {
                         kernelStrategy.kernelSize());
             }
         }
+        this.learnedValues = new ArrayList<Pair>();
+        for(int i=0; i<this.instantGenerator.maxInstantValue(); i++) {
+            this.learnedValues.add(null);
+        }
+
     }
 
 
@@ -90,6 +107,8 @@ public class DayOfWeekTypedPredictorMA implements PredictorListener {
      * Emits a forecast based on learned values.
      */
     public double[] predictVector(final Calendar when) {
+        this.learnInsidePredictors();
+
         final int index = daySelector(when);
         final double prediction[] = new double[
                 this.instantGenerator.maxInstantValue()];
@@ -98,10 +117,13 @@ public class DayOfWeekTypedPredictorMA implements PredictorListener {
             prediction[i] = predictors[index][i].predict(when);
         }
 
-        // Normalizes prediction to 1.0
-        double sum = 0;
-        for(int i=0; i<prediction.length; i++) sum += prediction[i];
-        for(int i=0; i<prediction.length; i++) prediction[i] /= sum;
+        // Normalizes prediction
+        if(this.scale>0) {
+            double sum = 0;
+            for(int i=0; i<prediction.length; i++) sum += prediction[i];
+            double s = scale/sum;
+            for(int i=0; i<prediction.length; i++) prediction[i] *= s;
+        }
 
         return prediction;
     }
@@ -118,9 +140,8 @@ public class DayOfWeekTypedPredictorMA implements PredictorListener {
                     + this.instantGenerator.maxInstantValue() 
                     + " in this case, and not " + vals.length + ")");
         }
-        final int i = daySelector(when);
-        for(int j=0; j<this.predictors[i].length; j++) {
-            this.predictors[i][j].learnValue(when, vals[j]);
+        for(int j=0; j<vals.length; j++) {
+            this.learnValue(when, vals[j]);
         }
     }
 
@@ -136,9 +157,8 @@ public class DayOfWeekTypedPredictorMA implements PredictorListener {
                     + this.instantGenerator.maxInstantValue() 
                     + " in this case, and not " + vals.size() + ")");
         }
-        final int i = daySelector(when);
-        for(int j=0; j<this.predictors[i].length; j++) {
-            this.predictors[i][j].learnValue(when, vals.get(j));
+        for(int j=0; j<vals.size(); j++) {
+            this.learnValue(when, vals.get(j));
         }
     }
 
@@ -149,11 +169,18 @@ public class DayOfWeekTypedPredictorMA implements PredictorListener {
     public void learnValue(final Calendar when, final double val) {
         // Date Control: noitified date should not be before previous date
         assert( ! when.before(this.lastLearningTime) );
+
+        if(when.get(Calendar.DAY_OF_YEAR) !=
+                        this.lastLearningTime.get(Calendar.DAY_OF_YEAR) 
+                || when.get(Calendar.YEAR) !=
+                        this.lastLearningTime.get(Calendar.YEAR)) {
+            learnInsidePredictors();
+        }
+
         this.lastLearningTime = when;
 
-        final int i = daySelector(when);
         final int j = this.instantGenerator.generate(when);
-        predictors[i][j].learnValue(when, val);
+        this.learnedValues.set(j, new Pair(when, val));
     }
 
 
@@ -166,6 +193,10 @@ public class DayOfWeekTypedPredictorMA implements PredictorListener {
                 this.predictors[i][j].reset();
             }
         }
+        this.learnedValues.clear();
+        for(int i=0; i<this.instantGenerator.maxInstantValue(); i++) {
+            this.learnedValues.add(null);
+        }
     }
 
 
@@ -173,7 +204,8 @@ public class DayOfWeekTypedPredictorMA implements PredictorListener {
      * Returns the human name of the predictor.
      */
     public String toString() {
-        return "Daily Minute Volume Profile Predictor";
+        return this.scale>0 ? "Not Normalized Weekly Predictor"
+                : "Normalized to " + this.scale + " Weekly Predictor";
     }
 
 
@@ -196,6 +228,61 @@ public class DayOfWeekTypedPredictorMA implements PredictorListener {
             default:
                 throw new IllegalArgumentException(
                         "Don't how to deal with SATURDAY or SUNDAYS");
+        }
+    }
+
+
+
+    /**
+     * Learns inside predictors with memorized values for day, normalizing
+     * values (if it's needed) and forgeting values for next learning cycle.
+     */
+    private void learnInsidePredictors() {
+        // Normalize
+        if(this.scale>0) {
+            double total = 0;
+            for(int moment=0; moment<this.learnedValues.size(); moment++) {
+                final Pair p = this.learnedValues.get(moment);
+                if(p!=null) {
+                    total += p.val;
+                }
+            }
+            for(int moment=0; moment<this.learnedValues.size(); moment++) {
+                final Pair p = this.learnedValues.get(moment);
+                if(p!=null) {
+                    this.learnedValues.set(moment, 
+                            new Pair(p.when, this.scale * p.val / total));
+                }
+            }
+        }
+
+        // Learn
+        final int dayOfWeek = daySelector(this.lastLearningTime);
+        for(int moment=0; moment<this.learnedValues.size(); moment++) {
+            final Pair p = this.learnedValues.get(moment);
+            if(p!=null) {
+                this.predictors[dayOfWeek][moment].learnValue(p.when, p.val);
+            }
+        }
+
+        // Reset memorized values
+        this.learnedValues.clear();
+        for(int i=0; i<this.instantGenerator.maxInstantValue() ;i++) {
+            this.learnedValues.add(null);
+        }
+    }
+
+
+
+    /**
+     * Struct-C emulation.
+     */
+    private class Pair {
+        private final double val;
+        private final Calendar when;
+        private Pair(final Calendar when, final double val) {
+            this.when = (Calendar) when.clone();
+            this.val = val;
         }
     }
 }

@@ -34,7 +34,8 @@ for dayOfWeek in [Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY,\
     lineParser.addFilter(MercadoContinuoIsOpen())\
             .addFilter(DayOfWeek(dayOfWeek)).addFilter(OnlyThirdFriday(1))
 
-    t = VolumeViews(noAccumulator, LocalTimeMinutes())
+    t = VolumeViews(LocalTimeMinutes())
+    noAccumulator.addListener(t)
     source.run()
     t.consolidateDay(None)
     t.normalizeDays(100)

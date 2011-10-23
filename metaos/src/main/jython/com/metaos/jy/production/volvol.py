@@ -13,60 +13,48 @@ memorySize = Integer.parseInt(args[2])
 ##
 ## Calculi helper for volatility on volume.
 ##
-class VolatilityCalculator(Listener):
-    def __init__(self, memorySize):
+class VolatilityCalculator:
+    def __init__(self, volumeViews, memorySize):
+        self.volumeViews = volumeViews
         self.memorySize = memorySize
-        self.values = []
-        self.minutesGenerator = LocalTimeMinutes()
-        for i in range(0,self.minutesGenerator.maxInstantValue()+1):
-            self.values.append([])
+
 
     def getValues(self):
         volatilities = []
-        for i in range(1,len(self.values)):
-            if len(self.values[i])<=1: continue
+        for i in range(0, self.volumeViews.numberOfInstantsInADay()):
+            volatility = 0
+            N = 0
+            init = self.volumeViews.getValueAcrossDays(i).size()-self.memorySize
+            end = self.volumeViews.getValueAcrossDays(i).size()
+            for j in range(init, end):
+                N = N + 1
 
-            total = 0
-            for j in range(len(self.values[i])-self.memorySize, \
-                    len(self.values[i])):
-                total = total + self.values[i][j]
-            mean = total / len(self.values[i])
 
-            total = 0
-            for j in range(len(self.values[i])-self.memorySize, \
-                    len(self.values[i])):
-                dif = mean - self.values[i][j]
-                total = total + (dif*dif)
-            variance = total / (len(self.values[i])-1)
-
-            volatilities.append(variance)
+            if N>1:
+                volatility = volatility / (N-1)
+                volatilities.append(volatility)
 
         return volatilities
-
+         
 
     def reset(self):
-        self.values = []
-
-
-    def notify(self, result):
-        if result.values(0)!=None and \
-                result.values(0).get(Field.VOLUME())!=None:
-            minute = self.minutesGenerator.generate(result.getLocalTimestamp()) 
-            self.values[minute].append(result.values(0).get(Field.VOLUME()))
+        self.volumeViews.reset()
 
 
 
-
+#
+# Let's go...
+#
 lineParser = ReutersCSVLineParser(fileName)
 noAccumulator = TransparentSTMgr()
 source = SingleSymbolScanner(fileName, symbol, lineParser, noAccumulator)
-volatilityCalculator = VolatilityCalculator(memorySize)
-noAccumulator.addListener(volatilityCalculator)
-
-
-
+volumeViews = VolumeViews(LocalTimeMinutes())
+volatilityCalculator = VolatilityCalculator(volumeViews, memorySize)
+noAccumulator.addListener(volumeViews)
 
 statistics = Statistics(interpreteR)
+
+
 # Volatility for each minute and for each day of week
 for dayOfWeek in [Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY,\
                   Calendar.THURSDAY,Calendar.FRIDAY]:
@@ -74,6 +62,7 @@ for dayOfWeek in [Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY,\
             .addFilter(DayOfWeek(dayOfWeek)).addFilter(OnlyThirdFriday(-1))\
             .addFilter(MainOutliers(0.75))
     source.run()
+    normalizeDays(1.0)
     vols = volatilityCalculator.getValues()
     for i in range(0, len(vols)): statistics.addValue(vols[i])
 

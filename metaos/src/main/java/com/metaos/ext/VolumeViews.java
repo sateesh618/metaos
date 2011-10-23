@@ -31,9 +31,7 @@ public class VolumeViews implements Listener {
     /**
      * Creates a transposer subscribed to given lines accumulator.
      */
-    public VolumeViews(final SpreadTradesMgr accumulator, 
-            final CalUtils.InstantGenerator instantGenerator) {
-        accumulator.addListener(this);
+    public VolumeViews(final CalUtils.InstantGenerator instantGenerator) {
         this.instantGenerator = instantGenerator;
         this.valuesInstantDay = new ArrayList<List<Double>>();
         this.consideredDays = new ArrayList<Calendar>();
@@ -164,4 +162,12 @@ public class VolumeViews implements Listener {
     public List<Calendar> getConsideredDays() {
         return this.consideredDays;
     }
+
+    /**
+     * Empties everything, reseting to initial state.
+     */
+    public void reset() {
+        this.valuesInstantDay.clear();
+        this.consideredDays.clear();
+    } 
 }
