@@ -21,16 +21,28 @@ class VolatilityCalculator:
 
     def getValues(self):
         volatilities = []
-        for i in range(0, self.volumeViews.numberOfInstantsInADay()):
-            volatility = 0
-            N = 0
-            init = self.volumeViews.getValueAcrossDays(i).size()-self.memorySize
-            end = self.volumeViews.getValueAcrossDays(i).size()
-            for j in range(init, end):
-                N = N + 1
+        for instant in range(0, self.volumeViews.numberOfInstantsInADay()):
+            instantValues = self.volumeViews.getValueAcrossDays(instant)
 
+            mean = 0
+            N = 0
+            j = self.volumeViews.getValueAcrossDays(instant).size() - 1
+            while j>0 and N<self.memorySize:
+                if instantValues[j] != None:
+                    N = N + 1
+                    mean = mean + instantValues[j]
+                j = j-1
 
             if N>1:
+                mean = mean / N
+                N = 0
+                volatility = 0
+                j = self.volumeViews.getValueAcrossDays(instant).size() - 1
+                while j>0 and N<self.memorySize:
+                    if instantValues[j] != None:
+                        dif = mean - instantValues[j]
+                        volatility = volatility + (dif * dif)
+
                 volatility = volatility / (N-1)
                 volatilities.append(volatility)
 
@@ -50,8 +62,6 @@ noAccumulator = TransparentSTMgr()
 source = SingleSymbolScanner(fileName, symbol, lineParser, noAccumulator)
 volumeViews = VolumeViews(LocalTimeMinutes())
 volatilityCalculator = VolatilityCalculator(volumeViews, memorySize)
-noAccumulator.addListener(volumeViews)
-
 statistics = Statistics(interpreteR)
 
 
@@ -61,8 +71,10 @@ for dayOfWeek in [Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY,\
     lineParser.addFilter(MercadoContinuoIsOpen())\
             .addFilter(DayOfWeek(dayOfWeek)).addFilter(OnlyThirdFriday(-1))\
             .addFilter(MainOutliers(0.75))
+    noAccumulator.addListener(volumeViews)
     source.run()
-    normalizeDays(1.0)
+    volumeViews.consolidateDay(None)
+    volumeViews.normalizeDays(1.0)
     vols = volatilityCalculator.getValues()
     for i in range(0, len(vols)): statistics.addValue(vols[i])
 
@@ -73,9 +85,14 @@ for dayOfWeek in [Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY,\
 # And then, third fridays
 lineParser.addFilter(MercadoContinuoIsOpen()).addFilter(OnlyThirdFriday(1))\
             .addFilter(MainOutliers(0.75))
+noAccumulator.addListener(volumeViews)
 source.run()
+volumeViews.consolidateDay(None)
+volumeViews.normalizeDays(1.0)
 vols = volatilityCalculator.getValues()
-for i in range(0, len(vols)): statistics.addValue(vols[i])
+for i in range(0, len(vols)): 
+    print vols[i]
+    statistics.addValue(vols[i])
 
 
 

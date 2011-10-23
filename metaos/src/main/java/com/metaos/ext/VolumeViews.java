@@ -123,6 +123,8 @@ public class VolumeViews implements Listener {
 
     /**
      * Gets the list of values for every day for a fixed moment in day.
+     * @return vector with null where no data for day has been received
+     * for requested instant but data has been request for some other instant.
      */
     public List<Double> getValueAcrossDays(final int instant) {
         return this.valuesInstantDay.get(instant);
