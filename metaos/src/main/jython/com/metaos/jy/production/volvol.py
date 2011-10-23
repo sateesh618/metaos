@@ -6,6 +6,7 @@ from com.metaos.jy.util.LocalTimeMinutes import LocalTimeMinutes
 
 fileName = args[0]
 symbol = args[1]
+memorySize = Integer.parseInt(args[2])
 
 
 
@@ -13,7 +14,8 @@ symbol = args[1]
 ## Calculi helper for volatility on volume.
 ##
 class VolatilityCalculator(Listener):
-    def __init__(self):
+    def __init__(self, memorySize):
+        self.memorySize = memorySize
         self.values = []
         self.minutesGenerator = LocalTimeMinutes()
         for i in range(0,self.minutesGenerator.maxInstantValue()+1):
@@ -25,12 +27,14 @@ class VolatilityCalculator(Listener):
             if len(self.values[i])<=1: continue
 
             total = 0
-            for j in range(0, len(self.values[i])):
+            for j in range(len(self.values[i])-self.memorySize, \
+                    len(self.values[i])):
                 total = total + self.values[i][j]
             mean = total / len(self.values[i])
 
             total = 0
-            for j in range(0, len(self.values[i])):
+            for j in range(len(self.values[i])-self.memorySize, \
+                    len(self.values[i])):
                 dif = mean - self.values[i][j]
                 total = total + (dif*dif)
             variance = total / (len(self.values[i])-1)
@@ -56,7 +60,7 @@ class VolatilityCalculator(Listener):
 lineParser = ReutersCSVLineParser(fileName)
 noAccumulator = TransparentSTMgr()
 source = SingleSymbolScanner(fileName, symbol, lineParser, noAccumulator)
-volatilityCalculator = VolatilityCalculator()
+volatilityCalculator = VolatilityCalculator(memorySize)
 noAccumulator.addListener(volatilityCalculator)
 
 
@@ -68,7 +72,7 @@ for dayOfWeek in [Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY,\
                   Calendar.THURSDAY,Calendar.FRIDAY]:
     lineParser.addFilter(MercadoContinuoIsOpen())\
             .addFilter(DayOfWeek(dayOfWeek)).addFilter(OnlyThirdFriday(-1))\
-            .addFilter(MainOutlier(0.75))
+            .addFilter(MainOutliers(0.75))
     source.run()
     vols = volatilityCalculator.getValues()
     for i in range(0, len(vols)): statistics.addValue(vols[i])
@@ -79,7 +83,7 @@ for dayOfWeek in [Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY,\
 
 # And then, third fridays
 lineParser.addFilter(MercadoContinuoIsOpen()).addFilter(OnlyThirdFriday(1))\
-            .addFilter(MainOutlier(0.75))
+            .addFilter(MainOutliers(0.75))
 source.run()
 vols = volatilityCalculator.getValues()
 for i in range(0, len(vols)): statistics.addValue(vols[i])

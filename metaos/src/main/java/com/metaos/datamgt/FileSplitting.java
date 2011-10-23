@@ -68,7 +68,7 @@ public class FileSplitting {
                 try {
                     saveTrade(result.getLocalTimestamp(), s, result.values(s));
                 } catch(IOException ioe) {
-// ¿Qué hacer en este caso?
+                    // What should I do? Ignore?
                 }
             }
         }
@@ -139,7 +139,8 @@ public class FileSplitting {
         private final Calendar initDay, endDay;
         private final String symbol;
         private final LineParser lineParser;
-        private final SpreadTradesMgr spreadTradesMgr
+        private final SpreadTradesMgr spreadTradesMgr;
+        private final String path;
 
         /**
          * @param path complete path to file repository.
@@ -165,11 +166,15 @@ public class FileSplitting {
         public void run() {
             Calendar currentDay = initDay;
             while( ! currentDay.after(endDay) ) {
-                final String fileName = getFileName(this.symbol, currentDay);
-                final LineScanner source = new SingleSymbolScanner(
-                        this.path + "/" + fileName, this.symbol, 
-                        this.lineParser, this.spreadTradesMgr);
-                source.run();
+                final String fileName = getFileName(currentDay, this.symbol);
+                try {
+                    final LineScanner source = new SingleSymbolScanner(
+                            this.path + "/" + fileName, this.symbol, 
+                            this.lineParser, this.spreadTradesMgr);
+                    source.run();
+                } catch(IOException ioe) {
+                    // Cannot open required file...
+                }
                 currentDay.add(Calendar.DAY_OF_MONTH, 1);
             }
         }
@@ -203,6 +208,13 @@ public class FileSplitting {
          */
         public boolean last() {
             throw new UnsupportedOperationException("Not implemented");
+        }
+
+
+        /**
+         * Does nothing...
+         */
+        public void close() {
         }
     }
 }
