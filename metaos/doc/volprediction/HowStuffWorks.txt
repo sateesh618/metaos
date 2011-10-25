@@ -1,0 +1,46 @@
+The environment
+
+    Directory A:
+    ---------------------------------------------------------------------
+    files with weekly data, minute by minute, for all desired stocks.
+
+
+    Directory B:
+    ---------------------------------------------------------------------
+    Set of subdirectories (one for each day) with stock trade data files 
+    (one file per each stock):
+
+            year/month/day/stockSymbol.1min.csv
+
+
+    Directory C:
+    --------------------------------------------------------------------
+    Set of subdirectories (one for each day) with volume profile forecastings:
+    one file per each symbol prediction.
+
+            year/month/day/stockSymbol.volprofile.csv
+
+
+
+Usage
+
+    Weekly data file should placed at directory A.
+
+    Forecasting process is executed, receiving complete path to file at
+    directory A and location of directory B
+
+    Forecasting results are:
+        - new files in directory B, with daily information for each stock
+        - new files in directory C, with daily volume profile forecastings
+    
+
+
+Pay attention to these risks
+
+    New data overwrite old data. Thus, file at directory A, containing 
+    information about a day and stock will produce a file for this day 
+    and stock overwriting previously existing one in directory B.
+
+    New forecastings overwrite previous forecastings.
+
+
