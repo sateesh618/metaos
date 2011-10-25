@@ -93,7 +93,6 @@ volumeViews.consolidateDay(None)
 volumeViews.normalizeDays(1.0)
 vols = volatilityCalculator.getValues()
 for i in range(0, len(vols)): 
-    print vols[i]
     statistics.addValue(vols[i])
 
 
