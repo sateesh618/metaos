@@ -19,17 +19,34 @@ import com.metaos.util.*;
  */
 public class FileSplitting {
     private static final SimpleDateFormat fileDateParser = new SimpleDateFormat(
-            "yyyy-MM-dd");
+            "yyyy/MM/dd");
+
+
+    private final String resolution;
+
+    public FileSplitting(final String resolution) {
+        this.resolution = resolution;
+    }
 
 
     /**
      * Utility function to get the name of the file containing trades for
      * given symbol and day.
      */
-    public static String getFileName(final Calendar when, final String symbol) {
-        final StringBuffer fileName = new StringBuffer(symbol).append(".");
-        fileName.append(fileDateParser.format(when.getTime())).append(".csv");
+    public String getFileName(final Calendar when, final String symbol) {
+        final StringBuffer fileName = new StringBuffer();
+        fileName.append(fileDateParser.format(when.getTime())).append(".")
+                .append(symbol).append(".").append(resolution).append(".csv");
         return fileName.toString();
+    }
+
+
+    /**
+     * Creates path to desired file.
+     */
+    public void createPath(final String fileName) {
+        final String filePath = fileName.substring(0,fileName.lastIndexOf("/"));
+        new File(filePath).mkdirs();
     }
 
 
@@ -40,7 +57,7 @@ public class FileSplitting {
     /**
      * Splits information in different outputs.
      */
-    public static class CSVReutersSplitter implements Listener {
+    public class CSVReutersSplitter implements Listener {
         private final List<Field> fields;
         private final Map<String, Calendar> processingDays;
         private final Map<String, PrintStream> processingPrintStreams;
@@ -94,7 +111,9 @@ public class FileSplitting {
                     output.flush();
                     output.close();
                 }
-                final File currentFile = new File(getFileName(when, symbol));
+                final String fileName = getFileName(when, symbol);
+                createPath(fileName);
+                final File currentFile = new File(fileName);
                 output = new PrintStream(currentFile);
                 this.processingPrintStreams.put(symbol, output);
 
@@ -135,7 +154,7 @@ public class FileSplitting {
      * Prices source for only one symbol for data split in different files,  
      * one for each day.
      */
-    public static class SingleSymbolSplitFiles implements LineScanner {
+    public class SingleSymbolSplitFiles implements LineScanner {
         private final Calendar initDay, endDay;
         private final String symbol;
         private final LineParser lineParser;
