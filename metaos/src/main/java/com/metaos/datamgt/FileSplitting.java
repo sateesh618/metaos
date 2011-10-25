@@ -154,10 +154,9 @@ public class FileSplitting {
      * Prices source for only one symbol for data split in different files,  
      * one for each day.
      */
-    public class SingleSymbolSplitFiles implements LineScanner {
+    public class CSVReutersSingleSymbol implements LineScanner {
         private final Calendar initDay, endDay;
         private final String symbol;
-        private final LineParser lineParser;
         private final SpreadTradesMgr spreadTradesMgr;
         private final String path;
 
@@ -166,13 +165,11 @@ public class FileSplitting {
          * @param initDay first included day for scanning.
          * @param endDay last included day for scanning.
          */
-        public SingleSymbolSplitFiles(final String path, final String symbol, 
-                final LineParser lineParser, 
+        public CSVReutersSingleSymbol(final String path, final String symbol, 
                 final SpreadTradesMgr spreadTradesMgr, final Calendar initDay, 
                 final Calendar endDay) {
             this.path = path;
             this.symbol = symbol;
-            this.lineParser = lineParser;
             this.spreadTradesMgr = spreadTradesMgr;
             this.initDay = CalUtils.normalizedClone(initDay);
             this.endDay = CalUtils.normalizedClone(endDay);
@@ -187,9 +184,11 @@ public class FileSplitting {
             while( ! currentDay.after(endDay) ) {
                 final String fileName = getFileName(currentDay, this.symbol);
                 try {
+                    final LineParser lineParser = new ReutersCSVLineParser(
+                            this.path + "/" + fileName);
                     final LineScanner source = new SingleSymbolScanner(
                             this.path + "/" + fileName, this.symbol, 
-                            this.lineParser, this.spreadTradesMgr);
+                            lineParser, this.spreadTradesMgr);
                     source.run();
                 } catch(IOException ioe) {
                     // Cannot open required file...

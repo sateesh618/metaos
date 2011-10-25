@@ -4,10 +4,11 @@
 
 from com.metaos.jy.util.LocalTimeMinutes import LocalTimeMinutes
 
-fileName = args[0]
+repositoryPath = args[0]
 symbol = args[1]
 memorySize = Integer.parseInt(args[2])
-
+initDate = SimpleDateFormat('yyyy-MM-dd').parse(args[3])
+endDate = SimpleDateFormat('yyyy-MM-dd').parse(args[4])
 
 
 ##
@@ -59,9 +60,9 @@ class VolatilityCalculator:
 #
 # Let's go...
 #
-lineParser = ReutersCSVLineParser(fileName)
 noAccumulator = TransparentSTMgr()
-source = SingleSymbolScanner(fileName, symbol, lineParser, noAccumulator)
+source = FileSplitting('1min').CSVReutersSingleSymbol(\
+        filePath, symbol, noAccumulator, initDate, endDate)
 volumeViews = VolumeViews(LocalTimeMinutes())
 volatilityCalculator = VolatilityCalculator(volumeViews, memorySize)
 statistics = Statistics(interpreteR)

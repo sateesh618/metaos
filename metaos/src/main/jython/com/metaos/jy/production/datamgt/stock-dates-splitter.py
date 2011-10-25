@@ -15,6 +15,6 @@ lineParser = ReutersCSVLineParser(fileName)
 accumulator = TransparentSTMgr()
 source = SingleSymbolScanner(fileName,symbol,lineParser,accumulator)
 
-accumulator.addListener(FileSplitting.CSVReutersSplitter())
+accumulator.addListener(FileSplitting('1min').CSVReutersSplitter())
 
 source.run()
