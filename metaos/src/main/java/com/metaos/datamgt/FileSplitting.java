@@ -116,7 +116,7 @@ public class FileSplitting {
                     output.flush();
                     output.close();
                 }
-                final String fileName = this.repository + "/" 
+                final String fileName = repository + "/" 
                         + getFileName(when, symbol);
                 createPath(fileName);
                 final File currentFile = new File(fileName);
