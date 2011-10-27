@@ -11,7 +11,7 @@ symbols = [ 'TEF.MC' ]
 symbol = 'TEF.MC'
 # TODO: implement MultipleSymbols 
 
-lineParser = ReutersCSVLineParser(fileName)
+lineParser = ReutersCSVLineParser('.', fileName)
 accumulator = TransparentSTMgr()
 source = SingleSymbolScanner(fileName,symbol,lineParser,accumulator)
 
