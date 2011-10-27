@@ -1,6 +1,6 @@
 from com.metaos.jy.production.algotrading.vol4wap1minVarKerMABase \
     import Vol4Wap1MinVarKernelMABase
-from com.metaos.jy.production.algotrading.vol4wapMABase import NotifiedDay
+from com.metaos.jy.production.algotrading.vol4wapBase import NotifiedDay
 from com.metaos.jy.util.LocalTimeMinutes import LocalTimeMinutes
 from java.util import Calendar
 
