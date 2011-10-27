@@ -69,7 +69,7 @@ class Vol4WapBase(object):
         TimeZone.setDefault(TimeZone.getTimeZone("GMT"))
 
         accumulator = self.createSpreadTradesMgr()
-        source = FileSplitting('1min').CSVReutersSingleSymbol(\
+        source = FileSplitting.CSVReutersSingleSymbol(\
                 repository, symbol, accumulator, initDay, endDay)
 
         lineParser.addFilter(MercadoContinuoIsOpen())\

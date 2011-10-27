@@ -39,7 +39,7 @@ public class FileSplitting {
      * given symbol and day.
      */
     public String getFileName(final Calendar when, final String symbol) {
-        final StringBuffer fileName = new StringBuffer(repository);
+        final StringBuffer fileName = new StringBuffer(repository).append("/");
         fileName.append(fileDateParser.format(when.getTime())).append(".")
                 .append(symbol).append(".").append(resolution).append(".csv");
         return fileName.toString();
@@ -116,8 +116,7 @@ public class FileSplitting {
                     output.flush();
                     output.close();
                 }
-                final String fileName = repository + "/" 
-                        + getFileName(when, symbol);
+                final String fileName = getFileName(when, symbol);
                 createPath(fileName);
                 final File currentFile = new File(fileName);
                 output = new PrintStream(currentFile);

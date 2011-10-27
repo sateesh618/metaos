@@ -7,8 +7,8 @@ from java.util import Calendar
 
 
 inputFile = args[0]
+repositoryPath = args[1]
 forecastingPath = args[2]
-repository = args[1]
 
 # IBEX35
 symbols = [ 'TEF.MC' ]
@@ -17,11 +17,12 @@ initDay = None
 notifiedDay = NotifiedDay()
 
 # Feed repository
+repository = FileSplitting(repositoryPath, '1min')
 for symbol in symbols:
     lineParser = ReutersCSVLineParser(inputFile)
     accumulator = TransparentSTMgr()
-    accumulator.addListener(FileSplitting(repository, '1min')\
-            .CSVReutersSplitter())
+    
+    accumulator.addListener(FileSplitting.CSVReutersSplitter(repository))
     accumulator.addListener(notifiedDay)
     source = SingleSymbolScanner(inputFile,symbol,lineParser,accumulator)
     source.run()
