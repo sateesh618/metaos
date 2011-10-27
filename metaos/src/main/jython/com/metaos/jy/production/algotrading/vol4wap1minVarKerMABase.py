@@ -47,7 +47,7 @@ class VariableSizeStrategy(DayOfWeekTypedPredictorMA.KernelStrategy):
 ##
 class Vol4Wap1MinVarKernelMABase(Vol4WapBase):
     def createPredictor(self):
-        kernelStrategy = VariableSizeStrategy(5, 0.10, 10)
+        kernelStrategy = VariableSizeStrategy(5, 0.00000572, 10)
         return DayOfWeekTypedPredictorMA(kernelStrategy, LocalTimeMinutes(), \
                 Field.VOLUME(), 1.0)
 
