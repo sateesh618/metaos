@@ -22,10 +22,15 @@ public class FileSplitting {
             "yyyy/MM/dd");
 
 
-    private final String resolution;
+    private final String resolution, repository;
 
-    public FileSplitting(final String resolution) {
+    /**
+     * @param repository complete path to repository base directory.
+     * @param resolution prefix for file naming.
+     */
+    public FileSplitting(final String repository, final String resolution) {
         this.resolution = resolution;
+        this.repository = repository;
     }
 
 
@@ -34,7 +39,7 @@ public class FileSplitting {
      * given symbol and day.
      */
     public String getFileName(final Calendar when, final String symbol) {
-        final StringBuffer fileName = new StringBuffer();
+        final StringBuffer fileName = new StringBuffer(repository);
         fileName.append(fileDateParser.format(when.getTime())).append(".")
                 .append(symbol).append(".").append(resolution).append(".csv");
         return fileName.toString();
@@ -111,7 +116,8 @@ public class FileSplitting {
                     output.flush();
                     output.close();
                 }
-                final String fileName = getFileName(when, symbol);
+                final String fileName = this.repository + "/" 
+                        + getFileName(when, symbol);
                 createPath(fileName);
                 final File currentFile = new File(fileName);
                 output = new PrintStream(currentFile);
@@ -158,17 +164,14 @@ public class FileSplitting {
         private final Calendar initDay, endDay;
         private final String symbol;
         private final SpreadTradesMgr spreadTradesMgr;
-        private final String path;
 
         /**
-         * @param path complete path to file repository.
          * @param initDay first included day for scanning.
          * @param endDay last included day for scanning.
          */
-        public CSVReutersSingleSymbol(final String path, final String symbol, 
+        public CSVReutersSingleSymbol(final String symbol, 
                 final SpreadTradesMgr spreadTradesMgr, final Calendar initDay, 
                 final Calendar endDay) {
-            this.path = path;
             this.symbol = symbol;
             this.spreadTradesMgr = spreadTradesMgr;
             this.initDay = CalUtils.normalizedClone(initDay);
@@ -185,9 +188,9 @@ public class FileSplitting {
                 final String fileName = getFileName(currentDay, this.symbol);
                 try {
                     final LineParser lineParser = new ReutersCSVLineParser(
-                            this.path + "/" + fileName);
+                            fileName);
                     final LineScanner source = new SingleSymbolScanner(
-                            this.path + "/" + fileName, this.symbol, 
+                            fileName, this.symbol, 
                             lineParser, this.spreadTradesMgr);
                     source.run();
                 } catch(IOException ioe) {
