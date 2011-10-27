@@ -70,10 +70,8 @@ class Vol4WapBase(object):
 
         accumulator = self.createSpreadTradesMgr()
         source = FileSplitting.CSVReutersSingleSymbol(\
-                repository, symbol, accumulator, initDay, endDay)
-
-        lineParser.addFilter(MercadoContinuoIsOpen())\
-                .addFilter(MainOutliers(0.75))
+                repository, symbol, accumulator, initDay, endDay, \
+                [MercadoContinuoIsOpen(), MainOutliers(0.75)])        
 
         ## 
         ## Function 'createPredictor()' must 
@@ -90,7 +88,7 @@ class Vol4WapBase(object):
             nextDay = notifiedDay.nextDay()
             forecasting = predictor.predictVector(nextDay)
 
-            file = open(forcastingPath + "/" + symbol + "-" \
+            file = open(forecastingPath + "/" + symbol + "-" \
                     + str(nextDay.get(Calendar.DAY_OF_MONTH)) \
                     + "-" + str(nextDay.get(Calendar.MONTH)+1) \
                     + "-" + str(nextDay.get(Calendar.YEAR)) \

@@ -163,6 +163,7 @@ public class FileSplitting {
         private final Calendar initDay, endDay;
         private final String symbol;
         private final SpreadTradesMgr spreadTradesMgr;
+        private final List<Filter> filters;
 
         /**
          * @param initDay first included day for scanning.
@@ -170,11 +171,12 @@ public class FileSplitting {
          */
         public CSVReutersSingleSymbol(final String symbol, 
                 final SpreadTradesMgr spreadTradesMgr, final Calendar initDay, 
-                final Calendar endDay) {
+                final Calendar endDay, final List<Filter> filters) {
             this.symbol = symbol;
             this.spreadTradesMgr = spreadTradesMgr;
             this.initDay = CalUtils.normalizedClone(initDay);
-            this.endDay = CalUtils.normalizedClone(endDay);
+            this.endDay = CalUtils.normalizedClone(endDay);            
+            this.filters = filters;
         }
 
 
@@ -188,9 +190,12 @@ public class FileSplitting {
                 try {
                     final LineParser lineParser = new ReutersCSVLineParser(
                             fileName);
+                    for(final Filter f : this.filters) {
+                        lineParser.addFilter(f);
+                    }
                     final LineScanner source = new SingleSymbolScanner(
                             fileName, this.symbol, 
-                            lineParser, this.spreadTradesMgr);
+                            lineParser, this.spreadTradesMgr);                    
                     source.run();
                 } catch(IOException ioe) {
                     // Cannot open required file...

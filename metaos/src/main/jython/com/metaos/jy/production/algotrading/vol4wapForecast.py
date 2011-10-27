@@ -30,6 +30,11 @@ for symbol in symbols:
     if endDay==None or notifiedDay.lastDay().after(endDay):
         endDay = notifiedDay.lastDay()
 
+#endDay = Calendar.getInstance()
+#endDay.set(Calendar.YEAR, 2011)
+#endDay.set(Calendar.MONTH, 3)
+#endDay.set(Calendar.DAY_OF_MONTH, 29)
+
 initDay = endDay.clone()
 initDay.add(Calendar.DAY_OF_MONTH, -25*7)
 
