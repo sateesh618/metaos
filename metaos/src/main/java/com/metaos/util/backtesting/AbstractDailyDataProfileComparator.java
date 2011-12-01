@@ -87,20 +87,6 @@ public abstract class AbstractDailyDataProfileComparator
         if(this.minimumDay.after(when)) return;
         final double errors[] = 
                 contrast(predictedValues, this.dailyData);
-/*
-System.out.println("Evaluating for day : " + when.get(Calendar.DAY_OF_MONTH) + "/" + (when.get(Calendar.MONTH)+1));
-for(int i=0; i<predictedValues.length; i++) {
-    System.out.print(predictedValues[i]);
-    System.out.print(" ");
-}
-System.out.println();
-for(int i=0; i<this.dailyData.length; i++) {
-    System.out.print(this.dailyData[i]);
-    System.out.print(" ");
-}
-System.out.println();
-*/
-
         final String dayAsString = when.get(Calendar.YEAR) + "-"
                 + (when.get(Calendar.MONTH)+1) + "-" 
                 + when.get(Calendar.DAY_OF_MONTH);

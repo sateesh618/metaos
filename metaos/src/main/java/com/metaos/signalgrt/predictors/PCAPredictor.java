@@ -82,7 +82,6 @@ public class PCAPredictor implements Predictor {
         // First: pass elements to R
         final int n2 = minIndexOfZerosAtTheEnd-maxIndexOfZerosAtTheBegining-1;
         r.eval("vols<-array(dim=c(" + n2 + "," + m + "))");
-System.out.println("vols<-array(dim=c(" + n2 + "," + m + "))");
         for(int i=0; i<n2; i++) {
             if(matrix[i]==null) {
                 matrix[i] = new double[m];
@@ -90,7 +89,6 @@ System.out.println("vols<-array(dim=c(" + n2 + "," + m + "))");
             int i2 = i + maxIndexOfZerosAtTheBegining + 1;
             for(int j=0; j<m; j++) {
                 r.eval("vols[" + (i+1) + "," + (j+1) + "]<-" + matrix[i2][j]);
-System.out.println("vols[" + (i+1) + "," + (j+1) + "]<-" + matrix[i2][j]);
             }
         }
 
@@ -98,8 +96,6 @@ System.out.println("vols[" + (i+1) + "," + (j+1) + "]<-" + matrix[i2][j]);
         // Second: normalize volume to get volume profiles
         for(int j=0; j<m; j++) {
             r.eval("vols[," + (j+1) + "]<-100*vols[," + (j+1) 
-                    + "]/sum(vols[," + (j+1) + "])");
-System.out.println("vols[," + (j+1) + "]<-100*vols[," + (j+1) 
                     + "]/sum(vols[," + (j+1) + "])");
         }
 

@@ -1,5 +1,3 @@
-
-
 <!-- $Id: build.xml,v 1.6 2011-06-23 15:00:51 l Exp $ -->
 
 <project name="metaos" basedir="." default="compile">
@@ -35,7 +33,7 @@
 </target>
 
 
-<target name="test" depends="distrib" 
+<target name="nojunit-test" depends="distrib" 
         description="Executes testing routines, but not Unit Testing">
     <java fork="true" dir="distrib/bin" classname="com.metaos.engine.Engine">
         <classpath>
@@ -52,6 +50,30 @@
         <arg value="${args-test2}"/>
     </java>
 </target>
+
+<target name="test" depends="compile" description="Executes Unit Testing">
+    <javac destdir="build/classes"
+               classpathref="compile.class.path" 
+               debug="yes" deprecation="yes">
+        <src path="src/test/java"/>
+    </javac>
+    <jar jarfile="test/lib/metaos.jar" basedir="build/classes"/>
+    <copy todir="test/lib">
+      <fileset dir="lib" includes="**/*.*"/>
+      <fileset dir="lib/swing-layout" includes="**/*.*"/>
+      <fileset dir="distrib/lib" includes="**/*.*"/>
+    </copy>
+    <copy todir="test/bin">
+      <!-- <fileset dir="src/test/jython" includes="**/*.*"/>
+      <fileset dir="src/test/R" includes="**/*.*"/> -->
+      <fileset dir="src/test/sh" includes="*.*"/>
+    </copy>
+    <chmod perm="+x">
+        <fileset dir="test/bin" includes="**/*.sh"/>
+    </chmod>
+</target>
+
+
 
 <target name="run" depends="distrib" 
         description="Executes graphical console">
@@ -88,10 +110,12 @@
     <copy todir="distrib/bin">
       <fileset dir="src/main/jython" includes="**/*.*"/>
       <fileset dir="src/main/R" includes="**/*.*"/>
-      <fileset dir="src/main/sh" includes="**/*.*"/>
-      <fileset dir="src/testdata" includes="**/*.*"/>
+      <fileset dir="src/main/sh" includes="*.*"/>
+      <fileset dir="src/main/sh/ext" includes="*.*"/>
     </copy>
-    <chmod file="distrib/bin/run.sh" perm="+x"/>
+    <chmod perm="+x">
+        <fileset dir="distrib/bin" includes="**/*.sh"/>
+    </chmod>
 </target>
 
 
