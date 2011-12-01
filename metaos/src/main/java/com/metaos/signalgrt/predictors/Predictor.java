@@ -12,6 +12,36 @@ import java.util.*;
  * Most general interface for a predictor, able to learn and to be reset.
  */
 public interface Predictor {
+    //
+    // Inner interface --------------------------------------------
+    //
+
+    /**
+     * Decission algorithm to select kernel for time series predictor.
+     */
+    public static interface PredictorSelectionStrategy {
+        /**
+         * Injects kernel to kernel-MA according to predictor internal data.
+         */
+        public void injectKernel(final Predictor predictor);
+
+        /**
+         * Maximum size of kernels
+         */
+        public int kernelSize();
+
+        /**
+         * Creates a brand new predictor.
+         */
+        public Predictor buildPredictor();
+    }
+
+
+
+    //
+    // Interface methods -------------------------------------------
+    //
+
     /**
      * Emits a single forecast based on learned values.
      */

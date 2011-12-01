@@ -9,31 +9,21 @@ package com.metaos.ext.filters;
 import com.metaos.datamgt.Field;
 import com.metaos.datamgt.Filter;
 import java.util.Calendar;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 /**
- * Filter lines containing information on a given symbol or list of symbols.
+ * Filter lines not before a given date.
  */
-public class Symbol implements Filter {
-    private final Set<String> symbols;
+public class NotBefore implements Filter {
+    private final Calendar dateLimit;
     
     /**
-     * Creates the filtor for given symbol.
+     * Creates the filter to avoid lines with date before given date.
      */
-    public Symbol(final String symbol) {
-        this(new String[] { symbol });
+    public NotBefore(final Calendar dateLimit) {
+        this.dateLimit = (Calendar) dateLimit.clone();
     }
 
-
-    /**
-     * Creates the filtor for given list of symbol.
-     */
-    public Symbol(final String[] symbols) {
-        this.symbols = new HashSet<String>();
-        for(int i=0; i<symbols.length; i++) this.symbols.add(symbols[i]);
-    }
 
 
     /**
@@ -42,6 +32,7 @@ public class Symbol implements Filter {
      */
     public boolean filter(final Calendar when, final String symbol,
             final Map<Field, Double> values) {
-        return this.symbols.contains(symbol);
+        System.out.println(! when.before(this.dateLimit));
+        return ! when.before(this.dateLimit);
     }
 }

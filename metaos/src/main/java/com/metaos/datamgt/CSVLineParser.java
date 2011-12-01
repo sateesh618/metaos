@@ -15,7 +15,11 @@ import java.util.logging.Logger;
 /**
  * Line processor for CSV files with only one date and symbol per line.
  *
- * <b>Not thread safe</b>
+ * An <code>ErrorControl</code> object may be injected to detecte parsing
+ * errors. Read documentation of <code>LineParser.ErrorControl</code>
+ * interface to get more information on this topic.
+ *
+ * <span style="color:red">Not thread safe</span>
  */
 public class CSVLineParser implements LineParser {
     private final Format[] formatters;
@@ -29,6 +33,9 @@ public class CSVLineParser implements LineParser {
     private ParseResult parsedData;
     private boolean parsingResult;
     private boolean isValid;
+
+    private LineParser.ErrorControl errorControl = LineParser.nullErrorControl;
+
     
     /**
      * Creates a parser for CSV files.
@@ -131,6 +138,14 @@ public class CSVLineParser implements LineParser {
     }
 
 
+    /**
+     * Sets the object to control errors when parsing lines.
+     */
+    public void setErrorControl(final ErrorControl errorControl) {
+        if(errorControl!=null) this.errorControl = errorControl;
+    }
+
+
     //
     // Private stuff ----------------------------------------------
     //
@@ -166,6 +181,8 @@ public class CSVLineParser implements LineParser {
                                     this.parsedData.newTimestamp();
                                 }
                                 
+                                final long millis = this.parsedData
+                                        .getLocalTimestamp().getTimeInMillis();
                                 if(val>0) {
                                     this.parsedData.getLocalTimestamp()
                                             .setTimeZone(TimeZone.getTimeZone(
@@ -179,6 +196,13 @@ public class CSVLineParser implements LineParser {
                                             .setTimeZone(TimeZone.getTimeZone(
                                                     "GMT-"+(int)((-val))));
                                 }
+                                this.parsedData.getLocalTimestamp()
+                                            .set(Calendar.ZONE_OFFSET, 
+                                                (int)val * (60 * 60 * 1000));
+
+                                // Due to a bug in Calendar, when 
+                                this.parsedData.getLocalTimestamp()
+                                        .setTimeInMillis(millis);
                             }
                         }
                         if(!isFieldIndex) {
@@ -208,9 +232,13 @@ public class CSVLineParser implements LineParser {
                         }
                     } else {
                         // Unknown type
+                        this.errorControl.unknownType(line, i, 
+                                this.formatters[i], parts[i]);
                     }
                 } catch(Exception e) {
                     // Ok, don't worry, nothing matters
+                    this.errorControl.exception(line, i, 
+                                this.formatters[i], parts[i], e);
                 }
             }
         }
@@ -220,6 +248,7 @@ public class CSVLineParser implements LineParser {
         this.isValid = this.parsedData.getSymbol(0) != null 
                     && this.parsedData.getLocalTimestamp() != null
                     && this.parsingResult;
+
         if(this.isValid) {
             for(final Filter f : this.pricesFilters) {
                 if( ! f.filter(this.parsedData.getLocalTimestamp(),

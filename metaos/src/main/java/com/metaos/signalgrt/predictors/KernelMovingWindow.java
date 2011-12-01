@@ -9,25 +9,22 @@ package com.metaos.signalgrt.predictors;
 import java.util.*;
 
 /**
- * Moving average as predictor for the next value.
+ * Moving window predictor for the next value using injectable kernel.
  * ATTENTION: Not thread safe.
  */
-public class MovingAverage implements Predictor {
+public class KernelMovingWindow implements Predictor {
     private final double memory[];
     private int head;
+    private Kernel kernel;
 
-    public MovingAverage(final int memorySize) {
+    public KernelMovingWindow(final int memorySize) {
         this.memory = new double[memorySize];
         this.head = 0;
     }
 
 
     public double predict(final Calendar ignored) {
-        double total = 0;
-        for(int i=0;i<this.memory.length; i++) {
-            total = total + this.memory[i];       
-        }
-        return total / this.memory.length;
+        return this.kernel.eval(this.memory, this.head);
     }
 
 
@@ -80,6 +77,52 @@ public class MovingAverage implements Predictor {
 
 
     public String toString() {
-        return "MA(" + this.memory.length + ")";
+        return "kMA(" + this.memory.length + ")";
+    }
+
+    //
+    // Additional methods ------------------------------
+    //
+
+    /**
+     * Returns memorized values.
+     */
+    public double[] getCore() {
+        final double core[] = new double[this.memory.length];
+        for(int i=0, j=this.head+1; i<this.memory.length; i++, j++) {
+            if(j>=this.memory.length) j=0;
+            core[i] = this.memory[j];
+        }
+        return core;
+    }
+
+    
+    /**
+     * Sets kernel for next prediction.
+     */
+    public void setKernel(final KernelMovingWindow.Kernel kernel) {
+        this.kernel = kernel;
+    }
+
+
+    //
+    // Public inner interfaces -------------------------
+    //
+
+    /**
+     * Interface for kernel function.
+     */
+    public static interface Kernel {
+        /**
+         * Gets the maximum memory size the kernel may manage.
+         */
+        public int getKernelSize();
+
+        /**
+         * Evaluates moving average memory.
+         * @param headIndex starting position for circular buffer.
+         * @param memory memory as circular buffer.
+         */
+        public double eval(final double[] memory, final int headIndex);
     }
 }

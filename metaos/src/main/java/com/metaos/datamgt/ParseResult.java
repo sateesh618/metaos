@@ -130,4 +130,65 @@ public class ParseResult {
         this.calendar = null;
         this.symbols.clear();
     }
+
+
+    /**
+     * Gets given data into this object.
+     */
+    public void merge(final ParseResult other) {
+        if(this.getLocalTimestamp()==null) {
+            this.calendar = (Calendar) other.calendar.clone();
+        }
+        if(!other.getLocalTimestamp().equals(this.getLocalTimestamp())) {
+//            throw new IllegalArgumentException("Cannot merge result data in "
+            System.out.println("Cannot merge result data in "
+                   + "different times (" + other.getLocalTimestamp() 
+                   + " is not as expected " + this.getLocalTimestamp() + ")\n"
+                   + "Original result is related to " + this.symbols + " and "
+                   + "unexpected result is related to " + other.symbols);
+        }
+
+        for(Map.Entry<String,Map<Field,Double>> symbolVals : 
+                other.values.entrySet()) {
+            boolean symbolFound = false;
+            for(int i=0; i<this.symbols.size(); i++) {
+                if(this.symbols.get(i).equals(symbolVals.getKey())) {
+                    symbolFound = true;
+                    break;
+                }
+            }
+            if(!symbolFound) this.addSymbol(symbolVals.getKey());
+
+            for(Map.Entry<Field, Double> fieldValue : 
+                    symbolVals.getValue().entrySet()) {
+                this.putValue(symbolVals.getKey(), fieldValue.getKey(), 
+                        fieldValue.getValue());
+            }
+        }
+    }
+
+
+    /**
+     * Clones result COPYING all data into new variables.
+     */
+    public Object clone() {
+        final ParseResult cloned = new ParseResult();
+        cloned.calendar = (Calendar) this.calendar.clone();
+
+        for(int i=0; i<this.symbols.size(); i++) {
+            cloned.symbols.add(this.symbols.get(i));
+        }
+
+        for(final Map.Entry<String, Map<Field, Double>> entry1 : 
+                this.values.entrySet()) {
+            final Map<Field, Double> vals = new HashMap<Field, Double>();
+            for(final Map.Entry<Field,Double> entry2 :
+                    entry1.getValue().entrySet()) {
+                vals.put(entry2.getKey(), entry2.getValue());
+            }
+            cloned.values.put(entry1.getKey(), vals);
+        }
+
+        return cloned;
+    }
 }

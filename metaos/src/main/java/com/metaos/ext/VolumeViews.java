@@ -14,7 +14,8 @@ import com.metaos.util.*;
  * Transposes data, resulting into a set of prices organized firstly by
  * instant and secondly by day.
  * Internally, its implemented as a dense matrix - ie it wouldn't be efficient
- * for parse matrices as in tick-data
+ * for parse matrices as in tick-data.
+ *
  * @deprecated.
  */
 public class VolumeViews implements Listener {
@@ -102,6 +103,7 @@ public class VolumeViews implements Listener {
     /**
      * Normalizes data such that all values per day have the same accumulated
      * value, thus sum(x(i,day), i=0...) = K for every day.
+     * @throws java.lang.IndexOutOfBoundsException if it's empty.
      */
     public void normalizeDays(final double k) {
         for(int i=0; i<this.valuesInstantDay.get(0).size(); i++) {

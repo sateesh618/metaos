@@ -63,6 +63,10 @@ public class ReutersCSVLineParser implements LineParser {
         this.inner.reset();
     }
 
+    public void setErrorControl(final LineParser.ErrorControl errorControl) {
+        this.inner.setErrorControl(errorControl);
+    }
+
     //
     // Private stuff ------------------ only useful for construction
     //

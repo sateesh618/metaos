@@ -12,6 +12,7 @@ import org.python.core.*;
 import org.python.util.*;
 
 public class Engine {
+
     private final PythonInterpreter interpreter;
 
     public Engine(final String pyFile) throws IOException {
@@ -28,18 +29,21 @@ public class Engine {
 
 
     /**
-     * 
+     * Executes Python file with given arguments passed as "args" array to
+     * Python script.
+     *
      * @param pyFile
      * @param args arguments to python file
-     * @return
+     * @return "ok" ig everything goes fine
      * @throws IOException 
      */
     public String execute(final String pyFile, final String args[]) 
             throws IOException {
-        // TODO: execfile
+        
         this.interpreter.set("args", args);
-        final R interpreteR = new R();
+        final R interpreteR = new R(System.getProperty("RCONSOLE")!=null);
         this.interpreter.set("interpreteR", interpreteR);
+        Engine.setR(interpreteR);
         try {
             final FileReader reader = new FileReader(pyFile);
             final char[] pyBuffer = new char[(int) new File(pyFile).length()];
@@ -53,6 +57,21 @@ public class Engine {
     }
 
     
+
+    private static R interpreteR;
+    private static void setR(final R r) { interpreteR = r; }
+
+    /**
+     * Gets the interpreter for R scripts assigned to the current Classloader
+     * instance.
+     */
+    public static R getR() { return interpreteR; }
+
+
+
+    /**
+     * Entry point.
+     */
     public static void main(final String args[]) throws Exception {
         final String[] argsRest = new String[args.length-2];
         for(int i=0; i<argsRest.length; i++) argsRest[i] = args[i+2];

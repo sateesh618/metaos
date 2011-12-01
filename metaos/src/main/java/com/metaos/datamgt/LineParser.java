@@ -17,6 +17,43 @@ import java.util.logging.Logger;
  */
 public interface LineParser {
     /**
+     * Implement this interface to get informed about unparseable objects into
+     * a line and exceptions occured when parsing lines.
+     */
+    public static interface ErrorControl {
+        /**
+         * Callback invoked when a part of a line is parsed but is not possible
+         * to recognize any kind of type.
+         */
+        public void unknownType(final String line, final int position,
+                final Format formatter, final String part);
+
+        /**
+         * Callback invoked when an uncontrolled exception has occured
+         * when parsing a line.
+         */
+        public void exception(final String line, final int position,
+                final Format formatter, final String part,
+                final Exception exception);
+    }
+
+
+
+     /**
+      * Null object pattern to ignore problems parsing lines.
+      */
+     public static final ErrorControl nullErrorControl = new ErrorControl() {
+         public void unknownType(final String line, final int position,
+                        final Format formatter, final String part) {}
+         public void exception(final String line, final int position,
+                        final Format formatter, final String part,
+                        final Exception exception) {}
+     };
+
+
+
+
+    /**
      * Parses a line and remembers it.
      * @return true if the whole line has been processed, false if some
      * fields are invalid.
@@ -59,9 +96,13 @@ public interface LineParser {
      */
     public LineParser addFilter(final Filter filter);
 
-
     /**
      * Resets parser removing memory, filters, listeners...
      */
     public void reset();
+
+    /**
+     * Sets the object to control errors when parsing lines.
+     */
+    public void setErrorControl(final ErrorControl errorControl);
 }

@@ -9,12 +9,32 @@ import com.metaos.datamgt.Field.*;
 
 /**
  * Acumulates sequential trades to create N-minutes trades.
- * Results are typical Open-Close-Hifg-Low-TotalVolume information for
+ * Typical usages are Open-Close-Hifg-Low-TotalVolume information for
  * a block of minutes (usuarlly 1,5,10,30,60 minutes).
+ *
+ * As an example, in this situation:
+ * <pre>
+ *   10:00 line 1 of data
+ *   10:01 line 2 of data
+ *   10:02 line 3 of data
+ *   10:03 line 4 of data
+ *   10:04 line 5 of data
+ *   10:05 line 6 of data
+ *   10:08 line 7 of data
+ *   10:09 line 8 of data
+ *   10:11 line 9 of data
+ *   10:12 line 10 of data
+ *   10:13 line 1 of data
+ * </pre>
+ * this accumulator tunned to create five minutes blocks, will emit two 
+ * signals, one for trades of lines 1 to 5 and another one for lines 6,7,8,9,10.
+ * The first one covers from 10:00 to 10:04 and the second one from 10:05 
+ * to 10:12.
+ * <br/>
+ * If you want to cover equaly sized bands, use 
+ * <code>DiscreteMinutesSTMgr</code>.
  */
-public class BlocksOfMinutesSTMgr implements SpreadTradesMgr {
-    private final List<Listener> listeners;
-    private final List<ParseResult> memory;
+public class BlocksOfMinutesSTMgr extends AccumulatorSTMgrBase {
     private long lastTimestamp;
     private final long accumulationWindow;
 
@@ -23,8 +43,6 @@ public class BlocksOfMinutesSTMgr implements SpreadTradesMgr {
      * @param minutesWindowSize size of window in minutes. 
      */
     public BlocksOfMinutesSTMgr(final int minutesWindowSize) {
-        this.listeners = new ArrayList<Listener>();
-        this.memory = new ArrayList<ParseResult>();
         this.lastTimestamp = -1;
         this.accumulationWindow = minutesWindowSize * 60 * 1000;
     }
@@ -44,93 +62,5 @@ public class BlocksOfMinutesSTMgr implements SpreadTradesMgr {
             this.lastTimestamp = result.getLocalTimestamp().getTimeInMillis();
         }
         this.memory.add(result);
-    }
-
-
-    /**
-     * Resets accumulator.
-     */
-    public void reset() {
-        this.listeners.clear();
-    }
-
-
-    /**
-     * Ends forced accumulation process and notifies to listeners.
-     */
-    public void endAccumulation() {
-        final ParseResult accumResult = new ParseResult();
-   
-        for(final ParseResult result : memory) {
-            for(final String symbol : result.getSymbols()) {
-                if(accumResult.values(symbol)==null) {
-                    accumResult.addSymbol(symbol);
-                }
-
-                for(final Map.Entry<Field,Double> val : 
-                        result.values(symbol).entrySet()) {
-                    if(val.getKey() instanceof LOW) {
-                        final Double d = accumResult.values(symbol)
-                                .get(val.getKey());
-                        if(d!=null && d.doubleValue()>val.getValue()) {
-                            accumResult.putValue(symbol,val.getKey(), 
-                                    val.getValue());
-                        }
-                    } else if(val.getKey() instanceof HIGH) {
-                        final Double d = accumResult.values(symbol)
-                                .get(val.getKey());
-                        if(d!=null && d.doubleValue()<val.getValue()) {
-                            accumResult.putValue(symbol,val.getKey(), 
-                                    val.getValue());
-                        }
-                    } else if(val.getKey() instanceof OPEN) {
-                        if(accumResult.values(symbol).get(val.getKey())==null) {
-                            accumResult.putValue(symbol,val.getKey(), 
-                                    val.getValue());
-                        }
-                    } else if(val.getKey() instanceof CLOSE) {
-                        accumResult.putValue(symbol,val.getKey(),
-                                val.getValue());
-                    } else if(val.getKey() instanceof VOLUME) {
-                        final Double d = accumResult.values(symbol)
-                                .get(val.getKey());
-                        if(d!=null) {
-                            accumResult.putValue(symbol,val.getKey(), 
-                                    val.getValue() + d.doubleValue());
-                        } else {
-                            accumResult.putValue(symbol,val.getKey(), 
-                                    val.getValue());
-                        }
-                    } else {
-                        // Don't know what to do...
-                        accumResult.putValue(symbol, val.getKey(), 
-                                val.getValue());
-                    }
-                }
-            }
-        }
-
-
-        accumResult.newTimestamp();
-        final Calendar lastMemoryTime = memory.get(memory.size()-1)
-                .getLocalTimestamp();
-
-        accumResult.getLocalTimestamp().setTimeInMillis(
-                lastMemoryTime.getTimeInMillis());
-        accumResult.getLocalTimestamp().setTimeZone(
-                lastMemoryTime.getTimeZone());
-        
-        for(final Listener listener : this.listeners) {
-            listener.notify(accumResult);
-        }
-        this.memory.clear();
-    }
-
-
-    /**
-     * Subscribes a listener to "end of accumulation" events.
-     */
-    public void addListener(final Listener listener) {
-        this.listeners.add(listener);
     }
 }

@@ -140,12 +140,14 @@ public class FileSplitting {
             output.print(ReutersCSVLineParser.timeFormat.format(
                     when.getTime()));
             output.print(",");
-            output.print(when.get(Calendar.ZONE_OFFSET) / (1000 * 60 * 60));
+            final int gmt = when.get(Calendar.ZONE_OFFSET) / (1000 * 60 * 60);
+            output.print(gmt>=0 ? "+" : "-");
+            output.print(gmt);
 
             for(final Field f : this.fields) {
                 output.print(",");
                 output.print(values.get(f)!=null ? ReutersCSVLineParser
-                        .doubleFormat.format(values.get(f)) : "-");
+                        .doubleFormat.format(values.get(f)) : "");
             }
             output.println();
 
@@ -162,7 +164,11 @@ public class FileSplitting {
     public class CSVReutersSingleSymbol implements LineScanner {
         private final Calendar initDay, endDay;
         private final String symbol;
-        private final SpreadTradesMgr spreadTradesMgr;
+        private final SpreadTradesMgr spreadTradesMgr[];
+        private final List<Filter> filters;
+        private LineParser.ErrorControl errorControl =
+                LineParser.nullErrorControl;
+            
         private final List<Filter> filters;
 
         /**
@@ -170,7 +176,7 @@ public class FileSplitting {
          * @param endDay last included day for scanning.
          */
         public CSVReutersSingleSymbol(final String symbol, 
-                final SpreadTradesMgr spreadTradesMgr, final Calendar initDay, 
+                final SpreadTradesMgr spreadTradesMgr[],final Calendar initDay, 
                 final Calendar endDay, final List<Filter> filters) {
             this.symbol = symbol;
             this.spreadTradesMgr = spreadTradesMgr;
@@ -190,9 +196,16 @@ public class FileSplitting {
                 try {
                     final LineParser lineParser = new ReutersCSVLineParser(
                             fileName);
+<<<<<<< .mine
+                    lineParser.setErrorControl(this.errorControl);
                     for(final Filter f : this.filters) {
                         lineParser.addFilter(f);
                     }
+=======
+                    for(final Filter f : this.filters) {
+                        lineParser.addFilter(f);
+                    }
+>>>>>>> .r183
                     final LineScanner source = new SingleSymbolScanner(
                             fileName, this.symbol, 
                             lineParser, this.spreadTradesMgr);                    
@@ -240,6 +253,14 @@ public class FileSplitting {
          * Does nothing...
          */
         public void close() {
+        }
+
+
+        /**
+         * Sets error control for all scanned files.
+         */
+        public void setErrorControl(final LineParser.ErrorControl errorControl){
+            this.errorControl = errorControl;
         }
     }
 }
