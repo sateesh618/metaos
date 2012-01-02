@@ -32,7 +32,14 @@ public class MobileWindowVolumeProfileComparator
     public MobileWindowVolumeProfileComparator(final int windowSize,
             final CalUtils.InstantGenerator instantGenerator,
             final String symbol, final Field field, final Calendar minimumDay) {
-        super(instantGenerator, symbol, field, minimumDay);
+        super(instantGenerator, symbol, field, new Filter[] {
+                new Filter() {
+                    public boolean filter(Calendar when, String symbol, 
+                            Map<Field, Double> values) {
+                        return !when.before(minimumDay);
+                    }
+                }
+            });
         this.windowSize = windowSize;
     }
 
