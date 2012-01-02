@@ -37,11 +37,11 @@ public class MovingAverage implements Indicator {
     public void addValues(final double[] vals) {
         if(vals.length>memory.length) {
             for(int i=vals.length-memory.length-1;i<vals.length; i++) {
-                this.learnValue(null, vals[i]);
+                this.addValue(vals[i]);
             }
         } else {
             for(int i=0; i<vals.length; i++) {
-                this.learnValue(null, vals[i]);
+                this.addValue(vals[i]);
             }
         }
     }
@@ -50,11 +50,11 @@ public class MovingAverage implements Indicator {
     public void addValues(final List<Double> vals) {
         if(vals.size()>memory.length) {
             for(int i=vals.size()-memory.length-1;i<vals.size(); i++) {
-                if(vals.get(i)!=null) this.learnValue(null, vals.get(i));
+                if(vals.get(i)!=null) this.addValue(vals.get(i));
             }
         } else {
             for(int i=0; i<vals.size(); i++) {
-                if(vals.get(i)!=null) this.learnValue(null, vals.get(i));
+                if(vals.get(i)!=null) this.addValue(vals.get(i));
             }
         }
     }

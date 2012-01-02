@@ -88,8 +88,6 @@ public class PCAPredictorTransposed extends PCAPredictor {
             }
         }
         if( ! thereAreNumbers ) return;
-//if( ! thereAreNumbers ) throw new RuntimeException("Por que aprende NaNs?");
-
 
         if(!this.initialized) {
             // Initializes matrix

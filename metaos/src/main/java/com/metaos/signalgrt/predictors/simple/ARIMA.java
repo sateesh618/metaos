@@ -46,6 +46,7 @@ public class ARIMA implements Predictor {
             memoryArray[i] = this.memory.get(i);
         }
         try {
+            this.interpreteR.lock();
             this.interpreteR.set("x", memoryArray);
             this.interpreteR.eval("ar<-arima(x=x,order=c(" + p + "," + d + ","
                 + q + "))");
@@ -53,6 +54,8 @@ public class ARIMA implements Predictor {
             return this.interpreteR.evalDouble("f$pred[1]");
         } catch(Exception e) {
             return Double.NaN;
+        } finally {
+            this.interpreteR.release();
         }
     }
 
@@ -63,15 +66,21 @@ public class ARIMA implements Predictor {
         for(int i=0; i<this.memory.size(); i++) {
             memoryArray[i] = this.memory.get(i);
         }
-        this.interpreteR.set("x", memoryArray);
-        this.interpreteR.eval("ar<-arima(x=x,order=c(" + p + "," + d + ","
-                + q + "))");
-        this.interpreteR.eval("f<-predict(ar,n.ahead=" +this.forecastSize+ ")");
-        final double forecast[] = new double[this.forecastSize];
-        for(int i=0; i<this.forecastSize; i++) {
-            forecast[i] = this.interpreteR.evalDouble("f$pred[" + i + "]");
+        try {
+            this.interpreteR.lock();
+            this.interpreteR.set("x", memoryArray);
+            this.interpreteR.eval("ar<-arima(x=x,order=c(" + p + "," + d + ","
+                    + q + "))");
+            this.interpreteR.eval("f<-predict(ar,n.ahead=" 
+                    + this.forecastSize +  ")");
+            final double forecast[] = new double[this.forecastSize];
+            for(int i=0; i<this.forecastSize; i++) {
+                forecast[i] = this.interpreteR.evalDouble("f$pred[" + i + "]");
+            }
+            return forecast;
+        } finally {
+            this.interpreteR.release();
         }
-        return forecast;
     }
 
 

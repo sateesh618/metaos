@@ -72,6 +72,7 @@ public class KernelMovingWindow implements Predictor {
 
 
     public void learnValue(final Calendar when, final double val) {
+        if(Double.isNaN(val)) return;
         this.memory[this.head] = val;
         this.head = this.head + 1;
         if(this.head >= this.memory.length) {

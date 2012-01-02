@@ -8,7 +8,8 @@ package com.metaos.util.backtesting;
 
 import java.io.*;
 import java.util.*;
-import java.util.logging.*;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 import java.text.*;
 import com.metaos.datamgt.*;
 import com.metaos.engine.*;
@@ -30,13 +31,13 @@ public abstract class AbstractDailyDataProfileComparator
             AbstractDailyDataProfileComparator.class.getPackage().getName());
     private static final SimpleDateFormat dateFormat = 
             new SimpleDateFormat("yyyy-MM-dd");
-    private final Calendar minimumDay;
     private final Field field;
     private final Errors<Integer> minuteErrors;
     private final Errors<String> dayErrors;
     private final double[] dailyData;
-    private final boolean dumpResults = true;
+    private final boolean dumpResults;
     private final String symbol;
+    private final Filter[] filters;
     protected final CalUtils.InstantGenerator instantGenerator;
 
     /**
@@ -44,12 +45,12 @@ public abstract class AbstractDailyDataProfileComparator
      * @param instantGenerator definition of 'instant', coherent with one
      * used in predictors.
      * @param field the field to compare profile.
-     * @param minimumDay minimum day to compare forecasts.
+     * @param filters Filters to apply over date.
      * @param symbol to make comparisons.
      */
     public AbstractDailyDataProfileComparator(
             final CalUtils.InstantGenerator instantGenerator,
-            final String symbol, final Field field, final Calendar minimumDay) {
+            final String symbol, final Field field, final Filter filters[]) {
         this.instantGenerator = instantGenerator;
         this.minuteErrors = new Errors<Integer>();
         this.dayErrors = new Errors<String>();
@@ -59,16 +60,9 @@ public abstract class AbstractDailyDataProfileComparator
         for(int i=0; i<this.dailyData.length; i++) {
             this.dailyData[i] = Double.NaN;
         }
-        this.minimumDay = minimumDay==null ? Calendar.getInstance() : 
-                CalUtils.normalizedClone(minimumDay);
-        if(minimumDay==null) {
-            this.minimumDay.set(Calendar.YEAR, 1970);
-            this.minimumDay.set(Calendar.MONTH, 0);
-            this.minimumDay.set(Calendar.DAY_OF_MONTH, 1);
-            this.minimumDay.set(Calendar.HOUR_OF_DAY, 0);
-            this.minimumDay.set(Calendar.MINUTE, 0);
-            this.minimumDay.set(Calendar.SECOND, 0);
-        }
+
+        this.dumpResults = System.getProperty("DUMPRESULTS") != null;
+        this.filters = filters;
     }
 
 
@@ -101,10 +95,15 @@ public abstract class AbstractDailyDataProfileComparator
 
 
     /**
-     * Evaluates errors if the moment is after or equals the limit date.
+     * Evaluates errors if the moment verifies filters.
      */
     public void evaluate(final Calendar when, final double[] predictedValues) {
-        if(this.minimumDay.after(when)) return;
+        if(this.filters!=null) {
+            for(final Filter f : filters) {
+                if(!f.filter(when, this.symbol, null)) return;
+            }
+        }
+
         final String dayStr = dateFormat.format(when.getTime());
 
         // Clean values, removing outliers

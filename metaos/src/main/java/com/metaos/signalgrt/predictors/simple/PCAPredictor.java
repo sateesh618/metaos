@@ -95,8 +95,13 @@ public class PCAPredictor implements Predictor {
         this.shiftToScale = true;
 
         final R r = Engine.getR();
-        r.eval("vals<-c(0)");
-        r.eval("previousVals<-c(0)");
+        try {
+            r.lock();
+            r.eval("vals<-c(0)");
+            r.eval("previousVals<-c(0)");
+        } finally {
+            r.release();
+        }
     }
 
 
@@ -117,8 +122,13 @@ public class PCAPredictor implements Predictor {
         this.shiftToScale = false;
 
         final R r = Engine.getR();
-        r.eval("vals<-c(0)");
-        r.eval("previousVals<-c(0)");
+        try {
+            r.lock();
+            r.eval("vals<-c(0)");
+            r.eval("previousVals<-c(0)");
+        } finally {
+            r.release();
+        }
     }
 
 
@@ -142,51 +152,51 @@ public class PCAPredictor implements Predictor {
      * Gets profile for the principal component analysis.
      */
     public double[] predictVector(final Calendar when) {
-        try {
-            if(this.lastLearningTime!=null 
-                        && !when.after(this.lastLearningTime)) {
-                log.info("Trying to predict not after the last learning time:"
-                    + "learningTime=" + lastLearningTime + ",\nwhen=" + when);
-            }
-            this.lastInstant = -1;
+        if(this.lastLearningTime!=null 
+                    && !when.after(this.lastLearningTime)) {
+            log.info("Trying to predict not after the last learning time:"
+                + "learningTime=" + lastLearningTime + ",\nwhen=" + when);
+        }
+        this.lastInstant = -1;
 
-            final R r = Engine.getR();
-            final int n = matrix.length;
-            if(matrix[0] == null) {
-                // Not trained yet
-                return emptyAnswerVector();
-            }
-            final int m = matrix[0].length;
+        final int n = matrix.length;
+        if(matrix[0] == null) {
+            // Not trained yet
+            return emptyAnswerVector();
+        }
+        final int m = matrix[0].length;
 
-            // Search for NaN at the begining and at the end
-            int maxIndexOfZerosAtTheBegining = 0;
-            outter: for(int i=0; i<n; i++) {
-                if(matrix[i]!=null) {
-                    for(int j=0; j<m; j++) {
-                        if(matrix[i]!=null && !Double.isNaN(matrix[i][j]) 
-                                && matrix[i][j]!=0) {
-                            break outter;
-                        }
-                    }
-                }
-                maxIndexOfZerosAtTheBegining++;
-            }
-
-            int minIndexOfZerosAtTheEnd = n;
-            outter: for(int i=n-1; i>maxIndexOfZerosAtTheBegining; i--) {
+        // Search for NaN at the begining and at the end
+        int maxIndexOfZerosAtTheBegining = 0;
+        outter: for(int i=0; i<n; i++) {
+            if(matrix[i]!=null) {
                 for(int j=0; j<m; j++) {
-                    if(matrix[i]!=null && !Double.isNaN(matrix[i][j])
+                    if(matrix[i]!=null && !Double.isNaN(matrix[i][j]) 
                             && matrix[i][j]!=0) {
                         break outter;
                     }
                 }
-                minIndexOfZerosAtTheEnd--;
             }
+            maxIndexOfZerosAtTheBegining++;
+        }
+
+        int minIndexOfZerosAtTheEnd = n;
+        outter: for(int i=n-1; i>maxIndexOfZerosAtTheBegining; i--) {
+            for(int j=0; j<m; j++) {
+                if(matrix[i]!=null && !Double.isNaN(matrix[i][j])
+                        && matrix[i][j]!=0) {
+                    break outter;
+                }
+            }
+            minIndexOfZerosAtTheEnd--;
+        }
 
 
-            // Pass elements to R
-            final int n2 = minIndexOfZerosAtTheEnd 
-                    - maxIndexOfZerosAtTheBegining;
+        // Pass elements to R
+        final int n2 = minIndexOfZerosAtTheEnd - maxIndexOfZerosAtTheBegining;
+        final R r = Engine.getR();
+        try {
+            r.lock();
             r.eval("previousVals<-vals");
             r.eval("vals<-array(dim=c(" + n2 + "," + m + "))");
             for(int i=0; i<n2; i++) {
@@ -254,11 +264,22 @@ public class PCAPredictor implements Predictor {
             return characteristic;
         } catch(REngineException ree) {
             return emptyAnswerVector();
+        } finally {
+            r.release();
         }
     }
 
 
     public void learnVector(final Calendar when, final double[] vals) {
+        boolean somethingIsNotNaN = false;
+        for(int i=0; i<vals.length; i++) {
+            if(!Double.isNaN(vals[i])) {
+                somethingIsNotNaN = true;
+                break;
+            }
+        }
+        if(!somethingIsNotNaN) return;
+
         final int currentInstant = this.instantGenerator.generate(when);
         if(currentInstant>=this.matrix.length) return;
 

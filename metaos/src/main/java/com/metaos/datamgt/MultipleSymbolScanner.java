@@ -66,10 +66,6 @@ public class MultipleSymbolScanner implements LineScanner {
 
         boolean optimisticJumps = true;
 
-        final ObjectOutputStream cacheJumpsFileOut;
-        final ObjectInputStream cacheJumpsFileIn;
-        final boolean useCachedJumps;
-
 
         final ErrorControl errorControl = this.lineParser.getErrorControl();
         this.lineParser.setErrorControl(LineParser.nullErrorControl);
@@ -77,85 +73,84 @@ public class MultipleSymbolScanner implements LineScanner {
         final String cacheFilePath = filePath + ".cachejump";
 
         if(new File(cacheFilePath).exists()) {
-            cacheJumpsFileOut = null;
-            cacheJumpsFileIn = new ObjectInputStream(
-                new FileInputStream(cacheFilePath));
-            useCachedJumps = true;
+            final ObjectInputStream cacheJumpsFileIn = new ObjectInputStream(
+                    new FileInputStream(cacheFilePath));
 
             log.info("Using stored cached jumps in file " + cacheFilePath);
             try {
-                final int cachedJump = (int) cacheJumpsFileIn.readInt();
-                this.mainReader.skipBytes(cachedJump);
+                try {
+                    for(;;) {
+                        final String s = cacheJumpsFileIn.readUTF();
+                        final long pos = cacheJumpsFileIn.readLong();
+
+                        for(int i=0; i<symbols.length; i++) {
+                            if(symbols[i].equals(s)) {
+                                partReader[i] = new RandomAccessFile(
+                                        filePath, "r");
+                                partReader[i].seek(pos);
+                                log.info("Using cached information: position "
+                                        + pos + " for " + s);
+                                break;
+                            }
+                        }
+                    }
+                } catch(IOException ioe) {
+                    cacheJumpsFileIn.close();
+                }
+                for(int i=0; i<partReader.length; i++) {
+                    if(partReader[i] == null) {
+                        throw new IOException("Symbol " + symbols[i] 
+                                + " not placed");
+                    }
+                }
             } catch(IOException ioe) {
-                log.info("Ignoring and removing corrupted cache file " 
-                        + cacheFilePath);
+                log.log(Level.SEVERE, ioe.toString(), ioe);
+                log.severe("Error reading file "+cacheFilePath+". Removing");
                 new File(cacheFilePath).delete();
             }
         } else {
-            cacheJumpsFileIn = null;
-            cacheJumpsFileOut = new ObjectOutputStream(
-                new FileOutputStream(cacheFilePath));
-            useCachedJumps = false;
+            final ObjectOutputStream cacheJumpsFileOut = new ObjectOutputStream(
+                    new FileOutputStream(cacheFilePath));
             log.fine("Caching jumps for future uses in file " + cacheFilePath);
-        }
 
-        log.info("Scannig file to place reading pointers");
+            log.info("Scannig file to place reading pointers");
      
-        long previousLastPosition = 0;
-        for(int i=0; i<symbols.length; i++) {
-            long lastPosition = this.mainReader.getFilePointer();
-            long foundPosition;
-            log.fine("Starting to search symbol " + symbols[i] 
-                    + " from position " + lastPosition);
-            for(;;) {
-                foundPosition = this.mainReader.getFilePointer();
-                final String line = readNextLineCycling(lastPosition);
-                if(line==null) {
-                    // All file's been read without finding desired symbol.
-                    throw new IOException("Cannot find symbol '" 
-                            + symbols[i] + "' in file '" + filePath + "'");
+            for(int i=0; i<symbols.length; i++) {
+                long lastPosition = this.mainReader.getFilePointer();
+                long foundPosition;
+                log.fine("Starting to search symbol " + symbols[i] 
+                        + " from position " + lastPosition);
+                for(;;) {
+                    foundPosition = this.mainReader.getFilePointer();
+                    final String line = readNextLineCycling(lastPosition);
+                    if(line==null) {
+                        // All file's been read without finding desired symbol.
+                        throw new IOException("Cannot find symbol '" 
+                                + symbols[i] + "' in file '" + filePath + "'");
+                    }
+                    if(this.lineParser.isValid(line) && 
+                            symbols[i].equals(this.lineParser
+                                    .getSymbol(line, 0))) {
+                        break;
+                    }
                 }
-                if(this.lineParser.isValid(line) && 
-                        symbols[i].equals(this.lineParser.getSymbol(line, 0))) {
-                    break;
-                }
-            }
-            log.info("Located place for reader on " + symbols[i] + ":"
-                    + foundPosition);
-            if(!useCachedJumps) {
-                cacheJumpsFileOut.writeInt((int) 
-                        (foundPosition - previousLastPosition - 1024));
-                log.info("Writting to cache file jump of " 
-                        + (foundPosition - previousLastPosition - 1024));
-                previousLastPosition = foundPosition;
-            }
-            partReader[i] = new RandomAccessFile(filePath, "r");
-            partReader[i].seek(foundPosition);
-            if(!useCachedJumps) {
+                log.info("Located place for reader on " + symbols[i] + ":"
+                        + foundPosition);
+                cacheJumpsFileOut.writeUTF(symbols[i]);
+                cacheJumpsFileOut.writeLong(foundPosition);
+                partReader[i] = new RandomAccessFile(filePath, "r");
+                partReader[i].seek(foundPosition);
                 final int optimisticJump = (int) (
                             2*(foundPosition - lastPosition)/3);
-                //this.mainReader.skipBytes(optimisticJump);
-            } else if(i!=symbols.length-1) {
-                try {
-                    final int cachedJump = (int) cacheJumpsFileIn.readInt();
-                    this.mainReader.skipBytes(cachedJump);
-                    log.fine("Read from cache file jump of " + cachedJump);
-                } catch(IOException ioe) {
-                    log.fine("Problem reading cached jumps.");
-                }
+                this.mainReader.skipBytes(optimisticJump);
             }
+            cacheJumpsFileOut.flush();
+            cacheJumpsFileOut.close();
         }
 
         log.info("File scanned. Placing reading pointers");
 
         // Boot up
-        if(useCachedJumps) {
-            cacheJumpsFileIn.close();
-        } else {
-            cacheJumpsFileOut.flush();
-            cacheJumpsFileOut.close();
-        }
-
         for(int i=0; i<symbols.length; i++) {
             for(;;) {
                 try {
@@ -176,6 +171,7 @@ public class MultipleSymbolScanner implements LineScanner {
                 } catch(Exception e) {
                     log.log(Level.SEVERE, "Exception reading first line "
                             + "of file '" + this.filePath + "'", e);
+                    log.severe("Maybe cache file is not correct?");
                 }
             }
         }

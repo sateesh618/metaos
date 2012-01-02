@@ -7,6 +7,7 @@
 package com.metaos.signalgrt.predictors.specific;
 
 import java.util.*;
+import java.util.logging.Logger;
 import com.metaos.signalgrt.predictors.*;
 import com.metaos.signalgrt.predictors.simple.*;
 import com.metaos.util.*;
@@ -24,6 +25,9 @@ import com.metaos.datamgt.*;
  * of "notify" and "learn" events to suitable internal predictors.
  */
 public abstract class OnePredictorPerBin implements PredictorListener {
+    private static final Logger log = Logger.getLogger(OnePredictorPerBin
+            .class.getPackage().getName());
+
     private final Predictor[] predictors;
     private final CalUtils.InstantGenerator instantGenerator;
     private final String symbol;
@@ -59,13 +63,21 @@ public abstract class OnePredictorPerBin implements PredictorListener {
         this.predictors = new Predictor[instantGenerator.maxInstantValue()];
         for(int j=0; j<predictors.length; j++) {
             predictors[j] = predictorSelectionStrategy.buildPredictor();
+            if(predictors[j]==null) {
+                throw new RuntimeException("PredictorSelectionStrategy used "
+                        + "(" + predictorSelectionStrategy.getClass() + ") "
+                        + "does not implement correctly buildPredictor() "
+                        + "method: it returns a null!");
+            }
         }
 
         this.learnedValues = new ArrayList<Pair>();
         for(int i=0; i<this.instantGenerator.maxInstantValue(); i++) {
             this.learnedValues.add(null);
         }
-
+        log.fine("Created set of " + this.instantGenerator.maxInstantValue()
+                + "predictors, one per daily bin but the same set for every "
+                + "days but different");
     }
 
 

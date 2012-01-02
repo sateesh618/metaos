@@ -1,6 +1,6 @@
 #!/bin/bash
 
-CP=.
+CP=$(dirname $0)
 for a in $(dirname $0)/../lib/*.jar; do
   CP=$CP:$a
 done
@@ -24,8 +24,13 @@ if [ "$os" == 'Darwin' ]; then
 fi
 
 
+if [ "${RCONSOLE}" ]; then
+  R_CONSOLE=-DRCONSOLE
+else
+  R_CONSOLE=
+fi
 
 export R_HOME
 export LD_LIBRARY_PATH
 
-${JAVA_HOME}/bin/java -Dpython.path=. -Djava.library.path=$(dirname $0)/../lib -cp ${CP} com.metaos.engine.Engine init.py $*
+${JAVA_HOME}/bin/java $R_CONSOLE -Dpython.path=. -Djava.library.path=$(dirname $0)/../lib -cp ${CP} com.metaos.engine.Engine init.py $*

@@ -7,6 +7,7 @@
 package com.metaos.signalgrt.predictors.specific;
 
 import java.util.*;
+import java.util.logging.Logger;
 import com.metaos.signalgrt.predictors.*;
 import com.metaos.signalgrt.predictors.simple.*;
 import com.metaos.util.*;
@@ -25,6 +26,9 @@ import com.metaos.datamgt.*;
  * and to avoid the usage of "field".
  */
 public class OnePredictorPerTypeOfDayOfWeek implements PredictorListener {
+    private static final Logger log = Logger.getLogger(
+            OnePredictorPerTypeOfDayOfWeek.class.getPackage().getName());
+
     private final Predictor[] predictors;
     private final PredictorSelectionStrategy predictorSelectionStrategy;
     private final Field field;
@@ -54,6 +58,7 @@ public class OnePredictorPerTypeOfDayOfWeek implements PredictorListener {
         for(int i=0; i<6; i++) {
             predictors[i] = predictorSelectionStrategy.buildPredictor();
         }
+        log.fine("Created set of 6 predictors, one for each type of day");
     }
 
 
@@ -86,6 +91,7 @@ public class OnePredictorPerTypeOfDayOfWeek implements PredictorListener {
         final Calendar when = parseResult.getLocalTimestamp();
 
         final int index = daySelector(when);
+        if(index==-1) return;
         if(this.predictors[index] instanceof PredictorListener) {
             ((PredictorListener) this.predictors[index]).notify(parseResult);
         } else {
@@ -179,8 +185,8 @@ public class OnePredictorPerTypeOfDayOfWeek implements PredictorListener {
             case Calendar.FRIDAY: 
                 return when.get(Calendar.WEEK_OF_MONTH)==3 ? 5 : 4;
             default:
-                throw new IllegalArgumentException(
-                        "Don't how to deal with SATURDAY or SUNDAYS");
+                log.info("Don't how to deal with SATURDAY or SUNDAYS");
+                return -1;
         }
     }
 }

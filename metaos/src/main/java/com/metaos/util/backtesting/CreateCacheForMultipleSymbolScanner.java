@@ -48,89 +48,16 @@ public final class CreateCacheForMultipleSymbolScanner {
      * Removes previous cache and creates the new one file.
      */
     public void run() throws IOException {
-        this.mainReader = new RandomAccessFile(filePath, "r");
-        this.nextMilliseconds = new long[symbols.length];
-        this.nextLine = new String[symbols.length];
-
-        final ErrorControl errorControl = this.lineParser.getErrorControl();
-        this.lineParser.setErrorControl(LineParser.nullErrorControl);
-
         final String cacheFilePath = filePath + ".cachejump";
-
-        if(new File(cacheFilePath).exists()) {
-            new File(cacheFilePath).delete();
-            log.info("Removing old cache file " + filePath);
-        }
-        final ObjectOutputStream cacheJumpsFileOut = new ObjectOutputStream(
-                    new FileOutputStream(cacheFilePath));
-        log.fine("Caching jumps for future uses in file " + cacheFilePath);
-
-        log.info("Scannig file to place reading pointers");
-     
-        long previousLastPosition = 0;
-        for(int i=0; i<symbols.length; i++) {
-            long lastPosition = this.mainReader.getFilePointer();
-            long foundPosition;
-            log.fine("Starting to search symbol " + symbols[i] 
-                    + " from position " + lastPosition);
-            for(;;) {
-                foundPosition = this.mainReader.getFilePointer();
-                final String line = readNextLineCycling(lastPosition);
-                if(line==null) {
-                    // All file's been read without finding desired symbol.
-                    throw new IOException("Cannot find symbol '" 
-                            + symbols[i] + "' in file '" + filePath + "'");
-                }
-                if(this.lineParser.isValid(line) && 
-                        symbols[i].equals(this.lineParser.getSymbol(line, 0))) {
-                    break;
-                }
-            }
-            log.info("Located place for reader on " + symbols[i] + ":"
-                    + foundPosition);
-            final int jump = (int) 
-                    (foundPosition - previousLastPosition - 1024);
-            cacheJumpsFileOut.writeInt(jump>0 ? jump : 0);
-            log.info("Writting to cache file jump of " + (jump>0 ? jump : 0));
-            previousLastPosition = foundPosition;
-        }
-
-        log.info("File scanned. Placing reading pointers");
-
-        cacheJumpsFileOut.flush();
-        cacheJumpsFileOut.close();
-
-        this.lineParser.setErrorControl(errorControl);
+        new File(cacheFilePath).delete();
+        final MultipleSymbolScanner scanner = new MultipleSymbolScanner(
+                this.filePath, this.symbols, this.lineParser,
+                new SpreadTradesMgr[] { new TransparentSTMgr() });
+        scanner.close();
     }
 
 
 
     public void close() {
-        try {
-            this.mainReader.close();
-        } catch(IOException ioe) {
-            // Maybe nothing should happen in this case.... don't worry.
-        }
-    }
-
-
-    //
-    // Private stuff ----------------------------------
-    //
-    private String readNextLineCycling(final long positionLimit)
-            throws IOException {
-        final long previousPos = this.mainReader.getFilePointer();
-        final String line = this.mainReader.readLine();
-        final long newPos = this.mainReader.getFilePointer();
-        if(previousPos<positionLimit && newPos>=positionLimit) {
-            return null;
-        }
-        if(line==null) {
-            this.mainReader.seek(0);
-            if(positionLimit==0) return null;
-            return this.mainReader.readLine();
-        } else {
-            return line;
-        }
     }
 }

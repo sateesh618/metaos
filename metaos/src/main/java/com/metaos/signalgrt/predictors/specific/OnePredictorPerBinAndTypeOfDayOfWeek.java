@@ -7,6 +7,7 @@
 package com.metaos.signalgrt.predictors.specific;
 
 import java.util.*;
+import java.util.logging.Logger;
 import com.metaos.signalgrt.predictors.*;
 import com.metaos.signalgrt.predictors.simple.*;
 import com.metaos.util.*;
@@ -25,6 +26,8 @@ import com.metaos.datamgt.*;
  */
 public abstract class OnePredictorPerBinAndTypeOfDayOfWeek 
         implements PredictorListener {
+    private static final Logger log = Logger.getLogger(
+            OnePredictorPerBinAndTypeOfDayOfWeek.class.getPackage().getName());
     private final Predictor[][] predictors;
     private final CalUtils.InstantGenerator instantGenerator;
     private final String symbol;
@@ -70,7 +73,8 @@ public abstract class OnePredictorPerBinAndTypeOfDayOfWeek
         for(int i=0; i<this.instantGenerator.maxInstantValue(); i++) {
             this.learnedValues.add(null);
         }
-
+        log.fine("Created 6 sets of " + this.instantGenerator.maxInstantValue()
+                + "predictors, one per daily bin and per type of day");
     }
 
 

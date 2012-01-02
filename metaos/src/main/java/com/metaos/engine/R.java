@@ -72,17 +72,27 @@ public class R {
 
 
 
-
+    /**
+     * Evals R file.
+     */
     public void evalFile(final String rFile) throws IOException {
         this.engine.eval("source(\"" + rFile + "\")");
     }
 
 
+    /**
+     * Finishes R execution.
+     */
     public void end() {
         if(!this.consoleActive) this.engine.stop();
         else this.engine.startMainLoop();
     }
 
+
+    /**
+     * Lets the name of the variable containing given value.
+     * According to object type, different kind of assignations will be made.
+     */
     public void set(final String name, final Object value) {
         if(value instanceof boolean[]) {
             this.engine.assign(name, (boolean[]) value);
@@ -99,6 +109,10 @@ public class R {
         }
     }
     
+    /**
+     * Lets the name of the variable containing list of numbers.
+     * Specifically desinged to used from Python.
+     */
     public void setDoubles(final String name, final PyList list) {
         final double[] values = new double[list.size()];
         for(int i = 0; i < values.length; i++) {
@@ -107,34 +121,57 @@ public class R {
         this.engine.assign(name, values);
     }
  
+    /**
+     * Evals R expression.
+     */
     public REXP eval(final String what) {
         return this.engine.eval(what);
     }
 
+
+    /**
+     * Evals R expression as a boolean expression.
+     */
     public boolean evalBool(final String what) {
         final REXP x = this.engine.eval(what);
         if(x==null) throw new REngineException(what);
         return x.asBool().isTRUE();
     }
 
+
+    /**
+     * Evals R expression as a string expression.
+     */
     public String evalString(final String what) {
         final REXP x = this.engine.eval(what);
         if(x==null) throw new REngineException(what);
         return x.asString();
     }
 
+
+    /**
+     * Evals R expression as a double expression.
+     */
     public double evalDouble(final String what) {
         final REXP x = this.engine.eval(what);
         if(x==null) throw new REngineException(what);
         return x.asDouble();
     }
 
+
+    /**
+     * Evals R expression as a list of double values.
+     */
     public double[] evalDoubleArray(final String what) {
         final REXP x = this.engine.eval(what);
         if(x==null) throw new REngineException(what);
         return x.asDoubleArray();
     }
 
+
+    /**
+     * Evals R expression as a matrix of double values.
+     */
     public double[][] evalDoubleMatrix(final String what) {
         final REXP x = this.engine.eval(what);
         if(x==null) throw new REngineException(what);
@@ -142,6 +179,20 @@ public class R {
     }
 
 
+    /**
+     * Locks access to R to other threads.
+     * Lock must be released in order to let other thread to execute
+     * R functionallity.
+     */
+    public void lock() {
+    }
+
+    
+    /**
+     * Releases locked object for the current thread.
+     */
+    public void release() {
+    }
 
 
 
