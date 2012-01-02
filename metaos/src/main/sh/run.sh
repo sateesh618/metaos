@@ -33,4 +33,4 @@ fi
 export R_HOME
 export LD_LIBRARY_PATH
 
-${JAVA_HOME}/bin/java $R_CONSOLE -Dpython.path=. -Djava.library.path=$(dirname $0)/../lib -cp ${CP} com.metaos.engine.Engine init.py $*
+${JAVA_HOME}/bin/java $R_CONSOLE -Dpython.path=$(dirname $0) -Djava.library.path=$(dirname $0)/../lib -cp ${CP} com.metaos.engine.Engine init.py $*
