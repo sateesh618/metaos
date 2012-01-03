@@ -90,4 +90,12 @@ public class Errors<T> {
     public Set<T> indexes() {
         return this.errors.keySet();
     }
+
+
+    /**
+     * Gets stored errors for given moment.
+     */
+    public List<Double> getErrors(final T moment) {
+        return this.errors.get(moment);
+    }
 }
