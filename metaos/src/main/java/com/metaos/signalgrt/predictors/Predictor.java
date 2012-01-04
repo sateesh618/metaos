@@ -33,7 +33,7 @@ public interface Predictor {
         /**
          * Creates a brand new predictor.
          */
-        public PredictorListener buildPredictor();
+        public Predictor buildPredictor();
     }
 
 
