@@ -64,8 +64,10 @@ public class MedianVolumeProfileDifferentEachDayOfWeek
 
                     public int kernelSize() { return memorySize; }
 
-                    public Predictor buildPredictor() {
-                        return new MovingMedian(memorySize);
+                    public PredictorListener buildPredictor() {
+                        return new PredictorListener.SingleSymbolField(
+                                new MovingMedian(memorySize), symbol, 
+                                new Field.VOLUME());
                     }
                 },
                 instantGenerator, symbol, new Field.VOLUME(), 100.0d);

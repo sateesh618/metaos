@@ -50,20 +50,8 @@ public abstract class PCACombiningSeveralDays extends StaticDayByDayPredictor {
             final CalUtils.InstantGenerator instantGenerator,
             final Field field, final double minimumVariance, final double scale,
             final String symbol, final int memory) {
-        super(new Predictor.PredictorSelectionStrategy() {
-                public void injectKernel(final Predictor predictor) {
-                    // Do nothing
-                }
-
-                public int kernelSize() {
-                    return instantGenerator.maxInstantValue();
-                }
-
-                public Predictor buildPredictor() {
-                    return new PCAPredictorTransposed(instantGenerator, memory,
-                            minimumVariance, scale);
-                }
-            }, instantGenerator, field, scale);
+        super(new PCAPredictorTransposed(instantGenerator, memory, 
+                minimumVariance,scale), instantGenerator, symbol, field, scale);
         this.symbol = symbol;
         this.instantGenerator = instantGenerator;
         this.vals = new double[this.instantGenerator.maxInstantValue()];

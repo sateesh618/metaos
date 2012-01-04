@@ -22,14 +22,12 @@ import com.metaos.datamgt.*;
  * several predictors, one for each type of day of week wrapping them with
  * an object of this class.
  * <br/>
- * TODO: Refactor (with PredictorStrategy) to send directly "notify" events
- * and to avoid the usage of "field".
  */
 public class OnePredictorPerTypeOfDayOfWeek implements PredictorListener {
     private static final Logger log = Logger.getLogger(
             OnePredictorPerTypeOfDayOfWeek.class.getPackage().getName());
 
-    private final Predictor[] predictors;
+    private final PredictorListener[] predictors;
     private final PredictorSelectionStrategy predictorSelectionStrategy;
     private final Field field;
 
@@ -54,7 +52,7 @@ public class OnePredictorPerTypeOfDayOfWeek implements PredictorListener {
                 predictorSelectionStrategy, final Field field) {
         this.predictorSelectionStrategy = predictorSelectionStrategy;
         this.field = field;
-        this.predictors = new Predictor[6];
+        this.predictors = new PredictorListener[6];
         for(int i=0; i<6; i++) {
             predictors[i] = predictorSelectionStrategy.buildPredictor();
         }
@@ -78,7 +76,7 @@ public class OnePredictorPerTypeOfDayOfWeek implements PredictorListener {
             .PredictorSelectionStrategy predictorSelectionStrategy) {
         this.predictorSelectionStrategy = predictorSelectionStrategy;
         this.field = null;
-        this.predictors = new Predictor[6];
+        this.predictors = new PredictorListener[6];
         for(int i=0; i<6; i++) {
             predictors[i] = predictorSelectionStrategy.buildPredictor();
         }

@@ -62,8 +62,10 @@ public class MedianVolumeProfileAllDaysTheSame extends OnePredictorPerBin {
 
                     public int kernelSize() { return memorySize; }
 
-                    public Predictor buildPredictor() {
-                        return new MovingMedian(memorySize);
+                    public PredictorListener buildPredictor() {
+                        return new PredictorListener.SingleSymbolField(
+                                new MovingMedian(memorySize), symbol, 
+                                new Field.VOLUME());
                     }
                 },
                 instantGenerator, symbol, new Field.VOLUME(), 100.0d);
@@ -88,7 +90,7 @@ public class MedianVolumeProfileAllDaysTheSame extends OnePredictorPerBin {
      * Cleans data before learning.
      */
     @Override protected void cleanData(final double[] vals) {
-        RemoveVolumeData.cleanOutliers(vals);
+        //RemoveVolumeData.cleanOutliers(vals);
         RemoveVolumeData.cutHeadAndTail(vals, this.ignoreElementsHead,
                 this.ignoreElementsTail);
     }

@@ -26,14 +26,13 @@ public abstract class StaticDayByDayPredictor implements PredictorListener {
             .class.getPackage().getName());
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat(
             "yyyy-MM-dd");
-    protected final Predictor.PredictorSelectionStrategy 
-            predictorSelectionStrategy;
     protected final Predictor predictor;
     protected final CalUtils.InstantGenerator instantGenerator;
     protected final Field field;
     protected final List<Calendar> memorizedMoments;
     protected final List<Object> memorizedValues;
     protected final double scale;
+    protected final String symbol;
     protected Calendar lastLearningTime = CalUtils.getZeroCalendar();
 
 
@@ -49,15 +48,14 @@ public abstract class StaticDayByDayPredictor implements PredictorListener {
      * @param scale value to scale daily predictions, 
      *      0 or less if no scale is wanted.
      */
-    public StaticDayByDayPredictor(final Predictor.PredictorSelectionStrategy 
-                predictorSelectionStrategy,
+    public StaticDayByDayPredictor(final Predictor predictor,
             final CalUtils.InstantGenerator instantGenerator,
-            final Field field, final double scale) {
+            final String symbol, final Field field, final double scale) {
         this.scale = scale;
         this.field = field;
         this.instantGenerator = instantGenerator;
-        this.predictor = predictorSelectionStrategy.buildPredictor();
-        this.predictorSelectionStrategy = predictorSelectionStrategy;
+        this.predictor = predictor;
+        this.symbol = symbol;
         this.memorizedValues = new ArrayList<Object>();
         this.memorizedMoments = new ArrayList<Calendar>();
     }
@@ -65,9 +63,9 @@ public abstract class StaticDayByDayPredictor implements PredictorListener {
 
     public void notify(final ParseResult parseResult) {
         final Calendar when = parseResult.getLocalTimestamp();
-        if(parseResult.values(0) != null 
-                && parseResult.values(0).get(field)!=null) {
-            final double val = parseResult.values(0).get(field);
+        if(parseResult.values(this.symbol) != null 
+                && parseResult.values(this.symbol).get(this.field)!=null) {
+            final double val = parseResult.values(0).get(this.field);
             this.learnValue(when, val);
         }
     }
@@ -87,7 +85,8 @@ public abstract class StaticDayByDayPredictor implements PredictorListener {
      */
     public double[] predictVector(final Calendar when) {
         this.learnMemorizedValues();
-        this.predictorSelectionStrategy.injectKernel(predictor);
+
+        preparePredictorBeforePredictingAfterLearning();
 
         final double[] prediction = this.predictor.predictVector(when);
         if(this.scale>0) {
@@ -261,5 +260,17 @@ public abstract class StaticDayByDayPredictor implements PredictorListener {
         }
         this.memorizedValues.clear();
         this.memorizedMoments.clear();
+    }
+
+
+    //
+    // Hook method ---------------------------------------
+    //
+
+    /**
+     * Prepares predictor (maybe injecting kernel for injectable ones)
+     * after learning values but before predicting.
+     */
+    protected void preparePredictorBeforePredictingAfterLearning() {
     }
 }

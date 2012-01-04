@@ -43,20 +43,8 @@ public abstract class PCADayByDayPredictor extends StaticDayByDayPredictor {
             final CalUtils.InstantGenerator instantGenerator,
             final Field field, final double minimumVariance, final double scale,
             final String[] symbols) {
-        super(new Predictor.PredictorSelectionStrategy() {
-                public void injectKernel(final Predictor predictor) {
-                    // Do nothing
-                }
-
-                public int kernelSize() {
-                    return instantGenerator.maxInstantValue();
-                }
-
-                public Predictor buildPredictor() {
-                    return new PCAPredictor(instantGenerator, minimumVariance,
-                            scale);
-                }
-            }, instantGenerator, field, scale);
+        super(new PCAPredictor(instantGenerator, minimumVariance, scale), 
+                instantGenerator, symbols[0], field, scale);
         this.symbols = symbols;
     }
 
