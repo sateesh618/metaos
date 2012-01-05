@@ -4,7 +4,7 @@
 \usepackage{color}
 \usepackage{listings}
 
-\title{MetaOS R integration. A how-to guide.}
+\title{MetaOS Architecture.}
 \author{Sergio Alvarez (setelena@gmail.com),
     Luis F. Canals (luisf.canals@gmail.com)}
 
@@ -16,15 +16,72 @@
 
 \section{Abstract}
 
-\section{MetaOS viewed from Python scripts.}
+\section{MetaOS modules.}
 
-The following example shows how Python scripts invokes a R code in 
-the simplest way: load of R environment and R code, inizialization of R
-variables and objects, example of loop to call several times to a function
-R in the R-environment and new call at the end of the loop:
+\includegraphics{images/Overview.jpg}
+
+\section{Java packages.}
+Quite similar information is available in Javadoc, maybe with more 
+examples oriented to programming tasks.
+
+In this section, we're trying to provide an architectural view 
+and the ways system may grow.
+
+
+\subsection{datamgt}
+Classes related to data access, transformation and making of new variables.
+Remote (on demand and on line trading systems) and even local datasources 
+(like CSV files) are represented using a common interface thanks to 
+this package.
+
+Listener and factory patterns are in the core of the package to let:
+    a.- the startegies work into a simulated environment (for instance
+        created with historical data) and real time world agnostically,
+        thus without changing anything into strategies code;
+
+    b.- synthesize new data (in real time and in simulations) in an homogeneus
+        way, providing the same appear for crude and synthesized data;
+
+General package overview is shown is this figure, in which only interfaces
+are represented. The other elements in package are classes implementing
+interfaces for general cases (CSV files, sources with one or several symbols,
+file splitting manipulation, etc)
+
+\includegraphics{images/datamgrClassDiagram.jpg}
+
+The usage of the classes from this package is like this figure
+\includegraphics{images/datamgrsequence.jpg}
+
+The only main principle driving the package is the concept of listener:
+trading data is gotten from sources and several listeners are subscribed to
+the data management classes; listeners are, for instance, predictors,
+strategies or data transformations.
+
+\subsection{engine}
+
+\subsection{riskmgt}
+
+\subsection{signalgrt}
+
+\subsection{trading}
+
+\subsection{util}
+
+\subsection{ext}
+
+\section{Integration with other languages}
+
+\subsection{R project}
+
+\subsection{Python}
+
+\subsection{Any other}
+
+\section{Examples --------- erase me, please}
+Lorem ipsum dolor.
 
 \lstset{language=Python,frame=single,tabsize=2,basicstyle=\tiny}
-\lstinputlisting{../src/itest/jython/testR.py}
+\lstinputlisting{../src/test/jython/testR.py}
 
 As it's seen from the code, a R source code named \emph{correlation.r}
 where a class \emph{correlator} is defined. The class should have got the
@@ -35,14 +92,14 @@ methods \emph{memo} and \emph{show}, as in this example:
 
 
 
-\section{An example}
+\section{Generalization}
 
 The following code (\emph{rintegration.py}) uses the same described principle 
 in the previous section but letting the name of R source containing the 
 class as a runtime parameter:
 
 \lstset{language=Python,frame=single,tabsize=2,basicstyle=\tiny}
-\lstinputlisting{../src/test/jython/rintegration.py}
+\lstinputlisting{../src/python/rintegration.py}
 
 In this case, interface for R class has been modified, to create a simple
 predictor with two methods, \emph{learn} and \emph{predict}. An example of
@@ -56,7 +113,7 @@ Java-like):
 \begin{lstlisting}
 
     interface PredictorInR {
-        // Learns a new association x->y
+        // Learns a new relation x->y
         void learn(double x, double y);
 
         // Tries to predict the value of y from x
