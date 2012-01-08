@@ -169,13 +169,22 @@ public class CSVLineParser implements LineParser {
     /**
      * Modifies internal values trying to parse given line.
      */
-    private void _parseLine(final String line) {
+    protected void _parseLine(final String line) {
         this.parsedLine = line;
         this.parsedData.reset();
         this.parsingResult = false;
 
         final String parts[] = line.split(",");
         boolean anyValuePresent = false;
+
+        // First, look for the symbol (following ParseResult protocol)
+        this.parsePositions[this.symbolIndex].setIndex(0);
+        final Object objTmp = this.formatters[this.symbolIndex].parseObject(
+                parts[this.symbolIndex], this.parsePositions[this.symbolIndex]);
+        this.parsedData.addSymbol((String) ((Object[])objTmp)[0]);
+
+
+        // Then, look for symbol trade data
         for(int i=0; i<parts.length; i++) {
             if(this.formatters[i] != null) {
                 try {
@@ -184,8 +193,7 @@ public class CSVLineParser implements LineParser {
                             .parseObject(parts[i], this.parsePositions[i]);
                     if(obj instanceof Object[]) {
                         if(i==this.symbolIndex) {
-                            this.parsedData.addSymbol((String) 
-                                    ((Object[])obj)[0]);
+                            continue;
                         }
                     } else if(obj instanceof Number) {
                         boolean isFieldIndex = false;
