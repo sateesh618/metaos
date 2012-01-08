@@ -76,7 +76,7 @@ public abstract class OnePredictorPerBin implements PredictorListener {
             this.learnedValues.add(null);
         }
         log.fine("Created set of " + this.instantGenerator.maxInstantValue()
-                + "predictors, one per daily bin but the same set for every "
+                + " predictors, one per daily bin but the same set for every "
                 + "days but different");
     }
 

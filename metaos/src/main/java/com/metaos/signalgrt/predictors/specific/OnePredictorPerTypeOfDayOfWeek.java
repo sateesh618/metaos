@@ -29,7 +29,35 @@ public class OnePredictorPerTypeOfDayOfWeek implements PredictorListener {
 
     private final PredictorListener[] predictors;
     private final PredictorSelectionStrategy predictorSelectionStrategy;
-    private final Field field;
+    private final TypeOfDaysStrategy typeOfDays;
+
+
+
+    //
+    // Public Inner Classes
+    //
+    
+
+
+    /**
+     * Differences between Mon, Thu,...and Friday 
+     */
+    public static class MonTueWedThuFri implements TypeOfDaysStrategy {
+        public int numberOfDays() { return 5; }
+        public int typeOfDay(final Calendar when) {
+            switch(when.get(Calendar.DAY_OF_WEEK)) {
+                case Calendar.MONDAY: return 0;
+                case Calendar.TUESDAY: return 1;
+                case Calendar.WEDNESDAY: return 2;
+                case Calendar.THURSDAY: return 3;
+                case Calendar.FRIDAY: return 4;
+                default:
+                    log.info("Don't how to deal with SATURDAY or SUNDAYS");
+                    return -1;
+            }
+        }
+    }
+
 
 
     //
@@ -38,48 +66,27 @@ public class OnePredictorPerTypeOfDayOfWeek implements PredictorListener {
 
 
     /**
-     * Creates a combined predictor: 5 days (labour days) + third friday,
-     * time-series predictors with defined strategy to change predictors
-     * and scaling learned and predicted values.
-     *
-     * @param predictorSelectionStrategy strategy in the sense of design 
-     * patterns, to decide which predictor create and how to inject the core
-     * before predicting. 
-     * @deprecated Use constructor without <code>field</code> parameter.
-     */
-    public OnePredictorPerTypeOfDayOfWeek(
-            final Predictor.PredictorSelectionStrategy 
-                predictorSelectionStrategy, final Field field) {
-        this.predictorSelectionStrategy = predictorSelectionStrategy;
-        this.field = field;
-        this.predictors = new PredictorListener[6];
-        for(int i=0; i<6; i++) {
-            predictors[i] = predictorSelectionStrategy.buildPredictor();
-        }
-        log.fine("Created set of 6 predictors, one for each type of day");
-    }
-
-
-    /**
-     * Creates a combined predictor: 5 days (labour days) + third friday,
-     * time-series predictors with defined strategy to change predictors
-     * and scaling learned and predicted values.
+     * Creates a combined time-series predictors one for each different type
+     * of day.
      *
      * @param predictorSelectionStrategy strategy in the sense of design 
      * patterns, to decide which predictor create and how to inject the core
      * before predicting. Must create <code>PredictorListener</code>s, not
      * only <code>Predictor</code>s, since their <code>notify</code>
      * will be invoked.
-     * @deprecated Use constructor without <code>field</code> parameter.
+     * @param typeOfDays how is defined each type of day.
      */
     public OnePredictorPerTypeOfDayOfWeek(final Predictor
-            .PredictorSelectionStrategy predictorSelectionStrategy) {
+            .PredictorSelectionStrategy predictorSelectionStrategy,
+            final TypeOfDaysStrategy typeOfDays) {
         this.predictorSelectionStrategy = predictorSelectionStrategy;
-        this.field = null;
         this.predictors = new PredictorListener[6];
-        for(int i=0; i<6; i++) {
+        this.typeOfDays = typeOfDays;
+        for(int i=0; i<typeOfDays.numberOfDays(); i++) {
             predictors[i] = predictorSelectionStrategy.buildPredictor();
         }
+        log.fine("Created set of " + typeOfDays.numberOfDays()
+                + "predictors, one for each type of day");
     }
 
 
@@ -87,18 +94,9 @@ public class OnePredictorPerTypeOfDayOfWeek implements PredictorListener {
 
     public void notify(final ParseResult parseResult) {
         final Calendar when = parseResult.getLocalTimestamp();
-
-        final int index = daySelector(when);
+        final int index = typeOfDays.typeOfDay(when);
         if(index==-1) return;
-        if(this.predictors[index] instanceof PredictorListener) {
-            ((PredictorListener) this.predictors[index]).notify(parseResult);
-        } else {
-            // Backcompatibility
-            if(parseResult.values(0)!=null 
-                    && parseResult.values(0).get(field)!=null) {
-                this.learnValue(when, parseResult.values(0).get(field));
-            }
-        }
+        this.predictors[index].notify(parseResult);
     }
 
 
@@ -106,7 +104,7 @@ public class OnePredictorPerTypeOfDayOfWeek implements PredictorListener {
      * Emits a single forecast based on learned values.
      */
     public double predict(final Calendar when) {
-        final int index = daySelector(when);
+        final int index = typeOfDays.typeOfDay(when);
         return predictors[index].predict(when);
     }
 
@@ -115,7 +113,7 @@ public class OnePredictorPerTypeOfDayOfWeek implements PredictorListener {
      * Emits a forecast based on learned values.
      */
     public double[] predictVector(final Calendar when) {
-        final int index = daySelector(when);
+        final int index = typeOfDays.typeOfDay(when);
         this.predictorSelectionStrategy.injectKernel(predictors[index]);
         return predictors[index].predictVector(when);
     }
@@ -125,7 +123,7 @@ public class OnePredictorPerTypeOfDayOfWeek implements PredictorListener {
      * Memorizes several values at the same time.
      */
     public void learnVector(final Calendar when, final double[] vals) {
-        final int index = daySelector(when);
+        final int index = typeOfDays.typeOfDay(when);
         predictors[index].learnVector(when, vals);
     }
 
@@ -134,7 +132,7 @@ public class OnePredictorPerTypeOfDayOfWeek implements PredictorListener {
      * Memorizes several values at the same time.
      */
     public void learnVector(final Calendar when, final List<Double> vals) {
-        final int index = daySelector(when);
+        final int index = typeOfDays.typeOfDay(when);
         predictors[index].learnVector(when, vals);
     }
 
@@ -143,7 +141,7 @@ public class OnePredictorPerTypeOfDayOfWeek implements PredictorListener {
      * Memorizes one single value.
      */
     public void learnValue(final Calendar when, final double val) {
-        final int index = daySelector(when);
+        final int index = typeOfDays.typeOfDay(when);
         predictors[index].learnValue(when, val);
     }
 
@@ -163,28 +161,5 @@ public class OnePredictorPerTypeOfDayOfWeek implements PredictorListener {
      */
     public String toString() {
         return "Weekly Predictor " + this.predictors[0].toString();
-    }
-
-
-    //
-    // Private stuff -----------------------
-    //
-
-    /**
-     * Returns 0 when moment is in Monday, 2 when it's in Tuesday and so on,
-     * to select the suitable predictor.
-     */
-    private int daySelector(final Calendar when) {
-        switch(when.get(Calendar.DAY_OF_WEEK)) {
-            case Calendar.MONDAY: return 0;
-            case Calendar.TUESDAY: return 1;
-            case Calendar.WEDNESDAY: return 2;
-            case Calendar.THURSDAY: return 3;
-            case Calendar.FRIDAY: 
-                return when.get(Calendar.WEEK_OF_MONTH)==3 ? 5 : 4;
-            default:
-                log.info("Don't how to deal with SATURDAY or SUNDAYS");
-                return -1;
-        }
     }
 }
