@@ -31,6 +31,7 @@ public abstract class AbstractDailyDataProfileComparator
             AbstractDailyDataProfileComparator.class.getPackage().getName());
     private static final SimpleDateFormat dateFormat = 
             new SimpleDateFormat("yyyy-MM-dd");
+    private final boolean cleanOutliers;
     private final Field field;
     private final Errors<Integer> minuteErrors;
     private final Errors<String> dayErrors;
@@ -47,10 +48,13 @@ public abstract class AbstractDailyDataProfileComparator
      * @param field the field to compare profile.
      * @param filters Filters to apply over date.
      * @param symbol to make comparisons.
+     * @param cleanOutliers true if values greater than a fraction of last 
+     * value should be removed (false if not).
      */
     public AbstractDailyDataProfileComparator(
             final CalUtils.InstantGenerator instantGenerator,
-            final String symbol, final Field field, final Filter filters[]) {
+            final String symbol, final Field field, final Filter filters[],
+            final boolean cleanOutliers) {
         this.instantGenerator = instantGenerator;
         this.minuteErrors = new Errors<Integer>();
         this.dayErrors = new Errors<String>();
@@ -63,6 +67,7 @@ public abstract class AbstractDailyDataProfileComparator
 
         this.dumpResults = System.getProperty("DUMPRESULTS") != null;
         this.filters = filters;
+        this.cleanOutliers = cleanOutliers;
     }
 
 
@@ -86,7 +91,7 @@ public abstract class AbstractDailyDataProfileComparator
     public void notify(final ParseResult parseResult) {
         final int index = this.instantGenerator.generate(
                 parseResult.getLocalTimestamp());
-        // Effect:only takes memory of the each minute for the last received day
+        // Effect:only takes memory of each minute for the last received day
         if(parseResult.values(this.symbol) != null &&
                 parseResult.values(this.symbol).get(field) != null) {
             this.dailyData[index] = parseResult.values(this.symbol).get(field);
@@ -107,7 +112,11 @@ public abstract class AbstractDailyDataProfileComparator
         final String dayStr = dateFormat.format(when.getTime());
 
         // Clean values, removing outliers
-        RemoveVolumeData.cleanOutliers(this.dailyData);
+        if(this.cleanOutliers) {
+            log.info("Cleaning outliers from real data before "
+                    + "comparing prediction");
+            RemoveVolumeData.cleanOutliers(this.dailyData);
+        }
 
         final double errors[] = 
                 contrast(predictedValues, this.dailyData);

@@ -27,6 +27,7 @@ public interface PredictorListener extends Predictor, Listener {
                 this.symbol = symbol;
                 this.field = field;
         }
+
         /**
          * Receives notification signals.
          */
@@ -86,6 +87,13 @@ public interface PredictorListener extends Predictor, Listener {
          */
         public String toString() {
             return internal.toString();
+        }
+
+        /**
+         * Gets the internal wrapped predictor.
+         */
+        public Predictor getPredictor() {
+            return internal;
         }
     }
 }

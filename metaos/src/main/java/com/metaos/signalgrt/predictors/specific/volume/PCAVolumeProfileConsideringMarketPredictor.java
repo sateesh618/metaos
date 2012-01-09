@@ -38,6 +38,7 @@ public final class PCAVolumeProfileConsideringMarketPredictor
                     .getName());
 
     private final int ignoreElementsHead, ignoreElementsTail;
+    private final boolean cleanOutliers;
 
     //
     // Public methods ---------------------------------------
@@ -56,6 +57,7 @@ public final class PCAVolumeProfileConsideringMarketPredictor
                 symbols);
         this.ignoreElementsHead = 0;
         this.ignoreElementsTail = 0;
+        this.cleanOutliers = false;
     }
 
 
@@ -69,15 +71,18 @@ public final class PCAVolumeProfileConsideringMarketPredictor
      * element with value (maybe opening auction).
      * @param ignoreElementsHead number of elements to ignore from the last 
      * element with value (maybe closing auction).
+     * @param cleanOutliers true to clean otuliers when learning.
      */
     public PCAVolumeProfileConsideringMarketPredictor(
             final CalUtils.InstantGenerator instantGenerator,
             final double minimumVariance, final String[] symbols,
-            final int ignoreElementsHead, final int ignoreElementsTail) {
+            final int ignoreElementsHead, final int ignoreElementsTail,
+            final boolean cleanOutliers) {
         super(instantGenerator, new Field.VOLUME(), minimumVariance, 100.0d,
                 symbols);
         this.ignoreElementsHead = ignoreElementsHead;
         this.ignoreElementsTail = ignoreElementsTail;
+        this.cleanOutliers = cleanOutliers;
     }
 
 
@@ -134,7 +139,10 @@ public final class PCAVolumeProfileConsideringMarketPredictor
      * initialization parameters.
      */
     @Override protected void cleanData(final double vals[]) {
-        RemoveVolumeData.cleanOutliers(vals);
+        if(this.cleanOutliers) {
+            log.fine("Cleaning outliers before predicting");
+            RemoveVolumeData.cleanOutliers(vals);
+        }
         RemoveVolumeData.cutHeadAndTail(vals, this.ignoreElementsHead,
                 this.ignoreElementsTail);
     }

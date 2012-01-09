@@ -35,6 +35,8 @@ public final class PCAVolumeProfileConsideringOneStockPredictor
                     .getName());
 
     private final int ignoreElementsHead, ignoreElementsTail;
+    private final boolean cleanOutliers;
+
 
     //
     // Public methods ---------------------------------------
@@ -55,8 +57,8 @@ public final class PCAVolumeProfileConsideringOneStockPredictor
                 100.0d, symbol, memory);
         this.ignoreElementsHead = 0;
         this.ignoreElementsTail = 0;
+        this.cleanOutliers = false;
     }
-
 
     /**
      * Creates a day-by-day predictor which uses data from each day to
@@ -68,17 +70,21 @@ public final class PCAVolumeProfileConsideringOneStockPredictor
      * element with value (maybe opening auction).
      * @param ignoreElementsHead number of elements to ignore from the last 
      * element with value (maybe closing auction).
+     * @param cleanOutliers clean outliers when learning.
      */
     public PCAVolumeProfileConsideringOneStockPredictor(
             final CalUtils.InstantGenerator instantGenerator,
             final double minimumVariance, final String symbol, 
             final int memory, final int ignoreElementsHead, 
-            final int ignoreElementsTail) {
+            final int ignoreElementsTail, final boolean cleanOutliers) {
         super(instantGenerator, new Field.VOLUME(), minimumVariance,
                 100.0d, symbol, memory);
         this.ignoreElementsHead = ignoreElementsHead;
         this.ignoreElementsTail = ignoreElementsTail;
+        this.cleanOutliers = cleanOutliers;
     }
+
+
 
 
     /**
@@ -132,7 +138,10 @@ public final class PCAVolumeProfileConsideringOneStockPredictor
      * initialization parameters.
      */
     @Override protected void cleanData(final double vals[]) {
-        RemoveVolumeData.cleanOutliers(vals);
+        if(this.cleanOutliers) {
+            log.fine("Cleaning outliers data");
+            RemoveVolumeData.cleanOutliers(vals);
+        }
         RemoveVolumeData.cutHeadAndTail(vals, this.ignoreElementsHead,
                 this.ignoreElementsTail);
     }

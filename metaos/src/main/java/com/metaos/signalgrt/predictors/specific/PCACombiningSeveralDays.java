@@ -65,6 +65,9 @@ public abstract class PCACombiningSeveralDays extends StaticDayByDayPredictor {
                 ? x.get(field) : Double.NaN;
         final Calendar when = parseResult.getLocalTimestamp();
         this.learnValue(when, val);
+        log.finest("Memorizing value " + val + " for " + when.get(
+                Calendar.HOUR_OF_DAY) + ":" + when.get(Calendar.MINUTE)
+                + ":" + when.get(Calendar.SECOND));
     }
 
 

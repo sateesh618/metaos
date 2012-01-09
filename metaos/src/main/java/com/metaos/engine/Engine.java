@@ -84,6 +84,7 @@ public class Engine {
      * Entry point.
      */
     public static void main(final String args[]) throws Exception {
+        TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
         final String[] argsRest = new String[args.length-2];
         for(int i=0; i<argsRest.length; i++) argsRest[i] = args[i+2];
         final Engine engine = new Engine(args[0]);

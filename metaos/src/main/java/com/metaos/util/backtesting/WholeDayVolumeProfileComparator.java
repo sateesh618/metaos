@@ -30,7 +30,7 @@ public class WholeDayVolumeProfileComparator
     public WholeDayVolumeProfileComparator(
             final CalUtils.InstantGenerator instantGenerator,
             final String symbol, final Field field, final Calendar minimumDay) {
-        this(instantGenerator, symbol, field, minimumDay, 1);
+        this(instantGenerator, symbol, field, minimumDay, 1, true);
     }
 
 
@@ -51,7 +51,8 @@ public class WholeDayVolumeProfileComparator
     public WholeDayVolumeProfileComparator(
             final CalUtils.InstantGenerator instantGenerator, 
             final String symbol, final Field field, 
-            final Calendar minimumDay, final int groupSize) {
+            final Calendar minimumDay, final int groupSize, 
+            final boolean cleanOutliers) {
         this(instantGenerator, symbol, field, new Filter[] {
                 new Filter() {
                     public boolean filter(Calendar when, 
@@ -59,7 +60,7 @@ public class WholeDayVolumeProfileComparator
                         return !when.before(minimumDay);
                     }
                 }
-            }, groupSize);
+            }, groupSize, true);
     }
 
 
@@ -72,6 +73,7 @@ public class WholeDayVolumeProfileComparator
      * @param field the field to compare profile.
      * @param filters set of filters to apply to dates.
      * @param groupSize size of the groups to be done before comparing.
+     * @param cleanOutliers true if outliers will be cleaned before comparing.
      *
      * Thus, if there are N bins in a day to compare, they will be groupped,
      * in sequential order, in N/groupSize equally sized blocks, adding values.
@@ -79,8 +81,9 @@ public class WholeDayVolumeProfileComparator
     public WholeDayVolumeProfileComparator(
             final CalUtils.InstantGenerator instantGenerator, 
             final String symbol, final Field field, 
-            final Filter filters[], final int groupSize) {
-        super(instantGenerator, symbol, field, filters);
+            final Filter filters[], final int groupSize, 
+            final boolean cleanOutliers) {
+        super(instantGenerator, symbol, field, filters, cleanOutliers);
         this.groupSize = groupSize;
     }
 
@@ -93,11 +96,13 @@ public class WholeDayVolumeProfileComparator
      * @param symbol symbol to make comparisons.
      * @param field the field to compare profile.
      * @param filters set of filters to apply to dates.
+     * @param cleanOutliers true if outliers will be cleaned before comparing.
      */
     public WholeDayVolumeProfileComparator(
             final CalUtils.InstantGenerator instantGenerator, 
-            final String symbol, final Field field, final Filter filters[]) {
-        this(instantGenerator, symbol, field, filters, 1);
+            final String symbol, final Field field, final Filter filters[], 
+            final boolean cleanOutliers) {
+        this(instantGenerator, symbol, field, filters, 1, cleanOutliers);
     }
 
 

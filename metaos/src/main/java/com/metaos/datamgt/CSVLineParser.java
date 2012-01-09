@@ -185,6 +185,7 @@ public class CSVLineParser implements LineParser {
 
 
         // Then, look for symbol trade data
+        boolean timeZoneHasBeenSet = false;
         for(int i=0; i<parts.length; i++) {
             if(this.formatters[i] != null) {
                 try {
@@ -224,10 +225,12 @@ public class CSVLineParser implements LineParser {
                                             .set(Calendar.ZONE_OFFSET, 
                                                 (int)val * (60 * 60 * 1000));
 
-                                // Due to a bug in Calendar, when 
+                                // Due to a bug in Calendar, when setting 
+                                // timezone, milliseconds are altered too...
                                 this.parsedData.getLocalTimestamp()
                                         .setTimeInMillis(millis);
                                 anyValuePresent = true;
+                                timeZoneHasBeenSet = true;
                             }
                         }
                         if(!isFieldIndex) {
@@ -268,6 +271,13 @@ public class CSVLineParser implements LineParser {
             }
         }
         this.parsingResult = anyValuePresent;
+        if(!timeZoneHasBeenSet && this.parsedData.getLocalTimestamp()!=null) {
+            final long millis = this.parsedData.getLocalTimestamp()
+                    .getTimeInMillis();
+            this.parsedData.getLocalTimestamp().setTimeZone(
+                    TimeZone.getTimeZone("GMT"));
+            this.parsedData.getLocalTimestamp().setTimeInMillis(millis);
+        }
 
 
         this.isValid = this.parsedData.getSymbol(0) != null 

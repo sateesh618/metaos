@@ -28,10 +28,12 @@ public class MobileWindowVolumeProfileComparator
      * @param symbol symbol to compare profile.
      * @param field the field to compare profile.
      * @param minimumDay minimum day to compare forecasts.
+     * @param cleanOutliers true if outliers should be cleaned before comparing.
      */
     public MobileWindowVolumeProfileComparator(final int windowSize,
             final CalUtils.InstantGenerator instantGenerator,
-            final String symbol, final Field field, final Calendar minimumDay) {
+            final String symbol, final Field field, final Calendar minimumDay,
+            final boolean cleanOutliers) {
         super(instantGenerator, symbol, field, new Filter[] {
                 new Filter() {
                     public boolean filter(Calendar when, String symbol, 
@@ -39,7 +41,7 @@ public class MobileWindowVolumeProfileComparator
                         return !when.before(minimumDay);
                     }
                 }
-            });
+            }, cleanOutliers);
         this.windowSize = windowSize;
     }
 
