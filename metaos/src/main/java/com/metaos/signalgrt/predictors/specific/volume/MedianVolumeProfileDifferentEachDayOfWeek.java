@@ -24,6 +24,7 @@ import com.metaos.datamgt.*;
 public class MedianVolumeProfileDifferentEachDayOfWeek 
         extends OnePredictorPerBinAndTypeOfDayOfWeek{
     private final int ignoreElementsHead, ignoreElementsTail;
+    private final boolean cleanOutliers;
 
     /**
      * Creates a day-by-day predictor which uses median of N previous days,
@@ -38,7 +39,7 @@ public class MedianVolumeProfileDifferentEachDayOfWeek
     public MedianVolumeProfileDifferentEachDayOfWeek(final int memorySize,
             final CalUtils.InstantGenerator instantGenerator, 
             final String symbol) {
-        this(memorySize, instantGenerator, symbol, 0, 0);
+        this(memorySize, instantGenerator, symbol, 0, 0, true);
     }
 
 
@@ -56,7 +57,7 @@ public class MedianVolumeProfileDifferentEachDayOfWeek
     public MedianVolumeProfileDifferentEachDayOfWeek(final int memorySize,
             final CalUtils.InstantGenerator instantGenerator,
             final String symbol, final int ignoreElementsHead, 
-            final int ignoreElementsTail) {
+            final int ignoreElementsTail, final boolean cleanOutliers) {
         super(new Predictor.PredictorSelectionStrategy() {
                     public void injectKernel(final Predictor predictor) {
                         // Do nothing.
@@ -73,6 +74,7 @@ public class MedianVolumeProfileDifferentEachDayOfWeek
                 instantGenerator, symbol, new Field.VOLUME(), 100.0d);
         this.ignoreElementsHead = ignoreElementsHead;
         this.ignoreElementsTail = ignoreElementsTail;
+	this.cleanOutliers = cleanOutliers;
     }
 
 
@@ -82,7 +84,9 @@ public class MedianVolumeProfileDifferentEachDayOfWeek
      */
     public String toString() {
         return "Moving Median normalized to 100 Volume Profile Predictor, "
-                + "using different predictors for each day of week";
+                + "using different predictors for each day of week "
+                + (this.cleanOutliers ? "cleaning" : "not cleaning")
+                + " outliers";
     }
 
 
@@ -93,7 +97,9 @@ public class MedianVolumeProfileDifferentEachDayOfWeek
      * Cleans data before learning.
      */
     @Override protected void cleanData(final double[] vals) {
-        //RemoveVolumeData.cleanOutliers(vals);
+        if(this.cleanOutliers) {
+	    RemoveVolumeData.cleanOutliers(vals);
+        }
         RemoveVolumeData.cutHeadAndTail(vals, this.ignoreElementsHead,
                 this.ignoreElementsTail);
     }

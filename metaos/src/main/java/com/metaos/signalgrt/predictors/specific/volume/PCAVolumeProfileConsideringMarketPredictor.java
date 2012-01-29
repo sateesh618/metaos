@@ -54,7 +54,7 @@ public final class PCAVolumeProfileConsideringMarketPredictor
             final CalUtils.InstantGenerator instantGenerator,
             final double minimumVariance, final String[] symbols) {
         super(instantGenerator, new Field.VOLUME(), minimumVariance, 100.0d,
-                symbols);
+                symbols, symbols[0]);
         this.ignoreElementsHead = 0;
         this.ignoreElementsTail = 0;
         this.cleanOutliers = false;
@@ -79,7 +79,7 @@ public final class PCAVolumeProfileConsideringMarketPredictor
             final int ignoreElementsHead, final int ignoreElementsTail,
             final boolean cleanOutliers) {
         super(instantGenerator, new Field.VOLUME(), minimumVariance, 100.0d,
-                symbols);
+                symbols, symbols[0]);
         this.ignoreElementsHead = ignoreElementsHead;
         this.ignoreElementsTail = ignoreElementsTail;
         this.cleanOutliers = cleanOutliers;
@@ -123,7 +123,9 @@ public final class PCAVolumeProfileConsideringMarketPredictor
         return this.scale<=0 ? "Not Normalized PCA Volume Profile Considering "
                 + "all market values Predictor" 
                 : "Normalized to " + this.scale 
-                + " PCA Volume Profile Considering all market values Predictor";
+                + " PCA Volume Profile Considering all market values Predictor "
+                + (this.cleanOutliers ? "cleaning" : "not cleaning")
+                + " outliers";
     }
 
 

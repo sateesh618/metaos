@@ -32,7 +32,7 @@ public interface PredictorListener extends Predictor, Listener {
          * Receives notification signals.
          */
         public void notify(final ParseResult result) {
-            final Calendar when = result.getLocalTimestamp();
+            final Calendar when = result.getLocalTimestamp(0);
             if(result.values(0)!=null
                             && result.values(0).get(field)!=null) {
                 internal.learnValue(when, result.values(symbol).get(field));

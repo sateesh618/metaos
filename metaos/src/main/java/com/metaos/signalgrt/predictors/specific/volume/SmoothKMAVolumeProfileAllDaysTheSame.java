@@ -7,6 +7,7 @@
 package com.metaos.signalgrt.predictors.specific.volume;
 
 import java.util.*;
+import java.util.logging.*;
 import com.metaos.signalgrt.predictors.*;
 import com.metaos.signalgrt.predictors.specific.*;
 import com.metaos.util.*;
@@ -27,7 +28,10 @@ import com.metaos.datamgt.*;
  */
 public final class SmoothKMAVolumeProfileAllDaysTheSame 
         extends OnePredictorPerBin {
+    private static final Logger log = Logger.getLogger(
+            SmoothKMAVolumeProfileAllDaysTheSame.class.getPackage().getName());
     private final int ignoreElementsHead, ignoreElementsTail;
+    private final boolean cleanOutliers;
 
     /**
      * Creates a predictor for each bin in day using data from previous
@@ -46,6 +50,7 @@ public final class SmoothKMAVolumeProfileAllDaysTheSame
                 new Field.VOLUME(), 100.0d);
         this.ignoreElementsHead = 0;
         this.ignoreElementsTail = 0;
+	this.cleanOutliers = true;
     }
 
 
@@ -67,11 +72,12 @@ public final class SmoothKMAVolumeProfileAllDaysTheSame
                     predictorSelectionStrategy,
             final CalUtils.InstantGenerator instantGenerator, 
             final String symbol, final int ignoreElementsHead, 
-            final int ignoreElementsTail) {
+            final int ignoreElementsTail, final boolean cleanOutliers) {
         super(predictorSelectionStrategy, instantGenerator, symbol,
                 new Field.VOLUME(), 100.0d);
         this.ignoreElementsHead = ignoreElementsHead;
         this.ignoreElementsTail = ignoreElementsTail;
+	this.cleanOutliers = cleanOutliers;
     }
 
 
@@ -82,7 +88,9 @@ public final class SmoothKMAVolumeProfileAllDaysTheSame
      */
     public String toString() {
         return "Smooth Kernel Moving Average normalized to 100 Volume "
-                + "Profile Predictor";
+                + "Profile Predictor "
+                + (this.cleanOutliers ? "cleaning" : "not cleaning")
+                + " outliers";
     }
 
 
@@ -93,7 +101,10 @@ public final class SmoothKMAVolumeProfileAllDaysTheSame
      * Cleans data before learning.
      */
     @Override protected void cleanData(final double[] vals) {
-        RemoveVolumeData.cleanOutliers(vals);
+	if(this.cleanOutliers) {
+            log.finest("Removing outliers before learning");
+	    RemoveVolumeData.cleanOutliers(vals);
+        }
         RemoveVolumeData.cutHeadAndTail(vals, this.ignoreElementsHead,
                 this.ignoreElementsTail);
     }

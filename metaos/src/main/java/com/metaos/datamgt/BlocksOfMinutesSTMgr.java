@@ -53,13 +53,13 @@ public class BlocksOfMinutesSTMgr extends AccumulatorSTMgrBase {
      */
     public void accumulate(final ParseResult result) {
         if(this.lastTimestamp == -1) {
-            this.lastTimestamp = result.getLocalTimestamp().getTimeInMillis();
+            this.lastTimestamp = result.getUTCTimestampCopy().getTimeInMillis();
         }
 
-        if(result.getLocalTimestamp().getTimeInMillis()-this.lastTimestamp 
+        if(result.getUTCTimestampCopy().getTimeInMillis()-this.lastTimestamp 
                 >= this.accumulationWindow) {
             this.endAccumulation();
-            this.lastTimestamp = result.getLocalTimestamp().getTimeInMillis();
+            this.lastTimestamp = result.getUTCTimestampCopy().getTimeInMillis();
         }
         this.memory.add(result);
     }

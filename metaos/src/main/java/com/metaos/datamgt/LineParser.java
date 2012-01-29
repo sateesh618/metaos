@@ -84,11 +84,20 @@ public interface LineParser {
     public String getSymbol(final String line, final int index);
 
     /**
-     * Analyzes the line getting the timestamp, but not reporting to listeners
+     * Analyzes the line getting the local timestamp, 
+     * but without reporting to listeners
      * the result.
      * @return null if there is no timestamp information
      */
     public Calendar getLocalTimestamp(final String line);
+
+    /**
+     * Analyzes the line getting the UTC timestamp, 
+     * but without reporting to listeners
+     * the result.
+     * @return null if there is no timestamp information
+     */
+    public Calendar getUTCTimestamp(final String line);
 
     /**
      * Adds a filter to validate the line.

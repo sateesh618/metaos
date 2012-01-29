@@ -23,6 +23,7 @@ import com.metaos.datamgt.*;
  */
 public class MedianVolumeProfileAllDaysTheSame extends OnePredictorPerBin {
     private final int ignoreElementsHead, ignoreElementsTail;
+    private final boolean cleanOutliers;
 
     /**
      * Creates a day-by-day predictor which uses median of N previous days 
@@ -36,7 +37,7 @@ public class MedianVolumeProfileAllDaysTheSame extends OnePredictorPerBin {
     public MedianVolumeProfileAllDaysTheSame(final int memorySize,
             final CalUtils.InstantGenerator instantGenerator, 
             final String symbol) {
-        this(memorySize, instantGenerator, symbol, 0, 0);
+        this(memorySize, instantGenerator, symbol, 0, 0, true);
     }
 
 
@@ -54,7 +55,7 @@ public class MedianVolumeProfileAllDaysTheSame extends OnePredictorPerBin {
     public MedianVolumeProfileAllDaysTheSame(final int memorySize,
             final CalUtils.InstantGenerator instantGenerator,
             final String symbol, final int ignoreElementsHead, 
-            final int ignoreElementsTail) {
+            final int ignoreElementsTail, final boolean cleanOutliers) {
         super(new Predictor.PredictorSelectionStrategy() {
                     public void injectKernel(final Predictor predictor) {
                         // Do nothing.
@@ -71,6 +72,7 @@ public class MedianVolumeProfileAllDaysTheSame extends OnePredictorPerBin {
                 instantGenerator, symbol, new Field.VOLUME(), 100.0d);
         this.ignoreElementsHead = ignoreElementsHead;
         this.ignoreElementsTail = ignoreElementsTail;
+	this.cleanOutliers = cleanOutliers;
     }
 
 
@@ -79,7 +81,9 @@ public class MedianVolumeProfileAllDaysTheSame extends OnePredictorPerBin {
      * Returns the human name of the predictor.
      */
     public String toString() {
-        return "Moving Median normalized to 100 Volume Profile Predictor";
+        return "Moving Median normalized to 100 Volume Profile Predictor "
+                + (this.cleanOutliers ? "cleaning" : "not cleaning")
+                + " outliers";
     }
 
 
@@ -90,7 +94,9 @@ public class MedianVolumeProfileAllDaysTheSame extends OnePredictorPerBin {
      * Cleans data before learning.
      */
     @Override protected void cleanData(final double[] vals) {
-        //RemoveVolumeData.cleanOutliers(vals);
+        if(this.cleanOutliers) {
+            RemoveVolumeData.cleanOutliers(vals);
+        }
         RemoveVolumeData.cutHeadAndTail(vals, this.ignoreElementsHead,
                 this.ignoreElementsTail);
     }

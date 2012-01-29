@@ -28,6 +28,7 @@ import com.metaos.datamgt.*;
 public final class SmoothKMAVolumeProfileDifferentEachDayOfWeek 
         extends OnePredictorPerBinAndTypeOfDayOfWeek {
     private final int ignoreElementsHead, ignoreElementsTail;
+    private final boolean cleanOutliers;
 
     /**
      * Creates a combined predictor: 5 days (labour days) + third friday,
@@ -47,6 +48,7 @@ public final class SmoothKMAVolumeProfileDifferentEachDayOfWeek
                 new Field.VOLUME(), 100.0d);
         this.ignoreElementsHead = 0;
         this.ignoreElementsTail = 0;
+	this.cleanOutliers = true;
     }
 
 
@@ -71,11 +73,12 @@ public final class SmoothKMAVolumeProfileDifferentEachDayOfWeek
                     predictorSelectionStrategy,
             final CalUtils.InstantGenerator instantGenerator, 
             final String symbol, final int ignoreElementsHead, 
-            final int ignoreElementsTail) {
+            final int ignoreElementsTail, final boolean cleanOutliers) {
         super(predictorSelectionStrategy, instantGenerator, symbol,
                 new Field.VOLUME(), 100.0d);
         this.ignoreElementsHead = ignoreElementsHead;
         this.ignoreElementsTail = ignoreElementsTail;
+	this.cleanOutliers = cleanOutliers;
     }
 
 
@@ -86,7 +89,9 @@ public final class SmoothKMAVolumeProfileDifferentEachDayOfWeek
      */
     public String toString() {
         return "Smooth Kernel Moving Average normalized to 100 Volume "
-                + "Profile Predictor";
+                + "Profile Predictor "
+                + (this.cleanOutliers ? "cleaning" : "not cleaning")
+                + " outliers";
     }
 
 
@@ -97,7 +102,9 @@ public final class SmoothKMAVolumeProfileDifferentEachDayOfWeek
      * Cleans data before learning.
      */
     @Override protected void cleanData(final double[] vals) {
-        RemoveVolumeData.cleanOutliers(vals);
+        if(this.cleanOutliers) {
+            RemoveVolumeData.cleanOutliers(vals);
+        }
         RemoveVolumeData.cutHeadAndTail(vals, this.ignoreElementsHead,
                 this.ignoreElementsTail);
     }

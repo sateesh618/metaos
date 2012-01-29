@@ -33,15 +33,23 @@ public class MovingMedian implements Indicator {
      * been learnt.
      */
     public double calculate() {
-        if( ! this.trainedEnough ) return Double.NaN;
-        System.arraycopy(this.memory, 0, this.workingMemory, 0, memory.length);
-        Arrays.sort(workingMemory);
-        final double value;
-        if(memory.length % 2 == 1) {
-            value = workingMemory[(memory.length+1)/2-1];
+        final int memoryLength;
+        final double[] tmpMemory;
+        if( ! this.trainedEnough ) {
+            memoryLength = this.head;
+            tmpMemory = this.workingMemory;
         } else {
-            final double lower = workingMemory[memory.length/2-1];
-            final double upper = workingMemory[memory.length/2];
+            memoryLength = memory.length;
+            tmpMemory = this.workingMemory;
+        }
+        System.arraycopy(this.memory, 0, tmpMemory, 0, memoryLength);
+        Arrays.sort(tmpMemory);
+        final double value;
+        if(tmpMemory.length % 2 == 1) {
+            value = tmpMemory[(tmpMemory.length+1)/2-1];
+        } else {
+            final double lower = tmpMemory[tmpMemory.length/2-1];
+            final double upper = tmpMemory[tmpMemory.length/2];
             value = (lower + upper) / 2.0;
         }
         return value;

@@ -38,24 +38,24 @@ public class TestMultipleSymbolScanner {
                 new SpreadTradesMgr[] { accumulator });
         mss.run();
         for(int i=0; i<lineMemory.results.size(); i++) {
-            final Calendar t = lineMemory.results.get(i).getLocalTimestamp();
+            final Calendar t = lineMemory.results.get(i).getLocalTimestamp(0);
             if(t.get(Calendar.DAY_OF_MONTH)==28 && t.get(Calendar.MONTH)==9 
                     && t.get(Calendar.YEAR)==2011
                     && t.get(Calendar.HOUR_OF_DAY)==10
                     && t.get(Calendar.MINUTE)==44) {
-                assertEquals(12.75, lineMemory.results.get(i).values(0).get(
+                assertEquals(12.00, lineMemory.results.get(i).values(0).get(
                         new Field.OPEN()), 0);
-                assertEquals(12.75, lineMemory.results.get(i).values(0).get(
+                assertEquals(12.00, lineMemory.results.get(i).values(0).get(
                         new Field.HIGH()), 0);
-                assertEquals(12.75, lineMemory.results.get(i).values(0).get(
+                assertEquals(12.00, lineMemory.results.get(i).values(0).get(
                         new Field.LOW()), 0);
                 assertEquals(4124.0, lineMemory.results.get(i).values(0).get(
                         new Field.VOLUME()), 0);
-                assertEquals(2.705, lineMemory.results.get(i).values(1).get(
+                assertEquals(2.00, lineMemory.results.get(i).values(1).get(
                         new Field.OPEN()), 0);
-                assertEquals(2.706, lineMemory.results.get(i).values(1).get(
+                assertEquals(2.00, lineMemory.results.get(i).values(1).get(
                         new Field.HIGH()), 0);
-                assertEquals(2.705, lineMemory.results.get(i).values(1).get(
+                assertEquals(2.00, lineMemory.results.get(i).values(1).get(
                         new Field.LOW()), 0);
                 assertEquals(1894.0, lineMemory.results.get(i).values(1).get(
                         new Field.VOLUME()), 0);
@@ -80,11 +80,16 @@ public class TestMultipleSymbolScanner {
         mss.run();
 
         assertEquals("27-10-2011 16:49",new SimpleDateFormat("dd-MM-yyyy HH:mm")
-            .format(lineMemory.results.get(800).getLocalTimestamp().getTime()));
-        assertEquals(12.69, lineMemory.results.get(800).values(0)
+            .format(lineMemory.results.get(800)
+                    .getLocalTimestamp(0).getTime()));
+        assertEquals(12.00, lineMemory.results.get(800).values(0)
                 .get(new Field.OPEN()), 0);
-        assertEquals(6.82, lineMemory.results.get(800).values(6)
-                .get(new Field.HIGH()), 0);
+        assertEquals(6.0, lineMemory.results.get(800).values(6)
+                .get(new Field.HIGH()), 0);        
+        assertEquals(1, lineMemory.results.get(lineMemory.results.size()-1)
+                .getLocalTimestamp(0).get(Calendar.HOUR_OF_DAY));
+        assertEquals(59, lineMemory.results.get(lineMemory.results.size()-1)
+                .getLocalTimestamp(0).get(Calendar.MINUTE));
         System.out.println("Ok");
     }
 

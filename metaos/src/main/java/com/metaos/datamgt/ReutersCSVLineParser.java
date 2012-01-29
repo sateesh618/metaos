@@ -59,6 +59,10 @@ public class ReutersCSVLineParser implements LineParser {
         return this.inner.getLocalTimestamp(line);
     }
 
+    public Calendar getUTCTimestamp(final String line) {
+        return this.inner.getUTCTimestamp(line);
+    }
+
     public void reset() {
         this.inner.reset();
     }

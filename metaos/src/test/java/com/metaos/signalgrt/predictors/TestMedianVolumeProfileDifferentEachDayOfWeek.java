@@ -101,8 +101,8 @@ public class TestMedianVolumeProfileDifferentEachDayOfWeek {
             for(int i=0; i<coreDailyVols[0].length; i++) {
                 final Calendar now = (Calendar) moments[day].clone();
                 final ParseResult parseResult = new ParseResult();
-                parseResult.newTimestamp();
-                parseResult.getLocalTimestamp().setTime(now.getTime());
+                parseResult.newTimestamp(0);
+                parseResult.getLocalTimestamp(0).setTime(now.getTime());
                 parseResult.addSymbol(symbol);
                 parseResult.putValue(symbol, new Field.VOLUME(),
                         coreDailyVols[day][i]);

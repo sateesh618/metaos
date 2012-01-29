@@ -35,6 +35,24 @@ public class WholeDayVolumeProfileComparator
 
 
     /**
+     * Creates comparator of day forecasts with real data.
+     * @param instantGenerator definition of 'instant', coherent with one
+     * used in predictors.
+     * @param symbol symbol to make comparisons.
+     * @param field the field to compare profile.
+     * @param minimumDay minimum day to compare forecasts.
+     * @param removeOutliers true to remove outliers before comparing.
+     * @deprecated Use constructor with filters instead
+     */
+    public WholeDayVolumeProfileComparator(
+            final CalUtils.InstantGenerator instantGenerator,
+            final String symbol, final Field field, final Calendar minimumDay,
+	    final boolean removeOutliers) {
+        this(instantGenerator, symbol, field, minimumDay, 1, removeOutliers);
+    }
+
+
+    /**
      * Creates comparator of forecasts with real data groupping results into
      * blocks of given size before comparing.
      * @param instantGenerator definition of 'instant', coherent with one
@@ -60,7 +78,7 @@ public class WholeDayVolumeProfileComparator
                         return !when.before(minimumDay);
                     }
                 }
-            }, groupSize, true);
+            }, groupSize, cleanOutliers);
     }
 
 

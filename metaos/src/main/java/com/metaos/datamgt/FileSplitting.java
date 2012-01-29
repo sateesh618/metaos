@@ -39,8 +39,10 @@ public class FileSplitting {
      * given symbol and day.
      */
     public String getFileName(final Calendar when, final String symbol) {
+        final Calendar when2 = (Calendar) when.clone();
+        when2.setTimeZone(TimeZone.getTimeZone("GMT"));
         final StringBuffer fileName = new StringBuffer(repository).append("/");
-        fileName.append(fileDateParser.format(when.getTime())).append(".")
+        fileName.append(fileDateParser.format(when2.getTime())).append(".")
                 .append(symbol).append(".").append(resolution).append(".csv");
         return fileName.toString();
     }
@@ -88,7 +90,8 @@ public class FileSplitting {
             final List<String> symbols = result.getSymbols();
             for(final String s : symbols) {
                 try {
-                    saveTrade(result.getLocalTimestamp(), s, result.values(s));
+                    saveTrade(result.getLocalTimestamp(s), 
+                                    s, result.values(s));
                 } catch(IOException ioe) {
                     // What should I do? Ignore?
                 }

@@ -17,7 +17,7 @@ public class ParseResult {
 
     private final Map<String, Map<Field, Double>> values;
     private final List<String> symbols;
-    private Calendar calendar;
+    private final List<Calendar> calendars;
 
     /**
      * Creates an empty result set.
@@ -25,7 +25,7 @@ public class ParseResult {
     public ParseResult() {
         this.values = new HashMap<String,Map<Field, Double>>();
         this.symbols = new ArrayList<String>();
-        this.calendar = null;
+        this.calendars = new ArrayList<Calendar>();
     }
 
 
@@ -39,16 +39,32 @@ public class ParseResult {
 
     /**
      * Gets local time calendar (with adjusted time zone) for parsed date.
-     * @return eturns null if calendar is reset and has not been set.
+     * @return returns null if calendar is reset and has not been set.
      */
-    public Calendar getLocalTimestamp() { return this.calendar; }
+    public Calendar getLocalTimestamp(final int pos) { 
+        if(pos>=this.calendars.size()) return null;
+        else return this.calendars.get(pos); 
+    }
 
+    /**
+     * Gets local time calendar (with adjusted time zone) for parsed date.
+     * @return returns null if calendar is reset and has not been set.
+     */
+    public Calendar getLocalTimestamp(final String symbol) { 
+        for(int i=0; i<this.symbols.size(); i++) {
+            if(this.symbols.get(i) != null
+                            && this.symbols.get(i).equals(symbol)) {
+                return this.calendars.get(i); 
+            }
+        }
+        return null;
+    }
 
     /**
      * Returns A COPY of the local timestamp set to GMT+0
      */
     public Calendar getUTCTimestampCopy() { 
-        final Calendar cloned = (Calendar) this.calendar.clone();
+        final Calendar cloned = (Calendar) this.calendars.get(0).clone();
         cloned.setTimeZone(TimeZone.getTimeZone("GMT"));
         return cloned;
     }
@@ -57,8 +73,14 @@ public class ParseResult {
     /**
      * Creates a new calendar reset to time zero.
      */
-    public void newTimestamp() {
-        this.calendar = CalUtils.getZeroCalendar();
+    public void newTimestamp(final int pos) {
+        if(pos>=this.calendars.size()) {
+            for(int i=this.calendars.size(); i<=pos; i++) {
+                this.calendars.add(CalUtils.getZeroCalendar());
+            }
+        } else {
+            this.calendars.set(pos, CalUtils.getZeroCalendar());
+        }
     }
 
 
@@ -139,7 +161,7 @@ public class ParseResult {
      */
     public void reset() {
         this.values.clear();
-        this.calendar = null;
+        this.calendars.clear();
         this.symbols.clear();
     }
 
@@ -148,14 +170,14 @@ public class ParseResult {
      * Gets given data into this object.
      */
     public void merge(final ParseResult other) {
-        if(this.getLocalTimestamp()==null) {
-            this.calendar = (Calendar) other.calendar.clone();
+        if(this.calendars.size()==0) {
+            this.calendars.add((Calendar) other.getLocalTimestamp(0).clone());
         }
-        if(!other.getLocalTimestamp().equals(this.getLocalTimestamp())) {
+        if(!other.getUTCTimestampCopy().equals(this.getUTCTimestampCopy())) {
             throw new IllegalArgumentException("Cannot merge result data in "
 //            System.out.println("Cannot merge result data in "
-                   + "different times (" + other.getLocalTimestamp() 
-                   + " is not as expected " + this.getLocalTimestamp() + ")\n"
+                   + "different times (" + other.getUTCTimestampCopy() 
+                   + " is not as expected " + this.getUTCTimestampCopy() + ")\n"
                    + "Original result is related to " + this.symbols + " and "
                    + "unexpected result is related to " + other.symbols);
         }
@@ -169,7 +191,22 @@ public class ParseResult {
                     break;
                 }
             }
-            if(!symbolFound) this.addSymbol(symbolVals.getKey());
+            if(!symbolFound) {
+		final String s = symbolVals.getKey();
+                this.addSymbol(s);
+		for(int i=0; i<this.symbols.size(); i++) {
+		    if(this.symbols.get(i).equals(s)) {
+		final Calendar c = (Calendar)
+                        other.getLocalTimestamp(s).clone();
+		final long millis = c.getTimeInMillis();
+		c.setTimeZone(other.getLocalTimestamp(s).getTimeZone());
+		c.setTimeInMillis(millis);
+		if(this.calendars.size()<=i) this.newTimestamp(i);
+                this.calendars.set(i,c);
+			break;
+		    }
+		}
+            }
 
             for(Map.Entry<Field, Double> fieldValue : 
                     symbolVals.getValue().entrySet()) {
@@ -185,7 +222,6 @@ public class ParseResult {
      */
     public Object clone() {
         final ParseResult cloned = new ParseResult();
-        cloned.calendar = (Calendar) this.calendar.clone();
 
         for(int i=0; i<this.symbols.size(); i++) {
             cloned.symbols.add(this.symbols.get(i));
@@ -201,6 +237,10 @@ public class ParseResult {
             cloned.values.put(entry1.getKey(), vals);
         }
 
+        for(final Calendar c : this.calendars) {
+            cloned.calendars.add((Calendar) c.clone());
+        }
+
         return cloned;
     }
 
@@ -209,7 +249,7 @@ public class ParseResult {
      * Logging purposes.
      */
     public String toString() {
-        return "ParseResult:[moment=" + this.calendar + ", values="
+        return "ParseResult:[moments=" + this.calendars + ", values="
                 + this.values + "]";
     }
 }

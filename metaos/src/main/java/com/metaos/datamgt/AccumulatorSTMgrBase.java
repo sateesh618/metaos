@@ -87,14 +87,14 @@ public abstract class AccumulatorSTMgrBase implements SpreadTradesMgr {
         }
 
 
-        accumResult.newTimestamp();
+        accumResult.newTimestamp(0);
         if(memory.size()>0) {
             final Calendar lastMemoryTime = memory.get(memory.size()-1)
-                    .getLocalTimestamp();
+                    .getLocalTimestamp(0);
 
-            accumResult.getLocalTimestamp().setTimeInMillis(
+            accumResult.getLocalTimestamp(0).setTimeInMillis(
                     lastMemoryTime.getTimeInMillis());
-            accumResult.getLocalTimestamp().setTimeZone(
+            accumResult.getLocalTimestamp(0).setTimeZone(
                     lastMemoryTime.getTimeZone());
         
             for(final Listener listener : this.listeners) {

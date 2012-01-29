@@ -165,7 +165,7 @@ public class MultipleSymbolScanner implements LineScanner {
                     } else {
                         this.nextLine[i] = line;
                         this.nextMilliseconds[i] = this.lineParser.parse(line)
-                                .getLocalTimestamp().getTimeInMillis();
+                                .getUTCTimestampCopy().getTimeInMillis();
                         break;
                     }
                 } catch(Exception e) {
@@ -234,10 +234,9 @@ public class MultipleSymbolScanner implements LineScanner {
                             this.nextLine[i] = null;
                         } else {
                             this.nextLine[i] = line;
-                            //this.nextMilliseconds[i] = localResult
-                            //        .getLocalTimestamp().getTimeInMillis();
                             this.nextMilliseconds[i] = this.lineParser
-                                    .getLocalTimestamp(line).getTimeInMillis();
+                                    .getUTCTimestamp(line)
+                                            .getTimeInMillis();
                         }
                     } else {
                         this.nextLine[i] = null;

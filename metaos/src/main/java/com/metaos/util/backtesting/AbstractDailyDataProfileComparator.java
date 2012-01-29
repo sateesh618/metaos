@@ -90,7 +90,7 @@ public abstract class AbstractDailyDataProfileComparator
 
     public void notify(final ParseResult parseResult) {
         final int index = this.instantGenerator.generate(
-                parseResult.getLocalTimestamp());
+                parseResult.getLocalTimestamp(this.symbol));
         // Effect:only takes memory of each minute for the last received day
         if(parseResult.values(this.symbol) != null &&
                 parseResult.values(this.symbol).get(field) != null) {
@@ -122,11 +122,16 @@ public abstract class AbstractDailyDataProfileComparator
                 contrast(predictedValues, this.dailyData);
 
         boolean anyErrorPresent = false;
+        boolean predictionValid = false;
+        boolean dailyDataValid = false;
         for(int i=0; i<errors.length; i++) {
             if(!Double.isNaN(errors[i]) && errors[i]>=0) {
                 anyErrorPresent = true;
                 this.minuteErrors.addError(i, errors[i]);
                 this.dayErrors.addError(dayStr, errors[i]);
+            } else {
+                if(!Double.isNaN(predictedValues[i])) predictionValid = true;
+                if(!Double.isNaN(this.dailyData[i])) dailyDataValid = true;
             }
         }
         // Dumps data.
@@ -167,8 +172,10 @@ public abstract class AbstractDailyDataProfileComparator
             } catch(IOException ioe) {
                 log.log(Level.SEVERE, "Error dumping results to file", ioe);
             }
-        } else {
-            log.finest("No prediction to evaluate (all positions are NaN)");
+        } else if(!anyErrorPresent) {
+            log.finest("Prediction comparison invalid");
+            if(!predictionValid) log.finest("All values in prediction are NaN");
+            if(!dailyDataValid) log.finest("All values in daily data are NaN");
         }
 
 

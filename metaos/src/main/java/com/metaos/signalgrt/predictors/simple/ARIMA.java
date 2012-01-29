@@ -38,6 +38,18 @@ public class ARIMA implements Predictor {
         this.forecastSize = forecastSize;
     }
 
+    /**
+     * Creates an ARIMA predictor with given parameters to forecast next value.
+     *
+     * @param p first argument for ARIMA(p,d,q) model
+     * @param d second argument for ARIMA(p,d,q) model
+     * @param q thrid argument for ARIMA(p,d,q) model
+     * <code>predictVector</code> method was called.
+     */
+    public ARIMA(final int p,final int d,final int q) {
+        this(p,d,q,1);
+    }
+
 
     public double predict(final Calendar ignored) {
         if(this.memory.size()<2) return 0;

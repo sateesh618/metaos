@@ -82,10 +82,10 @@ public class BacktesterAgent implements Listener {
      * Receives notification signals as time goes on.
      */
     public void notify(final ParseResult parseResult) {
-        final Calendar currentDay = parseResult.getLocalTimestamp();
+        final Calendar currentDay = parseResult.getLocalTimestamp(0);
 
-        // Is it the moment to test previous forecasting?
-        if(this.forecastingTime.shouldEvaluatePrediction(currentDay)) {
+        // Is it the moment to test previous forecast?
+        if(this.forecastingTime.shouldOnlyEvaluatePrediction(currentDay)) {
             if(this.lastForecast != null) {
                 log.finest("Evaluating previous prediction "
                     + dateFormatter.format(currentDay.getTime()));
@@ -95,7 +95,36 @@ public class BacktesterAgent implements Listener {
         }
 
         // Is it the moment to generate a new prediction?
-        if(this.forecastingTime.shouldPredict(currentDay)) {
+        if(this.forecastingTime.shouldOnlyPredict(currentDay)) {
+            log.finest("Asking for new forecast " 
+                    + dateFormatter.format(currentDay.getTime()));
+            this.lastForecast = (double[]) this.predictor
+                    .predictVector(currentDay).clone();
+        }
+
+
+        // Is it the moment to predict and then test prediction?
+        // (a little fake...)
+        if(this.forecastingTime.shouldPredictAndEvaluate(currentDay)) {
+            log.finest("Asking for new forecast " 
+                    + dateFormatter.format(currentDay.getTime()));
+            this.lastForecast = (double[]) this.predictor
+                    .predictVector(currentDay).clone();
+            log.finest("Evaluating recent prediction "
+                    + dateFormatter.format(currentDay.getTime()));
+            this.forecastingTest.evaluate(currentDay, this.lastForecast);
+            this.numberOfForecastings++;
+        }
+
+        // Is it the moment to test previous prediction and calculate new one?
+        if(this.forecastingTime.shouldEvaluatePreviousPredictionAndPredict(
+                    currentDay)) {
+            if(this.lastForecast != null) {
+                log.finest("Evaluating previous prediction "
+                    + dateFormatter.format(currentDay.getTime()));
+                this.forecastingTest.evaluate(currentDay, this.lastForecast);
+                this.numberOfForecastings++;
+            }
             log.finest("Asking for new forecast " 
                     + dateFormatter.format(currentDay.getTime()));
             this.lastForecast = (double[]) this.predictor

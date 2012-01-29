@@ -20,10 +20,18 @@ public class TestBacktesterAgent {
     @Test
     public void checkPredictionAndLearningMoments() throws Exception {
         final ForecastingTime forecastingTime = new ForecastingTime() {
-            public boolean shouldEvaluatePrediction(final Calendar when) {
+            public boolean shouldOnlyEvaluatePrediction(final Calendar when) {
                 return false;
             }
-            public boolean shouldPredict(final Calendar when) {
+            public boolean shouldOnlyPredict(final Calendar when) {
+                return false;
+            }
+            public boolean shouldPredictAndEvaluate(final Calendar when) {
+                return false;
+            }
+
+            public boolean shouldEvaluatePreviousPredictionAndPredict(
+                            final Calendar when) {
                 return false;
             }
             public void notify(final ParseResult result) { }

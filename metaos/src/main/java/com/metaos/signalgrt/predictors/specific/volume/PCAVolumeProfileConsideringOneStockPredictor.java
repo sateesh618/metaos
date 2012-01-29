@@ -123,7 +123,9 @@ public final class PCAVolumeProfileConsideringOneStockPredictor
         return "Normalized to " + this.scale 
                 + " PCA Volume Profile Combining Several Days Predictor"
                 + " ignoring " + this.ignoreElementsHead + " from the begining"
-                + " and " + this.ignoreElementsTail + " from the end";
+                + " and " + this.ignoreElementsTail + " from the end "
+                + (this.cleanOutliers ? "cleaning" : "not cleaning")
+                + " outliers";
     }
 
 

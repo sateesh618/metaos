@@ -16,7 +16,7 @@ import java.util.*;
  */
 public final class RemoveVolumeData {
     /**
-     * Cleans received data, removing values greater in more than 20% over
+     * Cleans received data, removing values greater in more than 150% over
      * the last valid value (assumed to be closing auction).
      */
     public static void cleanOutliers(final double dailyData[]) {
@@ -32,7 +32,7 @@ public final class RemoveVolumeData {
         for(int i=1; i<dailyData.length-1; i++) {
             if(i==closingIndex) continue;
             if( ! Double.isNaN(dailyData[i])
-                    && dailyData[i]>closingVolume*0.2 ) {
+                    && dailyData[i]>closingVolume*1.50 ) {
                 if( ! Double.isNaN(dailyData[i-1]) ) {
                     dailyData[i] = dailyData[i-1];
                 } else if( ! Double.isNaN(dailyData[i+1]) ) {

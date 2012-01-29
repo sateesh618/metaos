@@ -17,12 +17,25 @@ public interface ForecastingTime extends Listener {
      * Tests if it's moment to evaluate a previous prediction, usually at
      * the end of considered periods.
      */
-    public boolean shouldEvaluatePrediction(final Calendar when);
+    public boolean shouldOnlyEvaluatePrediction(final Calendar when);
 
     /**
      * Tests if it's moment to predict, usually at the begining of considered
      * periods.
      */
-    public boolean shouldPredict(final Calendar when);
+    public boolean shouldOnlyPredict(final Calendar when);
+
+    /**
+     * Tests if it's moment to evaluate a previous prediction and
+     * then calculate a new one.
+     */
+    public boolean shouldEvaluatePreviousPredictionAndPredict(
+		    final Calendar when);
+
+    /**
+     * Tests if it's moment to calculate a new prediction and evaluate it
+     * (it's a little fictitious...)
+     */
+    public boolean shouldPredictAndEvaluate(final Calendar when);
 
 }

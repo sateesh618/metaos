@@ -13,7 +13,7 @@ import com.metaos.util.*;
 import com.metaos.datamgt.*;
 
 /**
- * Uses a predictor to forecast the daiy data for the "typical" stock
+ * Uses a predictor to forecast the daily data for the "typical" stock
  * based on data from all stocks of previous day.
  *
  * TODO: Rename to PCAUsingSeveralValuesOneDay
@@ -38,19 +38,21 @@ public abstract class PCADayByDayPredictor extends StaticDayByDayPredictor {
      * @param scale value to scale daily predictions, 
      *      0 or less if no scale is wanted.
      * @param minimumVariance minimum explained variance by model.
+     * @param symbols list of market symbols to consider.
+     * @param patternSymbol symbol to project onto PCA.
      */
     public PCADayByDayPredictor(
             final CalUtils.InstantGenerator instantGenerator,
             final Field field, final double minimumVariance, final double scale,
-            final String[] symbols) {
+            final String[] symbols, final String patternSymbol) {
         super(new PCAPredictor(instantGenerator, minimumVariance, scale), 
-                instantGenerator, symbols[0], field, scale);
+                instantGenerator, patternSymbol, field, scale);
         this.symbols = symbols;
     }
 
 
     public void notify(final ParseResult parseResult) {
-        final Calendar when = parseResult.getLocalTimestamp();
+        final Calendar when = parseResult.getLocalTimestamp(this.symbols[0]);
         final double[] vals = new double[symbols.length];
         for(int i=0; i<this.symbols.length; i++) {
             final Map<Field, Double> x = parseResult.values(this.symbols[i]);

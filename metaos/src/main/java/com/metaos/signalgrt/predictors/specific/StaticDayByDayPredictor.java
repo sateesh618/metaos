@@ -15,7 +15,7 @@ import com.metaos.util.*;
 import com.metaos.datamgt.*;
 
 /**
- * Uses a predictor to forecast each day based on lerant data from 
+ * Uses a predictor to forecast each day based on learnt data from 
  * previous day.
  * <br/>
  * Note to developrs: reimplement <code>cleanData</code> protected method
@@ -61,15 +61,6 @@ public abstract class StaticDayByDayPredictor implements PredictorListener {
     }
 
 
-    public void notify(final ParseResult parseResult) {
-        final Calendar when = parseResult.getLocalTimestamp();
-        if(parseResult.values(this.symbol) != null 
-                && parseResult.values(this.symbol).get(this.field)!=null) {
-            final double val = parseResult.values(0).get(this.field);
-            this.learnValue(when, val);
-        }
-    }
-
 
     /**
      * Emits a single forecast based on learned values.
@@ -100,6 +91,7 @@ public abstract class StaticDayByDayPredictor implements PredictorListener {
                 prediction[i] = this.scale * prediction[i] / sum;
             }
         }
+
         return prediction;
     }
 

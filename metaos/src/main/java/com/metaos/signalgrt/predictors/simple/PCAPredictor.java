@@ -79,7 +79,7 @@ public class PCAPredictor implements Predictor {
      * @param minimumExplainedVariance quantity of variance that should be
      * explained by eigenvectors.
      * @param scale inputs and predictions will be scaled to sum desired scale
-     * value.
+     * value (0 to not scale)
      */
     public PCAPredictor(final CalUtils.InstantGenerator instantGenerator,
             final double minimumExplainedVariance, final double scale) {
@@ -92,7 +92,7 @@ public class PCAPredictor implements Predictor {
         this.maxInstant = instantGenerator.maxInstantValue();
         this.minimumExplainedVariance = minimumExplainedVariance;
         this.scale = scale;
-        this.shiftToScale = true;
+        this.shiftToScale = scale>0;
 
         final R r = Engine.getR();
         try {
@@ -166,7 +166,8 @@ public class PCAPredictor implements Predictor {
         }
         final int m = matrix[0].length;
 
-        // Search for NaN at the begining and at the end
+
+        // Search for NaN/zeros at the begining and at the end
         int maxIndexOfZerosAtTheBegining = 0;
         outter: for(int i=0; i<n; i++) {
             if(matrix[i]!=null) {
@@ -191,19 +192,19 @@ public class PCAPredictor implements Predictor {
             minIndexOfZerosAtTheEnd--;
         }
 
-
         // Pass elements to R
         final int n2 = minIndexOfZerosAtTheEnd - maxIndexOfZerosAtTheBegining;
+
         final R r = Engine.getR();
         try {
             r.lock();
             r.eval("previousVals<-vals");
             r.eval("vals<-array(dim=c(" + n2 + "," + m + "))");
             for(int i=0; i<n2; i++) {
-                if(matrix[i]==null) {
-                    matrix[i] = new double[m];
-                }
                 int i2 = i + maxIndexOfZerosAtTheBegining;
+                if(matrix[i2]==null) {
+                    matrix[i2] = new double[m];
+                }
                 for(int j=0; j<m; j++) {
                     if(Double.isNaN(matrix[i2][j])) {
                         log.info("Found NaN at position " + i2 + "," + j
@@ -217,7 +218,6 @@ public class PCAPredictor implements Predictor {
                           + (Double.isNaN(matrix[i2][j]) ? 0 : matrix[i2][j]));
                 }
             }
-
             // Rescale, if needed.
             if(this.shiftToScale) {
                 for(int j=0; j<m; j++) {
@@ -225,6 +225,7 @@ public class PCAPredictor implements Predictor {
                         + "*vals[," + (j+1) + "]/sum(vals[," + (j+1) + "])");
                 }
             }
+
 
             // Perform PCA
             r.eval("pca.vals<-prcomp(vals, xret=TRUE, scale=TRUE)");

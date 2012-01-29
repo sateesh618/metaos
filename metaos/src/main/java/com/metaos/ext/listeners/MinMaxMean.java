@@ -37,7 +37,7 @@ public class MinMaxMean implements Listener {
     }
 
     public void notify(final ParseResult result) {
-        final Calendar when = result.getLocalTimestamp();
+        final Calendar when = result.getLocalTimestamp(this.symbol);
         final int minuteInDay = (when.get(Calendar.HOUR_OF_DAY)*60
                                 + when.get(Calendar.MINUTE)) / resolution;
         if(result.values(symbol)==null 

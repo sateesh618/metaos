@@ -45,7 +45,7 @@ public class VolumeViews implements Listener {
     public void notify(final ParseResult parseResult) {
         if(parseResult.values(0).get(_volume_)==null) return;
         final Calendar currentDay = CalUtils.normalizedClone(
-                parseResult.getLocalTimestamp());
+                parseResult.getLocalTimestamp(0));
         if(this.lastDay!=null && this.lastDay.before(currentDay)) {
             consolidateDay(currentDay);
         } else if(this.lastDay==null) {
@@ -54,7 +54,7 @@ public class VolumeViews implements Listener {
         }
 
         final int instant = this.instantGenerator.generate(
-                parseResult.getLocalTimestamp());
+                parseResult.getLocalTimestamp(0));
         
         while(this.valuesInstantDay.size()<=instant) {
             final List<Double> l = new ArrayList<Double>();

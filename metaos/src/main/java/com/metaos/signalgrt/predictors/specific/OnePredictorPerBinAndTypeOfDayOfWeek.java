@@ -79,7 +79,7 @@ public abstract class OnePredictorPerBinAndTypeOfDayOfWeek
 
 
     public void notify(final ParseResult parseResult) {
-        final Calendar when = parseResult.getLocalTimestamp();
+        final Calendar when = parseResult.getLocalTimestamp(this.symbol);
         if(parseResult.values(this.symbol) != null 
                 && parseResult.values(this.symbol).get(field)!=null) {
             final double val = parseResult.values(this.symbol).get(field);

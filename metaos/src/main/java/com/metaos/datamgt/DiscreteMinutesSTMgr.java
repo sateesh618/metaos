@@ -46,32 +46,32 @@ public class DiscreteMinutesSTMgr extends AccumulatorSTMgrBase {
      */
     public void accumulate(final ParseResult result) {
         if(this.lastTimestamp == -1) {
-            this.lastTimestamp = result.getLocalTimestamp().getTimeInMillis();
+            this.lastTimestamp = result.getUTCTimestampCopy().getTimeInMillis();
         }
 
         
-        if(this.autocomplete
-            && result.getLocalTimestamp().getTimeInMillis()-this.lastTimestamp
-                        >= 2*(1000*60) 
-            && result.getLocalTimestamp().getTimeInMillis()-this.lastTimestamp
+        if(this.autocomplete && 
+            result.getUTCTimestampCopy().getTimeInMillis()-this.lastTimestamp
+                        >= 2*(1000*60) && 
+            result.getUTCTimestampCopy().getTimeInMillis()-this.lastTimestamp
                         <= this.accumulationWindow*(1000*60)) {
-            long minsToLastData = (result.getLocalTimestamp().getTimeInMillis()
+            long minsToLastData=(result.getUTCTimestampCopy().getTimeInMillis()
                     - this.lastTimestamp) / (1000*60);
             while(minsToLastData>=2) {
                 final ParseResult missingResult = (ParseResult) result.clone();
-                missingResult.getLocalTimestamp().add(Calendar.MINUTE, 
+                missingResult.getUTCTimestampCopy().add(Calendar.MINUTE, 
                         (int) (- minsToLastData + 1));
                 this.accumulate(missingResult);
                 minsToLastData--;
             }
         }
 
-        if(result.getLocalTimestamp().getTimeInMillis()>this.lastTimestamp && 
-                (result.getLocalTimestamp().getTimeInMillis() / (1000*60))
+        if(result.getUTCTimestampCopy().getTimeInMillis()>this.lastTimestamp && 
+                (result.getUTCTimestampCopy().getTimeInMillis() / (1000*60))
                         % this.accumulationWindow == 0) {
             this.endAccumulation();
         }
-        this.lastTimestamp = result.getLocalTimestamp().getTimeInMillis();
+        this.lastTimestamp = result.getUTCTimestampCopy().getTimeInMillis();
         this.memory.add(result);
     }
 }

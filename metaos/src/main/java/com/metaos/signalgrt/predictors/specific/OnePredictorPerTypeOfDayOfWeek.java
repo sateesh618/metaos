@@ -34,33 +34,6 @@ public class OnePredictorPerTypeOfDayOfWeek implements PredictorListener {
 
 
     //
-    // Public Inner Classes
-    //
-    
-
-
-    /**
-     * Differences between Mon, Thu,...and Friday 
-     */
-    public static class MonTueWedThuFri implements TypeOfDaysStrategy {
-        public int numberOfDays() { return 5; }
-        public int typeOfDay(final Calendar when) {
-            switch(when.get(Calendar.DAY_OF_WEEK)) {
-                case Calendar.MONDAY: return 0;
-                case Calendar.TUESDAY: return 1;
-                case Calendar.WEDNESDAY: return 2;
-                case Calendar.THURSDAY: return 3;
-                case Calendar.FRIDAY: return 4;
-                default:
-                    log.info("Don't how to deal with SATURDAY or SUNDAYS");
-                    return -1;
-            }
-        }
-    }
-
-
-
-    //
     // Public methods ---------------------------------------
     //
 
@@ -80,7 +53,7 @@ public class OnePredictorPerTypeOfDayOfWeek implements PredictorListener {
             .PredictorSelectionStrategy predictorSelectionStrategy,
             final TypeOfDaysStrategy typeOfDays) {
         this.predictorSelectionStrategy = predictorSelectionStrategy;
-        this.predictors = new PredictorListener[6];
+        this.predictors = new PredictorListener[typeOfDays.numberOfDays()];
         this.typeOfDays = typeOfDays;
         for(int i=0; i<typeOfDays.numberOfDays(); i++) {
             predictors[i] = predictorSelectionStrategy.buildPredictor();
@@ -93,7 +66,7 @@ public class OnePredictorPerTypeOfDayOfWeek implements PredictorListener {
 
 
     public void notify(final ParseResult parseResult) {
-        final Calendar when = parseResult.getLocalTimestamp();
+        final Calendar when = parseResult.getLocalTimestamp(0);
         final int index = typeOfDays.typeOfDay(when);
         if(index==-1) return;
         this.predictors[index].notify(parseResult);
