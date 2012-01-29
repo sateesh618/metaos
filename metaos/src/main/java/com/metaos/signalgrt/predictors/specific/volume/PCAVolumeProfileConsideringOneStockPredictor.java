@@ -68,7 +68,7 @@ public final class PCAVolumeProfileConsideringOneStockPredictor
      * @param memory number of days to store into memory
      * @param ignoreElementsHead number of elements to ignore from the first
      * element with value (maybe opening auction).
-     * @param ignoreElementsHead number of elements to ignore from the last 
+     * @param ignoreElementsTail number of elements to ignore from the last 
      * element with value (maybe closing auction).
      * @param cleanOutliers clean outliers when learning.
      */

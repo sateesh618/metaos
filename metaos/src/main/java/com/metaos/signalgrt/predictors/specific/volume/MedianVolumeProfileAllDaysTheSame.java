@@ -30,9 +30,9 @@ public class MedianVolumeProfileAllDaysTheSame extends OnePredictorPerBin {
      * to forecast volume profile value in each bin for next day.
      *
      * @param memorySize number of days back to consider.
-     * @param predictorSelectionStrategy in the sense of Design Patterns,
-     *      algorithm to select which predictor and which kernel will be
-     *      used for each bin to predict next value.
+     * @param instantGenerator startegy used to discretize time, compatible
+     * with the data management strategy (the same!)
+     * @param symbol symbol to predict.
      */
     public MedianVolumeProfileAllDaysTheSame(final int memorySize,
             final CalUtils.InstantGenerator instantGenerator, 
@@ -47,10 +47,13 @@ public class MedianVolumeProfileAllDaysTheSame extends OnePredictorPerBin {
      * bins at the begining and at the end (even in prediction and learning).
      *
      * @param memorySize number of days back to consider.
+     * @param instantGenerator startegy used to discretize time, compatible
+     * with the data management strategy (the same!)
      * @param ignoreElementsHead number of elements to ignore from the first
      *      element with value (maybe opening auction).
-     * @param ignoreElementsHead number of elements to ignore from the last 
+     * @param ignoreElementsTail number of elements to ignore from the last 
      *      element with value (maybe closing auction).
+     * @param symbol symbol to predict.
      */
     public MedianVolumeProfileAllDaysTheSame(final int memorySize,
             final CalUtils.InstantGenerator instantGenerator,

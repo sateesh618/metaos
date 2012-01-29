@@ -40,6 +40,7 @@ public final class SmoothKMAVolumeProfileAllDaysTheSame
      * @param predictorSelectionStrategy in the sense of Design Patterns,
      *      algorithm to select which predictor and which kernel will be
      *      used for each bin to predict next value.
+     * @param symbol string with the symbol to predict.
      */
     public SmoothKMAVolumeProfileAllDaysTheSame(
             final Predictor.PredictorSelectionStrategy 
@@ -64,8 +65,11 @@ public final class SmoothKMAVolumeProfileAllDaysTheSame
      *      used for each bin to predict next value.
      * @param ignoreElementsHead number of elements to ignore from the first
      * element with value (maybe opening auction).
-     * @param ignoreElementsHead number of elements to ignore from the last 
+     * @param ignoreElementsTail number of elements to ignore from the last 
      * element with value (maybe closing auction).
+     * @param symbol string with the symbol to predict.
+     * @param cleanOutliers true to supress excessive volume values
+     * (what's excessive? See <code>RemoveVolumeData</code> class)
      */
     public SmoothKMAVolumeProfileAllDaysTheSame(
             final Predictor.PredictorSelectionStrategy 

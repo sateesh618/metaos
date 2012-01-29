@@ -45,7 +45,7 @@ public class CSVLineParser implements LineParser {
      * that will be ignored.
      * @param symbolIndex index of the previous list of formatters for the
      *      symbol name (should be null in the previous list of fieldNames).
-     * @param dateIndex index of the previous list of formatters for the
+     * @param dateIndexes index of the previous list of formatters for the
      *      date of the line (should be null in the previous list of 
      *      fieldNames).
      */
